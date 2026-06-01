@@ -91,7 +91,8 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <h2 id="charTitle"></h2>
     <div class="verdict v-idle" id="verdict">Seleccione una característica e ingrese una medición</div>
     <div class="row" style="margin-bottom:6px">
-      <div><label>N° Pieza / Serie</label><input id="npieza" placeholder="Ej: SN-001" style="padding:7px;font-size:13px"></div>
+      <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50" style="padding:7px;font-size:13px"></div>
+      <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001" style="padding:7px;font-size:13px"></div>
     </div>
     <div id="numInput"><div class="row">
       <div><label id="measLbl">Medición</label><input id="meas" type="number" step="0.0001" onkeydown="if(event.key===\'Enter\')addMeas()"></div>
@@ -122,7 +123,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div class="stat"><div class="l">Promedio</div><div class="v" id="avg">—</div></div>
       <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk">—</div></div>
       <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div></div>
-    <div class="tblwrap"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Valor</th><th>Estado</th><th>Comentario</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="tblwrap"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Valor</th><th>Estado</th><th>Comentario</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
   <div class="card">
     <h2>Gráfico de control</h2>
@@ -224,21 +225,22 @@ function classify(v){const c=curChar;if(c.lo==null||c.hi==null)return 'OK';
   if(c.k==='sello'&&(v>=2.822||v<=2.821))return 'CERCA';
   const sp=c.hi-c.lo,m=(c.hi+c.lo)/2;if(Math.abs(v-m)>sp*0.4)return 'CERCA';return 'OK';}
 function getNpieza(){return document.getElementById('npieza').value.trim();}
+function getNserie(){return document.getElementById('nserie').value.trim();}
 function getComent(){return document.getElementById('comentarios').value.trim();}
 function addMeas(){const v=parseFloat(document.getElementById('meas').value);if(isNaN(v))return;
-  curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),val:v,status:classify(v),comentario:getComent()});
+  curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:classify(v),comentario:getComent()});
   const r=curData()[curData().length-1];document.getElementById('meas').value='';document.getElementById('comentarios').value='';document.getElementById('meas').focus();render();maybeSend(r);}
-function addGNG(r){curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),val:r,status:r==='RECHAZO'?'FUERA':'OK',comentario:getComent()});const x=curData()[curData().length-1];document.getElementById('comentarios').value='';render();maybeSend(x);}
+function addGNG(r){curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:r,status:r==='RECHAZO'?'FUERA':'OK',comentario:getComent()});const x=curData()[curData().length-1];document.getElementById('comentarios').value='';render();maybeSend(x);}
 function addVis(){const v=document.getElementById('visSel').value;const st=v==='OK'?'OK':'DEFECTO';
-  curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),val:v,status:st,comentario:getComent()});
+  curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:st,comentario:getComent()});
   const x=curData()[curData().length-1];document.getElementById('comentarios').value='';render();maybeSend(x);}
-function addOmit(){curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),val:'OMITIDA',status:'OMIT',comentario:getComent()});const x=curData()[curData().length-1];document.getElementById('comentarios').value='';render();maybeSend(x);}
+function addOmit(){curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:'OMITIDA',status:'OMIT',comentario:getComent()});const x=curData()[curData().length-1];document.getElementById('comentarios').value='';render();maybeSend(x);}
 
 function render(){
   const d=curData(),tb=document.getElementById('tbody');tb.innerHTML='';let out=0;
   d.slice().reverse().forEach(r=>{if(r.status==='FUERA'||r.status==='DEFECTO')out++;
     const cls=r.status==='FUERA'||r.status==='DEFECTO'?'bad':(r.status==='OK'?'ok':(r.status==='CERCA'?'warn':''));
-    tb.innerHTML+=`<tr><td>${r.n}</td><td>${r.pieza||'—'}</td><td>${r.hora}</td><td>${r.val}</td><td class="${cls}">${r.status}</td><td style="text-align:left;color:#8aa0b8;font-size:11px">${r.comentario||''}</td></tr>`;});
+    tb.innerHTML+=`<tr><td>${r.n}</td><td>${r.pieza||'—'}</td><td>${r.serie||'—'}</td><td>${r.hora}</td><td>${r.val}</td><td class="${cls}">${r.status}</td><td style="text-align:left;color:#8aa0b8;font-size:11px">${r.comentario||''}</td></tr>`;});
   document.getElementById('n').textContent=d.length;
   const vd=document.getElementById('verdict');
   if(!d.length){vd.className='verdict v-idle';vd.textContent='Ingrese una medición';}
@@ -322,7 +324,7 @@ function rowPayload(r){
     OP:document.getElementById('op').value,maquina:document.getElementById('maq').value,
     mecanico:document.getElementById('mec').value,inspector:document.getElementById('insp').value,
     turno:autoTurno(),caracteristica:curChar.k,
-    descripcion:curChar.label,pieza:r.pieza||'',comentario:r.comentario||'',
+    descripcion:curChar.label,pieza:r.pieza||'',serie:r.serie||'',comentario:r.comentario||'',
     valor:String(r.val),estado:r.status,
     fecha:new Date().toISOString()};
 }
@@ -335,10 +337,10 @@ function flash(t,c){const s=document.getElementById('connState');const old=s.tex
   s.textContent=t;s.style.color=c;setTimeout(()=>{updateConn();},1500);}
 function maybeSend(r){const c=cfg();if(c.url&&c.auto)sendRow(r);}
 function exportCSV(){
-  let csv='plano,part_number,lado,OP,maquina,mecanico,inspector,caracteristica,n,pieza,hora,valor,estado,comentario\n';
+  let csv='plano,part_number,lado,OP,maquina,mecanico,inspector,caracteristica,n,pieza,serie,hora,valor,estado,comentario\n';
   const op=document.getElementById('op').value,mq=document.getElementById('maq').value,mc=document.getElementById('mec').value,ins=document.getElementById('insp').value;
   Object.keys(data).forEach(k=>{const[pl,dn,sd,ck]=k.split('|');
-    data[k].forEach(r=>csv+=`"${pl}",${dn},${sd},"${op}","${mq}","${mc}","${ins}",${ck},${r.n},${r.pieza||""},${r.hora},${r.val},${r.status},"${(r.comentario||"").replace(/,/g," ")}"\n`);});
+    data[k].forEach(r=>csv+=`"${pl}",${dn},${sd},"${op}","${mq}","${mc}","${ins}",${ck},${r.n},${r.pieza||""},${r.serie||""},${r.hora},${r.val},${r.status},"${(r.comentario||"").replace(/,/g," ")}"\n`);});
   const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
   a.href=URL.createObjectURL(b);a.download='inspeccion_'+(mq||'maq').replace(/ /g,'_')+'.csv';a.click();
 }
