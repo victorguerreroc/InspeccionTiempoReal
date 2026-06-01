@@ -282,8 +282,9 @@ function drawChart(){
     ctx.fillStyle=r.status==='FUERA'?'#ff7a7a':(r.status==='CERCA'?'#ffce6b':'#5fdc8f');ctx.beginPath();ctx.arc(px,py,5,0,7);ctx.fill();});
   ctx.fillStyle='#65788f';ctx.font='12px Arial';ctx.fillText('Muestra →',pad,H-10);
 }
-function cfg(){return {url:localStorage.getItem('flowUrl')||'',auto:localStorage.getItem('autoSend')==='1'};}
-function saveCfg(){localStorage.setItem('flowUrl',document.getElementById('flowUrl').value.trim());
+const DEFAULT_URL='https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
+function cfg(){return {url:localStorage.getItem('flowUrl')||DEFAULT_URL,auto:localStorage.getItem('autoSend')!=='0'};}
+function saveCfg(){localStorage.setItem('flowUrl',document.getElementById('flowUrl').value.trim()||DEFAULT_URL);
   localStorage.setItem('autoSend',document.getElementById('autoSend').checked?'1':'0');updateConn();}
 function updateConn(){const c=cfg();const s=document.getElementById('connState');
   if(!c.url){s.textContent='● sin configurar';s.style.color='#65788f';}
@@ -298,7 +299,7 @@ function rowPayload(r){
     fecha:new Date().toISOString()};
 }
 async function sendRow(r){const c=cfg();if(!c.url)return;
-  try{await fetch(c.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rowPayload(r))});
+  try{await fetch(c.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(rowPayload(r))});
     flash('✓ enviado','#5fdc8f');}
   catch(e){flash('⚠ no se pudo enviar (se guardó local)','#ffce6b');}
 }
