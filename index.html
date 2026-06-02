@@ -364,7 +364,7 @@ async function sendAll(){const c=cfg();if(!c.url){alert('Primero pegue y guarde 
   alert('Enviadas '+cnt+' mediciones al Excel central.');}
 window.addEventListener('resize',drawChart);
 // restaurar
-try{const sv=localStorage.getItem('inspData');if(sv)data=JSON.parse(sv);}catch(e){}
+try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
 init();tickClock();
 document.getElementById('flowUrl').value=localStorage.getItem('flowUrl')||'';
 document.getElementById('autoSend').checked=localStorage.getItem('autoSend')==='1';
