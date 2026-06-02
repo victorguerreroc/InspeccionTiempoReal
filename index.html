@@ -72,7 +72,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 <div class="charbar">
   <div style="flex:0 0 auto">
     <label>Modo de inspección</label>
-    <div class="sidebtns"><button id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button><button id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button></div>
+    <div class="sidebtns"><button id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button><button id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button><button id="btnSierra" onclick="setMode('sierra')" style="background:#7b4fa6;color:#fff">Corte Sierra</button></div>
   </div>
   <div style="flex:0 0 auto">
     <label>Lado de la pieza</label>
@@ -137,6 +137,7 @@ const APP={"planos":{"CG1.C.31.XR Rev C":{"chars":[{"k":"rug","label":"Rugosidad
 const TOL_OMIT_TOP=["dl_661","dl_8375","dl_7375","dl_5625","dl_3791","rosca_mayor","od_2975","pared","dl_080","dl_08","dl_200"]; // en TOP se omiten bandas/diam mayor
 let curPlano,curSide='T',curChar,curMode='setup',data={};
 const PROCESO_KEYS=['sello','oal','rosca_go','rosca_go_top','rosca_go_bot','visual'];
+const SIERRA_KEYS=['oal'];
 const VISUAL_CHAR={k:'visual',label:'Inspección Visual',t:'vis',lo:null,hi:null,nom:null,unit:'',crit:false,sides:['T','B'],instr:'Visual'};
 
 function autoTurno(){const hM=new Date().getHours()*60+new Date().getMinutes();
@@ -165,11 +166,13 @@ function onPlano(){
 function setMode(m){curMode=m;
   document.getElementById('btnSetup').classList.toggle('act',m==='setup');
   document.getElementById('btnProceso').classList.toggle('act',m==='proceso');
+  document.getElementById('btnSierra').classList.toggle('act',m==='sierra');
   buildCharList();onChar();}
 function sideChars(){
   let cs=APP.planos[curPlano].chars.filter(c=>c.sides.includes(curSide));
   if(curMode==='proceso')cs=cs.filter(c=>PROCESO_KEYS.includes(c.k));
-  if(!cs.find(c=>c.k==='visual'))cs=[...cs,VISUAL_CHAR];
+  if(curMode==='sierra')cs=cs.filter(c=>SIERRA_KEYS.includes(c.k));
+  if(curMode!=='sierra'&&!cs.find(c=>c.k==='visual'))cs=[...cs,VISUAL_CHAR];
   return cs;
 }
 function buildCharList(){
