@@ -73,6 +73,14 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
       <select id="fCaract" onchange="applyFilters()"><option value="">Todas</option></select>
     </div>
     <div class="filter-group">
+      <label>Lado de la pieza</label>
+      <select id="fLado" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="T">TOP</option>
+        <option value="B">BOTTOM</option>
+      </select>
+    </div>
+    <div class="filter-group">
       <label>Máquina</label>
       <select id="fMaq" onchange="applyFilters()"><option value="">Todas</option></select>
     </div>
@@ -219,6 +227,7 @@ function applyFilters(){
   const mec    = document.getElementById('fMec').value;
   const turno  = document.getElementById('fTurno').value;
   const estado = document.getElementById('fEstado').value;
+  const lado   = document.getElementById('fLado').value;
 
   filteredData = allData.filter(r=>{
     if(fecha  && getDateStr(r)!==fecha) return false;
@@ -229,6 +238,7 @@ function applyFilters(){
     if(mec    && g(r,'mecanico')!==mec) return false;
     if(turno  && g(r,'turno')!==turno)  return false;
     if(estado && g(r,'estado')!==estado) return false;
+    if(lado   && g(r,'lado')!==lado)    return false;
     return true;
   });
 
@@ -239,7 +249,7 @@ function applyFilters(){
 }
 
 function clearFilters(){
-  ['fPlano','fDash','fCaract','fMaq','fMec','fTurno','fEstado'].forEach(id=>{
+  ['fPlano','fDash','fCaract','fMaq','fMec','fTurno','fEstado','fLado'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
   setTodayFilter();
