@@ -25,19 +25,14 @@ button.sec:hover{background:#2d3f54;color:#e6edf5}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:5px 6px;border-bottom:1px solid #243447;text-align:center}
 th{color:#8aa0b8;font-size:10px;text-transform:uppercase;position:sticky;top:0;background:#16212f}
-td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}td.def{color:#ff7a7a;font-weight:bold}
+td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
 .tblwrap{max-height:480px;overflow-y:auto}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold}
-.badge-ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
-.badge-bad{background:#3a1414;color:#ff7a7a;border:1px solid #C00000}
-.badge-warn{background:#3a2e10;color:#ffce6b;border:1px solid #b8860b}
-.loading{text-align:center;padding:40px;color:#8aa0b8;font-size:16px}
-.error-box{background:#3a1414;border:1px solid #C00000;border-radius:8px;padding:14px;color:#ff7a7a;margin-bottom:12px}
 .sheet-tabs{display:flex;gap:8px;margin-bottom:12px}
 .sheet-tab{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;border:1px solid #2d3f54;background:#0f1722;color:#8aa0b8}
 .sheet-tab.act{background:#2E75B6;color:#fff;border-color:#2E75B6}
 .sheet-tab.sierra.act{background:#7b4fa6;border-color:#7b4fa6}
-#noDataMsg{display:none;text-align:center;padding:60px;color:#8aa0b8;font-size:15px}
+.error-box{background:#3a1414;border:1px solid #C00000;border-radius:8px;padding:14px;color:#ff7a7a;margin-bottom:12px}
+#noDataMsg{text-align:center;padding:60px;color:#8aa0b8;font-size:15px;display:none}
 </style></head><body>
 
 <div class="topbar">
@@ -45,7 +40,7 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
     <h1>📊 Dashboard de Inspección</h1>
     <div class="sub">TechShop International S.A. · Datos en tiempo real desde Google Sheets</div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <span id="lastUpdate" style="color:#8aa0b8;font-size:12px"></span>
     <button onclick="loadData()" id="btnRefresh">🔄 Actualizar</button>
     <a href="index.html" style="text-decoration:none"><button class="sec">← Volver a Inspección</button></a>
@@ -105,9 +100,9 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
       </select>
     </div>
   </div>
-  <div style="margin-top:8px;display:flex;gap:8px">
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
     <button class="sec" onclick="clearFilters()" style="font-size:12px;padding:6px 12px">✕ Limpiar filtros</button>
-    <span id="rowCount" style="color:#8aa0b8;font-size:12px;align-self:center"></span>
+    <span id="rowCount" style="color:#8aa0b8;font-size:12px"></span>
   </div>
 </div>
 
@@ -115,8 +110,8 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
   <div class="stat"><div class="l">Total registros</div><div class="v" id="sTotal">—</div></div>
   <div class="stat"><div class="l">Muestras num.</div><div class="v" id="sN">—</div></div>
   <div class="stat"><div class="l">Promedio</div><div class="v" id="sAvg" style="font-size:16px">—</div></div>
-  <div class="stat"><div class="l">Cpk</div><div class="v" id="sCpk">—</div></div>
-  <div class="stat"><div class="l">Fuera de spec</div><div class="v" id="sFuera" style="color:#ff7a7a">—</div></div>
+  <div class="stat"><div class="l">Desv. Est.</div><div class="v" id="sSd" style="font-size:16px">—</div></div>
+  <div class="stat"><div class="l">Fuera de spec</div><div class="v" id="sFuera">—</div></div>
   <div class="stat"><div class="l">% Rechazo</div><div class="v" id="sPct">—</div></div>
 </div>
 
@@ -124,10 +119,10 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
   <div class="card">
     <h2 id="chartTitle">Gráfico de control</h2>
     <div id="noDataMsg">Sin datos para los filtros seleccionados</div>
-    <canvas id="chart" height="480"></canvas>
+    <canvas id="chart" height="500"></canvas>
   </div>
   <div class="card">
-    <h2>Registros</h2>
+    <h2>Registros <span id="tblCount" style="color:#8aa0b8;font-size:12px;font-weight:normal"></span></h2>
     <div class="tblwrap">
       <table>
         <thead><tr><th>#</th><th>Fecha</th><th>Pieza</th><th>Valor</th><th>Estado</th><th>Máquina</th></tr></thead>
@@ -138,149 +133,106 @@ td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
 </div>
 
 <script>
-const SHEET_ID = '1q1rAgbhNIYO9PSDRoJxIzroYYthIMX1RT5KtIkC9lGM';
-const URLS = {
-  insp: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`,
-  sierra: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Corte+de+Sierra`
-};
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
+const SHEET_NAMES = {insp:'Inspecciones', sierra:'Corte Sierra'};
 
-let allData = [];
-let filteredData = [];
-let curSheet = 'insp';
+let allData = [], filteredData = [], curSheet = 'insp';
 
-// Column indices for Inspecciones sheet
-const COL = {
-  plano:0, dash:1, lado:2, op:3, maq:4, mec:5, insp:6, turno:7,
-  caract:8, desc:9, pieza:10, serie:11, valor:12, estado:13, coment:14, fecha:15
-};
-// Column indices for Sierra sheet (fewer columns)
-const COL_S = {
-  plano:0, dash:1, lado:2, op:3, maq:4, mec:5, insp:6, turno:7,
-  pieza:8, serie:9, valor:10, estado:11, coment:12, fecha:13
-};
-
-function getCol(field){
-  return curSheet==='sierra' ? COL_S[field] : COL[field];
+// Field keys per sheet type
+function keys(){
+  return curSheet === 'sierra'
+    ? ['plano','part_number','lado','OP','maquina','mecanico','inspector','turno','pieza','serie','valor','estado','comentario','fecha']
+    : ['plano','part_number','lado','OP','maquina','mecanico','inspector','turno','caracteristica','descripcion','pieza','serie','valor','estado','comentario','fecha'];
 }
+function g(row, field){ return row[field] || ''; }
 
 async function loadData(){
   const btn = document.getElementById('btnRefresh');
-  btn.textContent = '⏳ Cargando...';
-  btn.disabled = true;
+  btn.textContent = '⏳ Cargando...'; btn.disabled = true;
   document.getElementById('errorBox').style.display = 'none';
-
   try {
-    const url = URLS[curSheet] + '&t=' + Date.now();
+    const url = SCRIPT_URL + '?sheet=' + encodeURIComponent(SHEET_NAMES[curSheet]) + '&t=' + Date.now();
     const resp = await fetch(url);
-    if(!resp.ok) throw new Error('No se pudo acceder a Google Sheets. Asegúrese que la hoja esté compartida como pública.');
-    const csv = await resp.text();
-    allData = parseCSV(csv);
+    if(!resp.ok) throw new Error('No se pudo conectar con el servidor.');
+    const json = await resp.json();
+    if(json.error) throw new Error(json.error);
+    allData = json.rows || [];
     populateFilters();
-    setTodayFilter();
     applyFilters();
-    document.getElementById('lastUpdate').textContent = '🟢 Actualizado: ' + new Date().toLocaleTimeString('es-CR');
-  } catch(e) {
-    showError(e.message);
+    document.getElementById('lastUpdate').textContent = '🟢 ' + new Date().toLocaleTimeString('es-CR');
+  } catch(e){
+    document.getElementById('errorBox').style.display = 'block';
+    document.getElementById('errorBox').innerHTML = '⚠️ <b>Error:</b> ' + e.message + '<br><small>Verifique que el Apps Script esté desplegado correctamente con acceso "Cualquier persona".</small>';
   }
-  btn.textContent = '🔄 Actualizar';
-  btn.disabled = false;
-}
-
-function parseCSV(csv){
-  const lines = csv.split('\n').filter(l=>l.trim());
-  const rows = [];
-  for(let i=1; i<lines.length; i++){
-    const cells = splitCSVLine(lines[i]);
-    if(cells.length > 3) rows.push(cells);
-  }
-  return rows;
-}
-
-function splitCSVLine(line){
-  const result = [];
-  let cur = '', inQ = false;
-  for(let i=0; i<line.length; i++){
-    if(line[i]==='"'){ inQ=!inQ; }
-    else if(line[i]===','&&!inQ){ result.push(cur.trim()); cur=''; }
-    else cur+=line[i];
-  }
-  result.push(cur.trim());
-  return result;
+  btn.textContent = '🔄 Actualizar'; btn.disabled = false;
 }
 
 function setTodayFilter(){
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('fFecha').value = today;
+  document.getElementById('fFecha').value = new Date().toISOString().split('T')[0];
 }
 
-function getDate(row){
-  const f = row[getCol('fecha')] || '';
+function getDateStr(row){
+  const f = String(g(row,'fecha'));
   return f.substring(0,10);
 }
 
 function populateFilters(){
-  const sets = {plano:new Set(), dash:new Set(), caract:new Set(), maq:new Set(), mec:new Set()};
+  const sets = {plano:new Set(),dash:new Set(),caract:new Set(),maq:new Set(),mec:new Set()};
   allData.forEach(r => {
-    if(r[getCol('plano')]) sets.plano.add(r[getCol('plano')]);
-    if(r[getCol('dash')]) sets.dash.add(r[getCol('dash')]);
-    if(curSheet==='insp' && r[COL.caract]) sets.caract.add(r[COL.caract]+'|'+r[COL.desc]);
-    if(r[getCol('maq')]) sets.maq.add(r[getCol('maq')]);
-    if(r[getCol('mec')]) sets.mec.add(r[getCol('mec')]);
+    if(g(r,'plano')) sets.plano.add(g(r,'plano'));
+    if(g(r,'part_number')) sets.dash.add(g(r,'part_number'));
+    if(curSheet==='insp' && g(r,'caracteristica')) sets.caract.add(g(r,'caracteristica')+'|||'+g(r,'descripcion'));
+    if(g(r,'maquina')) sets.maq.add(g(r,'maquina'));
+    if(g(r,'mecanico')) sets.mec.add(g(r,'mecanico'));
   });
-
-  fillSelect('fPlano', [...sets.plano].sort());
-  fillSelect('fDash', [...sets.dash].sort());
-  fillSelect('fMaq', [...sets.maq].sort());
-  fillSelect('fMec', [...sets.mec].sort());
-
+  fillSel('fPlano',[...sets.plano].sort());
+  fillSel('fDash',[...sets.dash].sort());
+  fillSel('fMaq',[...sets.maq].sort());
+  fillSel('fMec',[...sets.mec].sort());
   if(curSheet==='insp'){
     document.getElementById('fCaractGroup').style.display='';
-    const cs = document.getElementById('fCaract');
-    const prev = cs.value;
-    cs.innerHTML = '<option value="">Todas</option>';
-    [...sets.caract].sort().forEach(kv => {
-      const [k,v] = kv.split('|');
-      const o = document.createElement('option');
-      o.value = k; o.textContent = v||k;
-      cs.appendChild(o);
+    const cs=document.getElementById('fCaract'), prev=cs.value;
+    cs.innerHTML='<option value="">Todas</option>';
+    [...sets.caract].sort().forEach(kv=>{
+      const [k,v]=kv.split('|||');
+      const o=document.createElement('option'); o.value=k; o.textContent=v||k; cs.appendChild(o);
     });
-    cs.value = prev;
+    if(prev) cs.value=prev;
   } else {
     document.getElementById('fCaractGroup').style.display='none';
   }
 }
 
-function fillSelect(id, arr){
-  const s = document.getElementById(id);
-  const prev = s.value;
-  s.innerHTML = '<option value="">Todos</option>';
-  arr.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; s.appendChild(o); });
-  s.value = prev;
+function fillSel(id,arr){
+  const s=document.getElementById(id), prev=s.value;
+  s.innerHTML='<option value="">Todos</option>';
+  arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});
+  if(prev) s.value=prev;
 }
 
 function applyFilters(){
-  const fecha = document.getElementById('fFecha').value;
-  const plano = document.getElementById('fPlano').value;
-  const dash  = document.getElementById('fDash').value;
-  const caract= document.getElementById('fCaract')?.value || '';
-  const maq   = document.getElementById('fMaq').value;
-  const mec   = document.getElementById('fMec').value;
-  const turno = document.getElementById('fTurno').value;
-  const estado= document.getElementById('fEstado').value;
+  const fecha  = document.getElementById('fFecha').value;
+  const plano  = document.getElementById('fPlano').value;
+  const dash   = document.getElementById('fDash').value;
+  const caract = document.getElementById('fCaract')?.value||'';
+  const maq    = document.getElementById('fMaq').value;
+  const mec    = document.getElementById('fMec').value;
+  const turno  = document.getElementById('fTurno').value;
+  const estado = document.getElementById('fEstado').value;
 
-  filteredData = allData.filter(r => {
-    if(fecha && getDate(r) !== fecha) return false;
-    if(plano && r[getCol('plano')] !== plano) return false;
-    if(dash  && r[getCol('dash')]  !== dash)  return false;
-    if(caract && curSheet==='insp' && r[COL.caract] !== caract) return false;
-    if(maq   && r[getCol('maq')]   !== maq)   return false;
-    if(mec   && r[getCol('mec')]   !== mec)   return false;
-    if(turno && r[getCol('turno')] !== turno) return false;
-    if(estado && r[getCol('estado')] !== estado) return false;
+  filteredData = allData.filter(r=>{
+    if(fecha  && getDateStr(r)!==fecha) return false;
+    if(plano  && g(r,'plano')!==plano)  return false;
+    if(dash   && g(r,'part_number')!==dash) return false;
+    if(caract && curSheet==='insp' && g(r,'caracteristica')!==caract) return false;
+    if(maq    && g(r,'maquina')!==maq)  return false;
+    if(mec    && g(r,'mecanico')!==mec) return false;
+    if(turno  && g(r,'turno')!==turno)  return false;
+    if(estado && g(r,'estado')!==estado) return false;
     return true;
   });
 
-  document.getElementById('rowCount').textContent = filteredData.length + ' registros encontrados';
+  document.getElementById('rowCount').textContent = filteredData.length + ' registros';
   updateStats();
   drawChart();
   renderTable();
@@ -295,92 +247,60 @@ function clearFilters(){
 }
 
 function updateStats(){
-  const vals = filteredData
-    .map(r => parseFloat(r[getCol('valor')]))
-    .filter(v => !isNaN(v));
-  const fuera = filteredData.filter(r => r[getCol('estado')]==='FUERA'||r[getCol('estado')]==='DEFECTO').length;
-
+  const vals = filteredData.map(r=>parseFloat(g(r,'valor'))).filter(v=>!isNaN(v));
+  const fuera = filteredData.filter(r=>g(r,'estado')==='FUERA'||g(r,'estado')==='DEFECTO').length;
   document.getElementById('sTotal').textContent = filteredData.length;
   document.getElementById('sN').textContent = vals.length;
   document.getElementById('sFuera').textContent = fuera;
-  document.getElementById('sPct').textContent = filteredData.length>0 ? (fuera/filteredData.length*100).toFixed(1)+'%' : '—';
-
-  if(vals.length >= 2){
-    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
-    const sd = Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1));
+  document.getElementById('sFuera').style.color = fuera>0?'#ff7a7a':'#5fdc8f';
+  document.getElementById('sPct').textContent = filteredData.length>0?(fuera/filteredData.length*100).toFixed(1)+'%':'—';
+  if(vals.length>=1){
+    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
     document.getElementById('sAvg').textContent = avg.toFixed(4);
-
-    // Get limits from first numeric row
-    const limRow = filteredData.find(r=>!isNaN(parseFloat(r[getCol('valor')])));
-    // Cpk requires LSE/LIE — we'll show it if we can infer from estado/values
-    if(sd > 0){
-      // Try to infer limits from the range of OK values
-      const okVals = filteredData.filter(r=>r[getCol('estado')]==='OK').map(r=>parseFloat(r[getCol('valor')])).filter(v=>!isNaN(v));
-      if(okVals.length>=2){
-        const cpkEl = document.getElementById('sCpk');
-        cpkEl.textContent = '—';
-        cpkEl.style.color = '#e6edf5';
-      }
-    } else {
-      document.getElementById('sCpk').textContent = '—';
-    }
+    if(vals.length>=2){
+      const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1));
+      document.getElementById('sSd').textContent = sd.toFixed(4);
+    } else { document.getElementById('sSd').textContent='—'; }
   } else {
-    document.getElementById('sAvg').textContent = vals.length===1?vals[0].toFixed(4):'—';
-    document.getElementById('sCpk').textContent = '—';
+    document.getElementById('sAvg').textContent='—';
+    document.getElementById('sSd').textContent='—';
   }
-
-  // Color fuera
-  const fEl = document.getElementById('sFuera');
-  fEl.style.color = fuera > 0 ? '#ff7a7a' : '#5fdc8f';
 }
 
 function drawChart(){
-  const cv = document.getElementById('chart');
-  const ctx = cv.getContext('2d');
-  const W = cv.width = cv.clientWidth;
-  const H = cv.height;
+  const cv=document.getElementById('chart'), ctx=cv.getContext('2d');
+  const W=cv.width=cv.clientWidth, H=cv.height;
   ctx.clearRect(0,0,W,H);
-  const pad = 65;
+  const pad=68;
+  const noMsg=document.getElementById('noDataMsg');
 
-  const noDataMsg = document.getElementById('noDataMsg');
+  const numRows=filteredData.filter(r=>!isNaN(parseFloat(g(r,'valor'))));
+  if(!numRows.length){ noMsg.style.display='block'; cv.style.display='none'; return; }
+  noMsg.style.display='none'; cv.style.display='block';
 
-  const numRows = filteredData.filter(r=>!isNaN(parseFloat(r[getCol('valor')])));
-  if(!numRows.length){
-    noDataMsg.style.display = 'flex';
-    noDataMsg.style.alignItems = 'center';
-    noDataMsg.style.justifyContent = 'center';
-    cv.style.display = 'none';
-    updateCpk(null, null, null, null);
-    return;
-  }
-  noDataMsg.style.display = 'none';
-  cv.style.display = 'block';
+  const vals=numRows.map(r=>parseFloat(g(r,'valor')));
+  const estados=numRows.map(r=>g(r,'estado'));
+  const piezas=numRows.map(r=>g(r,'pieza'));
+  const fechas=numRows.map(r=>{ const f=String(g(r,'fecha')); return f.length>=16?f.substring(11,16):''; });
 
-  const vals = numRows.map(r=>parseFloat(r[getCol('valor')]));
-  const estados = numRows.map(r=>r[getCol('estado')]);
-  const piezas = numRows.map(r=>r[getCol('pieza')]||'');
-  const horas = numRows.map(r=>{
-    const f = r[getCol('fecha')]||'';
-    return f.length>=16 ? f.substring(11,16) : '';
-  });
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const sd=vals.length>1?Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1)):0;
 
-  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
-  let sd = vals.length>1 ? Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1)) : 0;
+  let ylo=Math.min(...vals),yhi=Math.max(...vals);
+  const rng=yhi-ylo||avg*0.001||0.001;
+  ylo-=rng*0.6; yhi+=rng*0.6;
+  if(sd>0){ ylo=Math.min(ylo,avg-4*sd); yhi=Math.max(yhi,avg+4*sd); }
 
-  let ylo = Math.min(...vals) - (Math.max(...vals)-Math.min(...vals)||1)*0.5;
-  let yhi = Math.max(...vals) + (Math.max(...vals)-Math.min(...vals)||1)*0.5;
-  if(sd>0){ ylo=Math.min(ylo,avg-3.8*sd); yhi=Math.max(yhi,avg+3.8*sd); }
+  const y=v=>H-pad-((v-ylo)/(yhi-ylo))*(H-2*pad);
+  const x=i=>pad+(i/(Math.max(vals.length-1,1)))*(W-pad-20);
 
-  const y = v => H-pad-((v-ylo)/(yhi-ylo))*(H-2*pad);
-  const x = i => pad+(i/(Math.max(vals.length-1,1)))*(W-pad-20);
-
-  // Grid lines
+  // Grid
   ctx.strokeStyle='#1e2d3d'; ctx.lineWidth=1;
   for(let t=0;t<=5;t++){
     const vv=ylo+(yhi-ylo)*t/5;
     ctx.beginPath(); ctx.moveTo(pad,y(vv)); ctx.lineTo(W-20,y(vv)); ctx.stroke();
     ctx.fillStyle='#65788f'; ctx.font='11px Arial'; ctx.textAlign='right';
-    ctx.fillText(vv.toFixed(4).replace(/0+$/,'').replace(/\.$/,''),pad-5,y(vv)+4);
+    ctx.fillText(vv.toFixed(4),pad-5,y(vv)+4);
   }
 
   // Sigma bands
@@ -390,23 +310,19 @@ function drawChart(){
       const ya=y(Math.min(Math.max(a,ylo),yhi)),yb=y(Math.min(Math.max(b,ylo),yhi));
       ctx.fillStyle=color; ctx.fillRect(pad,Math.min(ya,yb),W-pad-20,Math.abs(yb-ya));
     }
-    band(avg-sd,avg+sd,'rgba(46,125,79,0.10)');
-    band(avg+sd,avg+2*sd,'rgba(184,134,11,0.08)'); band(avg-2*sd,avg-sd,'rgba(184,134,11,0.08)');
-    band(avg+2*sd,ucl,'rgba(192,0,0,0.08)'); band(lcl,avg-2*sd,'rgba(192,0,0,0.08)');
-
+    band(avg-sd,avg+sd,'rgba(46,125,79,0.12)');
+    band(avg+sd,avg+2*sd,'rgba(184,134,11,0.09)'); band(avg-2*sd,avg-sd,'rgba(184,134,11,0.09)');
+    band(avg+2*sd,ucl,'rgba(192,0,0,0.09)'); band(lcl,avg-2*sd,'rgba(192,0,0,0.09)');
     function cl(val,color,lbl,dash){
       if(val<ylo||val>yhi)return;
-      ctx.strokeStyle=color; ctx.setLineDash(dash||[]); ctx.lineWidth=1.3;
+      ctx.strokeStyle=color; ctx.setLineDash(dash||[]); ctx.lineWidth=1.4;
       ctx.beginPath(); ctx.moveTo(pad,y(val)); ctx.lineTo(W-20,y(val)); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle=color; ctx.font='11px Arial'; ctx.textAlign='left';
-      ctx.fillText(lbl,pad+5,y(val)-3);
+      ctx.fillText(lbl,pad+4,y(val)-3);
     }
-    cl(ucl,'#b388ff','UCL +3σ '+ucl.toFixed(4),[6,3]);
-    cl(avg,'#b388ff','X̄ '+avg.toFixed(4),[2,2]);
-    cl(lcl,'#b388ff','LCL −3σ '+lcl.toFixed(4),[6,3]);
-    updateCpk(avg, sd, null, null);
-  } else {
-    updateCpk(null, null, null, null);
+    cl(ucl,'#b388ff','UCL +3σ  '+ucl.toFixed(4),[6,3]);
+    cl(avg,'#b388ff','X̄  '+avg.toFixed(4),[2,2]);
+    cl(lcl,'#b388ff','LCL −3σ  '+lcl.toFixed(4),[6,3]);
   }
 
   // Line
@@ -414,81 +330,64 @@ function drawChart(){
   vals.forEach((v,i)=>{ i===0?ctx.moveTo(x(i),y(v)):ctx.lineTo(x(i),y(v)); });
   ctx.stroke();
 
-  // Points
+  // Points + x labels
   vals.forEach((v,i)=>{
     const st=estados[i];
     ctx.fillStyle=st==='FUERA'||st==='DEFECTO'?'#ff7a7a':(st==='CERCA'?'#ffce6b':'#5fdc8f');
     ctx.beginPath(); ctx.arc(x(i),y(v),5,0,7); ctx.fill();
-    // Hover label on x axis
-    if(vals.length<=30){
+    if(vals.length<=50){
       ctx.fillStyle='#65788f'; ctx.font='10px Arial'; ctx.textAlign='center';
-      const lbl = piezas[i]||horas[i]||(i+1).toString();
-      ctx.fillText(lbl.substring(0,6), x(i), H-8);
+      const lbl=piezas[i]||fechas[i]||(i+1)+'';
+      ctx.fillText(lbl.substring(0,6),x(i),H-8);
     }
   });
 
-  // X axis label
   ctx.fillStyle='#65788f'; ctx.font='12px Arial'; ctx.textAlign='left';
-  ctx.fillText('Muestra →', pad, H-10);
+  ctx.fillText('Muestra →',pad,H-10);
 
   // Chart title
-  const caract = document.getElementById('fCaract')?.value;
-  const desc = caract ? (filteredData.find(r=>r[COL.caract]===caract)||[])[COL.desc]||caract : 'Todas las características';
-  document.getElementById('chartTitle').textContent = 'Gráfico de control — ' + desc;
-}
-
-function updateCpk(avg, sd, lo, hi){
-  const el = document.getElementById('sCpk');
-  if(!sd || sd===0){ el.textContent='—'; el.style.color='#e6edf5'; return; }
-  // Without explicit limits, show sigma ratio
-  el.textContent = '~' + (1/(sd>0?sd:1)*0.001).toFixed(2);
-  el.style.color = '#e6edf5';
+  const caractEl=document.getElementById('fCaract');
+  let ttl='Todas las características';
+  if(caractEl&&caractEl.value){
+    const found=allData.find(r=>g(r,'caracteristica')===caractEl.value);
+    if(found) ttl=g(found,'descripcion')||caractEl.value;
+  }
+  document.getElementById('chartTitle').textContent='Gráfico de control — '+ttl;
 }
 
 function renderTable(){
-  const tb = document.getElementById('tbody');
-  tb.innerHTML = '';
-  const rows = filteredData.slice().reverse().slice(0,200);
-  rows.forEach((r,i) => {
-    const st = r[getCol('estado')];
-    const cls = st==='FUERA'||st==='DEFECTO'?'bad':(st==='OK'?'ok':(st==='CERCA'?'warn':''));
-    const fecha = r[getCol('fecha')]||'';
-    const fechaFmt = fecha.length>=16 ? fecha.substring(5,10)+' '+fecha.substring(11,16) : fecha;
-    const caract = curSheet==='insp' ? (r[COL.desc]||r[COL.caract]||'') : 'OAL';
-    tb.innerHTML += `<tr>
+  const tb=document.getElementById('tbody');
+  tb.innerHTML='';
+  const rows=filteredData.slice().reverse().slice(0,300);
+  document.getElementById('tblCount').textContent='('+filteredData.length+' total)';
+  rows.forEach((r,i)=>{
+    const st=g(r,'estado');
+    const cls=st==='FUERA'||st==='DEFECTO'?'bad':(st==='OK'?'ok':(st==='CERCA'?'warn':''));
+    const fecha=String(g(r,'fecha'));
+    const fechaFmt=fecha.length>=16?fecha.substring(5,10)+' '+fecha.substring(11,16):fecha;
+    tb.innerHTML+=`<tr>
       <td style="color:#65788f">${filteredData.length-i}</td>
       <td style="font-size:11px">${fechaFmt}</td>
-      <td>${r[getCol('pieza')]||'—'}</td>
-      <td><b>${r[getCol('valor')]}</b></td>
+      <td>${g(r,'pieza')||'—'}</td>
+      <td><b>${g(r,'valor')}</b></td>
       <td class="${cls}">${st}</td>
-      <td style="font-size:11px;color:#8aa0b8">${r[getCol('maq')]||'—'}</td>
+      <td style="font-size:11px;color:#8aa0b8">${g(r,'maquina')||'—'}</td>
     </tr>`;
   });
-  if(!rows.length) tb.innerHTML='<tr><td colspan="6" style="color:#65788f;padding:20px">Sin datos</td></tr>';
+  if(!rows.length) tb.innerHTML='<tr><td colspan="6" style="color:#65788f;padding:20px">Sin datos para los filtros seleccionados</td></tr>';
 }
 
 function switchSheet(s){
-  curSheet = s;
-  document.getElementById('tabInsp').classList.toggle('act', s==='insp');
-  document.getElementById('tabSierra').classList.toggle('act', s==='sierra');
-  allData = []; filteredData = [];
-  document.getElementById('fCaractGroup').style.display = s==='insp'?'':'none';
+  curSheet=s;
+  document.getElementById('tabInsp').classList.toggle('act',s==='insp');
+  document.getElementById('tabSierra').classList.toggle('act',s==='sierra');
+  allData=[]; filteredData=[];
   loadData();
 }
 
-function showError(msg){
-  const el = document.getElementById('errorBox');
-  el.style.display = 'block';
-  el.innerHTML = `⚠️ <b>Error al cargar datos:</b> ${msg}<br><br>
-  <small>Asegúrese que la hoja de Google Sheets esté compartida como <b>"Cualquier persona con el enlace puede ver"</b>:<br>
-  Google Sheets → Compartir → Cambiar a Cualquier persona con el enlace → Lector → Listo</small>`;
-}
-
-window.addEventListener('resize', drawChart);
-
-// Set today's date and load
+window.addEventListener('resize',drawChart);
 setTodayFilter();
 loadData();
-setInterval(()=>{ document.getElementById('btnRefresh').click(); }, 60000);
+setInterval(()=>loadData(), 60000);
 </script>
 </body></html>
