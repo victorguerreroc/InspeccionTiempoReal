@@ -1,0 +1,494 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard de Inspección — TechShop International</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#0f1722;color:#e6edf5;padding:14px;font-size:14px}
+h1{font-size:20px;color:#fff;margin-bottom:2px}
+.sub{color:#8aa0b8;font-size:12px;margin-bottom:12px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.filters{background:#16212f;border:1px solid #243447;border-radius:10px;padding:12px;margin-bottom:12px}
+.filters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.filter-group label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}
+.filter-group select,.filter-group input{width:100%;padding:7px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#16212f;border:1px solid #243447;border-radius:8px;padding:10px;text-align:center}
+.stat .l{font-size:10px;color:#8aa0b8;text-transform:uppercase}
+.stat .v{font-size:22px;font-weight:bold;margin-top:3px}
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:12px}
+.card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
+.card h2{font-size:14px;margin-bottom:10px;color:#e6edf5}
+canvas{background:#0f1722;border-radius:8px;width:100%}
+button{background:#2E75B6;color:#fff;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:bold;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+button.sec{background:#243447;color:#8aa0b8}
+button.sec:hover{background:#2d3f54;color:#e6edf5}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:5px 6px;border-bottom:1px solid #243447;text-align:center}
+th{color:#8aa0b8;font-size:10px;text-transform:uppercase;position:sticky;top:0;background:#16212f}
+td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}td.def{color:#ff7a7a;font-weight:bold}
+.tblwrap{max-height:480px;overflow-y:auto}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold}
+.badge-ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
+.badge-bad{background:#3a1414;color:#ff7a7a;border:1px solid #C00000}
+.badge-warn{background:#3a2e10;color:#ffce6b;border:1px solid #b8860b}
+.loading{text-align:center;padding:40px;color:#8aa0b8;font-size:16px}
+.error-box{background:#3a1414;border:1px solid #C00000;border-radius:8px;padding:14px;color:#ff7a7a;margin-bottom:12px}
+.sheet-tabs{display:flex;gap:8px;margin-bottom:12px}
+.sheet-tab{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;border:1px solid #2d3f54;background:#0f1722;color:#8aa0b8}
+.sheet-tab.act{background:#2E75B6;color:#fff;border-color:#2E75B6}
+.sheet-tab.sierra.act{background:#7b4fa6;border-color:#7b4fa6}
+#noDataMsg{display:none;text-align:center;padding:60px;color:#8aa0b8;font-size:15px}
+</style></head><body>
+
+<div class="topbar">
+  <div>
+    <h1>📊 Dashboard de Inspección</h1>
+    <div class="sub">TechShop International S.A. · Datos en tiempo real desde Google Sheets</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="lastUpdate" style="color:#8aa0b8;font-size:12px"></span>
+    <button onclick="loadData()" id="btnRefresh">🔄 Actualizar</button>
+    <a href="index.html" style="text-decoration:none"><button class="sec">← Volver a Inspección</button></a>
+  </div>
+</div>
+
+<div id="errorBox" class="error-box" style="display:none"></div>
+
+<div class="sheet-tabs">
+  <div class="sheet-tab act" id="tabInsp" onclick="switchSheet('insp')">📋 Inspecciones</div>
+  <div class="sheet-tab sierra" id="tabSierra" onclick="switchSheet('sierra')">🪚 Corte Sierra</div>
+</div>
+
+<div class="filters">
+  <div class="filters-grid">
+    <div class="filter-group">
+      <label>📅 Fecha</label>
+      <input type="date" id="fFecha" onchange="applyFilters()">
+    </div>
+    <div class="filter-group">
+      <label>Plano / Familia</label>
+      <select id="fPlano" onchange="applyFilters()"><option value="">Todos</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Part Number</label>
+      <select id="fDash" onchange="applyFilters()"><option value="">Todos</option></select>
+    </div>
+    <div class="filter-group" id="fCaractGroup">
+      <label>Característica</label>
+      <select id="fCaract" onchange="applyFilters()"><option value="">Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Máquina</label>
+      <select id="fMaq" onchange="applyFilters()"><option value="">Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Mecánico</label>
+      <select id="fMec" onchange="applyFilters()"><option value="">Todos</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Turno</label>
+      <select id="fTurno" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option>Mañana 06-14</option>
+        <option>Tarde 14-22</option>
+        <option>Noche 22-06</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Estado</label>
+      <select id="fEstado" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option>OK</option>
+        <option>CERCA</option>
+        <option>FUERA</option>
+        <option>DEFECTO</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:8px;display:flex;gap:8px">
+    <button class="sec" onclick="clearFilters()" style="font-size:12px;padding:6px 12px">✕ Limpiar filtros</button>
+    <span id="rowCount" style="color:#8aa0b8;font-size:12px;align-self:center"></span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="l">Total registros</div><div class="v" id="sTotal">—</div></div>
+  <div class="stat"><div class="l">Muestras num.</div><div class="v" id="sN">—</div></div>
+  <div class="stat"><div class="l">Promedio</div><div class="v" id="sAvg" style="font-size:16px">—</div></div>
+  <div class="stat"><div class="l">Cpk</div><div class="v" id="sCpk">—</div></div>
+  <div class="stat"><div class="l">Fuera de spec</div><div class="v" id="sFuera" style="color:#ff7a7a">—</div></div>
+  <div class="stat"><div class="l">% Rechazo</div><div class="v" id="sPct">—</div></div>
+</div>
+
+<div class="main-grid">
+  <div class="card">
+    <h2 id="chartTitle">Gráfico de control</h2>
+    <div id="noDataMsg">Sin datos para los filtros seleccionados</div>
+    <canvas id="chart" height="480"></canvas>
+  </div>
+  <div class="card">
+    <h2>Registros</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>#</th><th>Fecha</th><th>Pieza</th><th>Valor</th><th>Estado</th><th>Máquina</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1q1rAgbhNIYO9PSDRoJxIzroYYthIMX1RT5KtIkC9lGM';
+const URLS = {
+  insp: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`,
+  sierra: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Corte+de+Sierra`
+};
+
+let allData = [];
+let filteredData = [];
+let curSheet = 'insp';
+
+// Column indices for Inspecciones sheet
+const COL = {
+  plano:0, dash:1, lado:2, op:3, maq:4, mec:5, insp:6, turno:7,
+  caract:8, desc:9, pieza:10, serie:11, valor:12, estado:13, coment:14, fecha:15
+};
+// Column indices for Sierra sheet (fewer columns)
+const COL_S = {
+  plano:0, dash:1, lado:2, op:3, maq:4, mec:5, insp:6, turno:7,
+  pieza:8, serie:9, valor:10, estado:11, coment:12, fecha:13
+};
+
+function getCol(field){
+  return curSheet==='sierra' ? COL_S[field] : COL[field];
+}
+
+async function loadData(){
+  const btn = document.getElementById('btnRefresh');
+  btn.textContent = '⏳ Cargando...';
+  btn.disabled = true;
+  document.getElementById('errorBox').style.display = 'none';
+
+  try {
+    const url = URLS[curSheet] + '&t=' + Date.now();
+    const resp = await fetch(url);
+    if(!resp.ok) throw new Error('No se pudo acceder a Google Sheets. Asegúrese que la hoja esté compartida como pública.');
+    const csv = await resp.text();
+    allData = parseCSV(csv);
+    populateFilters();
+    setTodayFilter();
+    applyFilters();
+    document.getElementById('lastUpdate').textContent = '🟢 Actualizado: ' + new Date().toLocaleTimeString('es-CR');
+  } catch(e) {
+    showError(e.message);
+  }
+  btn.textContent = '🔄 Actualizar';
+  btn.disabled = false;
+}
+
+function parseCSV(csv){
+  const lines = csv.split('\n').filter(l=>l.trim());
+  const rows = [];
+  for(let i=1; i<lines.length; i++){
+    const cells = splitCSVLine(lines[i]);
+    if(cells.length > 3) rows.push(cells);
+  }
+  return rows;
+}
+
+function splitCSVLine(line){
+  const result = [];
+  let cur = '', inQ = false;
+  for(let i=0; i<line.length; i++){
+    if(line[i]==='"'){ inQ=!inQ; }
+    else if(line[i]===','&&!inQ){ result.push(cur.trim()); cur=''; }
+    else cur+=line[i];
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function setTodayFilter(){
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fFecha').value = today;
+}
+
+function getDate(row){
+  const f = row[getCol('fecha')] || '';
+  return f.substring(0,10);
+}
+
+function populateFilters(){
+  const sets = {plano:new Set(), dash:new Set(), caract:new Set(), maq:new Set(), mec:new Set()};
+  allData.forEach(r => {
+    if(r[getCol('plano')]) sets.plano.add(r[getCol('plano')]);
+    if(r[getCol('dash')]) sets.dash.add(r[getCol('dash')]);
+    if(curSheet==='insp' && r[COL.caract]) sets.caract.add(r[COL.caract]+'|'+r[COL.desc]);
+    if(r[getCol('maq')]) sets.maq.add(r[getCol('maq')]);
+    if(r[getCol('mec')]) sets.mec.add(r[getCol('mec')]);
+  });
+
+  fillSelect('fPlano', [...sets.plano].sort());
+  fillSelect('fDash', [...sets.dash].sort());
+  fillSelect('fMaq', [...sets.maq].sort());
+  fillSelect('fMec', [...sets.mec].sort());
+
+  if(curSheet==='insp'){
+    document.getElementById('fCaractGroup').style.display='';
+    const cs = document.getElementById('fCaract');
+    const prev = cs.value;
+    cs.innerHTML = '<option value="">Todas</option>';
+    [...sets.caract].sort().forEach(kv => {
+      const [k,v] = kv.split('|');
+      const o = document.createElement('option');
+      o.value = k; o.textContent = v||k;
+      cs.appendChild(o);
+    });
+    cs.value = prev;
+  } else {
+    document.getElementById('fCaractGroup').style.display='none';
+  }
+}
+
+function fillSelect(id, arr){
+  const s = document.getElementById(id);
+  const prev = s.value;
+  s.innerHTML = '<option value="">Todos</option>';
+  arr.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; s.appendChild(o); });
+  s.value = prev;
+}
+
+function applyFilters(){
+  const fecha = document.getElementById('fFecha').value;
+  const plano = document.getElementById('fPlano').value;
+  const dash  = document.getElementById('fDash').value;
+  const caract= document.getElementById('fCaract')?.value || '';
+  const maq   = document.getElementById('fMaq').value;
+  const mec   = document.getElementById('fMec').value;
+  const turno = document.getElementById('fTurno').value;
+  const estado= document.getElementById('fEstado').value;
+
+  filteredData = allData.filter(r => {
+    if(fecha && getDate(r) !== fecha) return false;
+    if(plano && r[getCol('plano')] !== plano) return false;
+    if(dash  && r[getCol('dash')]  !== dash)  return false;
+    if(caract && curSheet==='insp' && r[COL.caract] !== caract) return false;
+    if(maq   && r[getCol('maq')]   !== maq)   return false;
+    if(mec   && r[getCol('mec')]   !== mec)   return false;
+    if(turno && r[getCol('turno')] !== turno) return false;
+    if(estado && r[getCol('estado')] !== estado) return false;
+    return true;
+  });
+
+  document.getElementById('rowCount').textContent = filteredData.length + ' registros encontrados';
+  updateStats();
+  drawChart();
+  renderTable();
+}
+
+function clearFilters(){
+  ['fPlano','fDash','fCaract','fMaq','fMec','fTurno','fEstado'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  setTodayFilter();
+  applyFilters();
+}
+
+function updateStats(){
+  const vals = filteredData
+    .map(r => parseFloat(r[getCol('valor')]))
+    .filter(v => !isNaN(v));
+  const fuera = filteredData.filter(r => r[getCol('estado')]==='FUERA'||r[getCol('estado')]==='DEFECTO').length;
+
+  document.getElementById('sTotal').textContent = filteredData.length;
+  document.getElementById('sN').textContent = vals.length;
+  document.getElementById('sFuera').textContent = fuera;
+  document.getElementById('sPct').textContent = filteredData.length>0 ? (fuera/filteredData.length*100).toFixed(1)+'%' : '—';
+
+  if(vals.length >= 2){
+    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+    const sd = Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1));
+    document.getElementById('sAvg').textContent = avg.toFixed(4);
+
+    // Get limits from first numeric row
+    const limRow = filteredData.find(r=>!isNaN(parseFloat(r[getCol('valor')])));
+    // Cpk requires LSE/LIE — we'll show it if we can infer from estado/values
+    if(sd > 0){
+      // Try to infer limits from the range of OK values
+      const okVals = filteredData.filter(r=>r[getCol('estado')]==='OK').map(r=>parseFloat(r[getCol('valor')])).filter(v=>!isNaN(v));
+      if(okVals.length>=2){
+        const cpkEl = document.getElementById('sCpk');
+        cpkEl.textContent = '—';
+        cpkEl.style.color = '#e6edf5';
+      }
+    } else {
+      document.getElementById('sCpk').textContent = '—';
+    }
+  } else {
+    document.getElementById('sAvg').textContent = vals.length===1?vals[0].toFixed(4):'—';
+    document.getElementById('sCpk').textContent = '—';
+  }
+
+  // Color fuera
+  const fEl = document.getElementById('sFuera');
+  fEl.style.color = fuera > 0 ? '#ff7a7a' : '#5fdc8f';
+}
+
+function drawChart(){
+  const cv = document.getElementById('chart');
+  const ctx = cv.getContext('2d');
+  const W = cv.width = cv.clientWidth;
+  const H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad = 65;
+
+  const noDataMsg = document.getElementById('noDataMsg');
+
+  const numRows = filteredData.filter(r=>!isNaN(parseFloat(r[getCol('valor')])));
+  if(!numRows.length){
+    noDataMsg.style.display = 'flex';
+    noDataMsg.style.alignItems = 'center';
+    noDataMsg.style.justifyContent = 'center';
+    cv.style.display = 'none';
+    updateCpk(null, null, null, null);
+    return;
+  }
+  noDataMsg.style.display = 'none';
+  cv.style.display = 'block';
+
+  const vals = numRows.map(r=>parseFloat(r[getCol('valor')]));
+  const estados = numRows.map(r=>r[getCol('estado')]);
+  const piezas = numRows.map(r=>r[getCol('pieza')]||'');
+  const horas = numRows.map(r=>{
+    const f = r[getCol('fecha')]||'';
+    return f.length>=16 ? f.substring(11,16) : '';
+  });
+
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  let sd = vals.length>1 ? Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1)) : 0;
+
+  let ylo = Math.min(...vals) - (Math.max(...vals)-Math.min(...vals)||1)*0.5;
+  let yhi = Math.max(...vals) + (Math.max(...vals)-Math.min(...vals)||1)*0.5;
+  if(sd>0){ ylo=Math.min(ylo,avg-3.8*sd); yhi=Math.max(yhi,avg+3.8*sd); }
+
+  const y = v => H-pad-((v-ylo)/(yhi-ylo))*(H-2*pad);
+  const x = i => pad+(i/(Math.max(vals.length-1,1)))*(W-pad-20);
+
+  // Grid lines
+  ctx.strokeStyle='#1e2d3d'; ctx.lineWidth=1;
+  for(let t=0;t<=5;t++){
+    const vv=ylo+(yhi-ylo)*t/5;
+    ctx.beginPath(); ctx.moveTo(pad,y(vv)); ctx.lineTo(W-20,y(vv)); ctx.stroke();
+    ctx.fillStyle='#65788f'; ctx.font='11px Arial'; ctx.textAlign='right';
+    ctx.fillText(vv.toFixed(4).replace(/0+$/,'').replace(/\.$/,''),pad-5,y(vv)+4);
+  }
+
+  // Sigma bands
+  if(sd>0){
+    const ucl=avg+3*sd,lcl=avg-3*sd;
+    function band(a,b,color){
+      const ya=y(Math.min(Math.max(a,ylo),yhi)),yb=y(Math.min(Math.max(b,ylo),yhi));
+      ctx.fillStyle=color; ctx.fillRect(pad,Math.min(ya,yb),W-pad-20,Math.abs(yb-ya));
+    }
+    band(avg-sd,avg+sd,'rgba(46,125,79,0.10)');
+    band(avg+sd,avg+2*sd,'rgba(184,134,11,0.08)'); band(avg-2*sd,avg-sd,'rgba(184,134,11,0.08)');
+    band(avg+2*sd,ucl,'rgba(192,0,0,0.08)'); band(lcl,avg-2*sd,'rgba(192,0,0,0.08)');
+
+    function cl(val,color,lbl,dash){
+      if(val<ylo||val>yhi)return;
+      ctx.strokeStyle=color; ctx.setLineDash(dash||[]); ctx.lineWidth=1.3;
+      ctx.beginPath(); ctx.moveTo(pad,y(val)); ctx.lineTo(W-20,y(val)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=color; ctx.font='11px Arial'; ctx.textAlign='left';
+      ctx.fillText(lbl,pad+5,y(val)-3);
+    }
+    cl(ucl,'#b388ff','UCL +3σ '+ucl.toFixed(4),[6,3]);
+    cl(avg,'#b388ff','X̄ '+avg.toFixed(4),[2,2]);
+    cl(lcl,'#b388ff','LCL −3σ '+lcl.toFixed(4),[6,3]);
+    updateCpk(avg, sd, null, null);
+  } else {
+    updateCpk(null, null, null, null);
+  }
+
+  // Line
+  ctx.strokeStyle='#4a6fa5'; ctx.lineWidth=2; ctx.beginPath();
+  vals.forEach((v,i)=>{ i===0?ctx.moveTo(x(i),y(v)):ctx.lineTo(x(i),y(v)); });
+  ctx.stroke();
+
+  // Points
+  vals.forEach((v,i)=>{
+    const st=estados[i];
+    ctx.fillStyle=st==='FUERA'||st==='DEFECTO'?'#ff7a7a':(st==='CERCA'?'#ffce6b':'#5fdc8f');
+    ctx.beginPath(); ctx.arc(x(i),y(v),5,0,7); ctx.fill();
+    // Hover label on x axis
+    if(vals.length<=30){
+      ctx.fillStyle='#65788f'; ctx.font='10px Arial'; ctx.textAlign='center';
+      const lbl = piezas[i]||horas[i]||(i+1).toString();
+      ctx.fillText(lbl.substring(0,6), x(i), H-8);
+    }
+  });
+
+  // X axis label
+  ctx.fillStyle='#65788f'; ctx.font='12px Arial'; ctx.textAlign='left';
+  ctx.fillText('Muestra →', pad, H-10);
+
+  // Chart title
+  const caract = document.getElementById('fCaract')?.value;
+  const desc = caract ? (filteredData.find(r=>r[COL.caract]===caract)||[])[COL.desc]||caract : 'Todas las características';
+  document.getElementById('chartTitle').textContent = 'Gráfico de control — ' + desc;
+}
+
+function updateCpk(avg, sd, lo, hi){
+  const el = document.getElementById('sCpk');
+  if(!sd || sd===0){ el.textContent='—'; el.style.color='#e6edf5'; return; }
+  // Without explicit limits, show sigma ratio
+  el.textContent = '~' + (1/(sd>0?sd:1)*0.001).toFixed(2);
+  el.style.color = '#e6edf5';
+}
+
+function renderTable(){
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+  const rows = filteredData.slice().reverse().slice(0,200);
+  rows.forEach((r,i) => {
+    const st = r[getCol('estado')];
+    const cls = st==='FUERA'||st==='DEFECTO'?'bad':(st==='OK'?'ok':(st==='CERCA'?'warn':''));
+    const fecha = r[getCol('fecha')]||'';
+    const fechaFmt = fecha.length>=16 ? fecha.substring(5,10)+' '+fecha.substring(11,16) : fecha;
+    const caract = curSheet==='insp' ? (r[COL.desc]||r[COL.caract]||'') : 'OAL';
+    tb.innerHTML += `<tr>
+      <td style="color:#65788f">${filteredData.length-i}</td>
+      <td style="font-size:11px">${fechaFmt}</td>
+      <td>${r[getCol('pieza')]||'—'}</td>
+      <td><b>${r[getCol('valor')]}</b></td>
+      <td class="${cls}">${st}</td>
+      <td style="font-size:11px;color:#8aa0b8">${r[getCol('maq')]||'—'}</td>
+    </tr>`;
+  });
+  if(!rows.length) tb.innerHTML='<tr><td colspan="6" style="color:#65788f;padding:20px">Sin datos</td></tr>';
+}
+
+function switchSheet(s){
+  curSheet = s;
+  document.getElementById('tabInsp').classList.toggle('act', s==='insp');
+  document.getElementById('tabSierra').classList.toggle('act', s==='sierra');
+  allData = []; filteredData = [];
+  document.getElementById('fCaractGroup').style.display = s==='insp'?'':'none';
+  loadData();
+}
+
+function showError(msg){
+  const el = document.getElementById('errorBox');
+  el.style.display = 'block';
+  el.innerHTML = `⚠️ <b>Error al cargar datos:</b> ${msg}<br><br>
+  <small>Asegúrese que la hoja de Google Sheets esté compartida como <b>"Cualquier persona con el enlace puede ver"</b>:<br>
+  Google Sheets → Compartir → Cambiar a Cualquier persona con el enlace → Lector → Listo</small>`;
+}
+
+window.addEventListener('resize', drawChart);
+
+// Set today's date and load
+setTodayFilter();
+loadData();
+setInterval(()=>{ document.getElementById('btnRefresh').click(); }, 60000);
+</script>
+</body></html>
