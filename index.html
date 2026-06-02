@@ -16,7 +16,7 @@ h1{font-size:18px;color:#fff;margin-bottom:2px}
 .sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
 .sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:9px 18px;font-size:14px;font-weight:bold;cursor:pointer}
 .sidebtns button.act{background:#2E75B6;color:#fff}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:12px}
+.grid{display:grid;grid-template-columns:500px 1fr;gap:12px}
 .card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
 .card h2{font-size:14px;margin-bottom:10px}
 .row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px}
@@ -46,7 +46,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 .note{font-size:12px;color:#8aa0b8;margin-top:10px;line-height:1.55}
 .danger{color:#ff7a7a;font-weight:bold}
 .tblwrap{max-height:230px;overflow-y:auto}
-.omitbadge{display:inline-block;background:#3d5170;color:#cdd9e6;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:6px}
+.omitbadge{display:inline-block;background:#3d5170;color:#cdd9e6;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:6px}.charform{overflow-y:auto;max-height:480px;margin-bottom:8px}.charrow{display:grid;grid-template-columns:1fr 150px 68px;gap:8px;align-items:center;padding:7px 6px;border-bottom:1px solid #1e2d3d;cursor:pointer;border-left:3px solid transparent}.charrow:hover{background:#1a2a3a}.charrow.focused{background:#1a2a3a;border-left-color:#2E75B6}.charname{color:#e6edf5;font-size:12px;font-weight:bold;margin-bottom:2px}.charlimits{color:#8aa0b8;font-size:10px}.crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff7a7a;margin-left:4px;vertical-align:middle}.charinput input[type=number]{width:100%;padding:6px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:15px;text-align:center}.charinput input[type=number]:focus{border-color:#2E75B6;outline:none}.gng-wrap{display:flex;gap:3px}.gng-wrap button{flex:1;padding:5px 2px;font-size:11px;border-radius:4px}.charinput select{width:100%;padding:5px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:11px}.chst{padding:3px 5px;border-radius:8px;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap}.chst-idle{background:#1a2330;color:#8aa0b8}.chst-ok{background:#10331f;color:#5fdc8f}.chst-warn{background:#3a2e10;color:#ffce6b}.chst-bad{background:#3a1414;color:#ff7a7a}.chst-omit{background:#3d5170;color:#cdd9e6}.reg-all-btn{width:100%;padding:12px;font-size:15px;background:#2e7d4f;border-radius:8px;margin-top:8px}.form-header{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}.form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}.form-header input{width:100%;padding:7px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:13px}.verdict-mini{padding:8px 12px;border-radius:6px;text-align:center;font-weight:bold;font-size:13px;margin-bottom:8px}
 </style></head><body>
 
 <h1>Inspección en Tiempo Real — Familia Guns / Carriers</h1>
@@ -72,53 +72,30 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <label>Lado de la pieza</label>
     <div class="sidebtns"><button id="btnT" class="act" onclick="setSide('T')">TOP</button><button id="btnB" onclick="setSide('B')">BOTTOM</button></div>
   </div>
-  <div class="grow">
-    <label>Característica a inspeccionar</label>
-    <select id="charSel" onchange="onChar()"></select>
-    <div class="spec" id="specTxt"></div>
-  </div>
-  <div style="flex:0 0 auto"><label>&nbsp;</label><button onclick="exportCSV()">Exportar CSV</button></div>
+  <div style="flex:0 0 auto;align-self:flex-end"><button onclick="exportCSV()">Exportar CSV</button></div>
 </div>
 
 <div class="grid">
   <div class="card">
-    <h2 id="charTitle"></h2>
-    <div class="verdict v-idle" id="verdict">Seleccione una característica e ingrese una medición</div>
-    <div class="row" style="margin-bottom:6px">
-      <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50" style="padding:7px;font-size:13px"></div>
-      <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001" style="padding:7px;font-size:13px"></div>
+    <h2 id="charTitle">Características de inspección</h2>
+    <div class="verdict v-idle verdict-mini" id="verdict">Ingrese mediciones y presione Registrar Todo</div>
+    <div class="form-header">
+      <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
+      <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
-    <div id="numInput"><div class="row">
-      <div><label id="measLbl">Medición</label><input id="meas" type="number" step="0.0001" onkeydown="if(event.key===\'Enter\')addMeas()"></div>
-      <div style="flex:0 0 auto"><button onclick="addMeas()">Registrar</button></div>
-    </div></div>
-    <div id="gngInput" style="display:none"><div class="row">
-      <button class="gng ok" onclick="addGNG('OK')">GO entra OK</button>
-      <button class="gng rej" onclick="addGNG('RECHAZO')">RECHAZO</button>
-    </div></div>
-    <div id="visInput" style="display:none"><div class="row">
-      <div><label>Resultado Visual</label>
-        <select id="visSel" class="vis-select">
-          <option value="OK">✓ OK — Sin defecto</option>
-          <option value="Rosca deforme">Rosca deforme</option>
-          <option value="Golpes">Golpes</option>
-          <option value="Cuñero deforme">Cuñero deforme</option>
-          <option value="Refrente Plano">Refrente Plano</option>
-          <option value="Marcas en diámetro de sello">Marcas en diámetro de sello</option>
-        </select>
-      </div>
-      <div style="flex:0 0 auto;align-self:flex-end"><button onclick="addVis()">Registrar</button></div>
-    </div></div>
-    <div id="omitInput" style="display:none"><div class="row"><button onclick="addOmit()" style="flex:1;background:#3d5170">Marcar OMITIDA</button></div></div>
-    <div class="row" style="margin-top:6px;margin-bottom:4px">
-      <div><label>Comentarios</label><textarea id="comentarios" placeholder="Observaciones adicionales..."></textarea></div>
+    <div class="charform" id="charForm"></div>
+    <div style="margin-top:6px">
+      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios generales</label>
+      <textarea id="comentarios" placeholder="Observaciones adicionales..."></textarea>
     </div>
-    <div class="stats"><div class="stat"><div class="l">Muestras</div><div class="v" id="n">0</div></div>
-      <div class="stat"><div class="l">Promedio</div><div class="v" id="avg">—</div></div>
-      <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk">—</div></div>
-      <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div></div>
-    <div class="tblwrap"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Valor</th><th>Estado</th><th>Comentario</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <button class="reg-all-btn" onclick="registerAll()">&#10003; Registrar Todo</button>
+    <div class="stats" style="margin-top:10px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n">0</div></div>
+      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:14px">—</div></div>
+      <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div>
+      <div class="stat"><div class="l">Cpk activo</div><div class="v" id="cpk">—</div></div></div>
+    <div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
+
   <div class="card">
     <h2>Gráfico de control</h2>
     <canvas id="chart" height="560"></canvas>
@@ -170,12 +147,32 @@ function sideChars(){
   if(curMode!=='sierra'&&!cs.find(c=>c.k==='visual'))cs=[...cs,VISUAL_CHAR];
   return cs;
 }
-function buildCharList(){
-  const cs=document.getElementById('charSel');cs.innerHTML='';
-  sideChars().forEach((c,i)=>{const o=document.createElement('option');o.value=c.k;
-    let lbl=c.label;
-    if(curSide==='T'&&TOL_OMIT_TOP.includes(c.k))lbl+=' (omitir en TOP)';
-    o.textContent=lbl;cs.appendChild(o);});
+function buildCharList(){buildCharForm();}
+function buildCharForm(){
+  const cf=document.getElementById('charForm');if(!cf)return;
+  cf.innerHTML='';
+  sideChars().forEach(c=>{
+    const isOmit=curSide==='T'&&TOL_OMIT_TOP.includes(c.k);
+    let limTxt='';
+    if(c.k==='oal'){const L=getDashLimits();limTxt=L[0]!=null?L[0].toFixed(3)+' - '+L[1].toFixed(3)+' pulg':'Seleccione dash';}
+    else if(c.t==='gng')limTxt='GO/NO-GO . '+c.instr;
+    else if(c.t==='vis')limTxt='Inspeccion visual';
+    else if(c.lo!=null)limTxt=c.lo+' - '+c.hi+' '+(c.unit||'')+' . '+c.instr;
+    else limTxt=c.instr;
+    let inputHtml='';
+    if(c.t==='num')inputHtml='<div class="charinput"><input type="number" step="0.0001" id="inp_'+c.k+'" placeholder="0.0000" oninput="liveStatus("'+c.k+'")"></div>';
+    else if(c.t==='gng')inputHtml='<div class="charinput"><div class="gng-wrap"><button class="ok" onclick="setGNGVal("'+c.k+'","OK")">GO OK</button><button class="rej" onclick="setGNGVal("'+c.k+'","RECHAZO")">RECH.</button></div></div>';
+    else if(c.t==='vis')inputHtml='<div class="charinput"><select id="inp_'+c.k+'" onchange="liveStatus("'+c.k+'")"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
+    const row=document.createElement('div');
+    row.className='charrow'+(isOmit?' omit-row':'');
+    row.id='crow_'+c.k;
+    row.onclick=()=>focusCharRow(c.k);
+    const critDot=c.crit?'<span class="crit-dot"></span>':'';
+    const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
+    row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="st_'+c.k+'">-</div>';
+    cf.appendChild(row);
+  });
+  const first=sideChars()[0];if(first)focusCharRow(first.k);
 }
 function setSide(s){curSide=s;
   document.getElementById('btnT').classList.toggle('act',s==='T');
@@ -194,7 +191,7 @@ function curData(){const k=keyOf();if(!data[k])data[k]=[];return data[k];}
 function persist(){try{localStorage.setItem('inspData',JSON.stringify(data));}catch(e){}}
 
 function onChar(){
-  const k=document.getElementById('charSel').value;
+  const k=curChar?curChar.k:(sideChars()[0]||{k:''}).k;
   const base=sideChars().find(c=>c.k===k)||sideChars()[0];
   curChar=JSON.parse(JSON.stringify(base));
   document.getElementById('charTitle').textContent=curChar.label;
@@ -357,6 +354,119 @@ async function sendAll(){const c=cfg();if(!c.url){alert('Primero pegue y guarde 
       try{await fetch(c.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});cnt++;}catch(e){}
     }}
   alert('Enviadas '+cnt+' mediciones al Excel central.');}
+
+let focusedKey=null;
+function focusCharRow(k){
+  // Update focused row highlight
+  document.querySelectorAll('.charrow').forEach(r=>r.classList.remove('focused'));
+  const row=document.getElementById('crow_'+k);if(row)row.classList.add('focused');
+  focusedKey=k;
+  // Update chart for this characteristic
+  const base=sideChars().find(c=>c.k===k)||sideChars()[0];
+  if(!base)return;
+  curChar=JSON.parse(JSON.stringify(base));
+  if(curChar.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+  document.getElementById('charTitle').textContent='Gráfico: '+curChar.label;
+  // Show reaction note
+  let react='';
+  if(curChar.crit&&curChar.k==='sello')react='<span class="danger">REGLA:</span> si toca o cae fuera de 2.820–2.823, DETENER y ajustar/cambiar inserto (F0.20). Sobredimensionado = scrap irrecuperable.';
+  else if(curChar.t==='gng')react='<span class="danger">REGLA:</span> GO entra suave y completo, sin juego. Si no entra o hay juego, RECHAZO.';
+  else react='Líneas rojas = LSE/LIE del plano. Bandas moradas = control 6σ (UCL/LC/LCL).';
+  const rn=document.getElementById('reactionNote');if(rn)rn.innerHTML=react;
+  render();
+}
+function liveStatus(k){
+  const c=sideChars().find(x=>x.k===k);if(!c)return;
+  const el=document.getElementById('st_'+k);if(!el)return;
+  if(c.t==='vis'){
+    const v=document.getElementById('inp_'+k)?.value||'OK';
+    const bad=v!=='OK';
+    el.className='chst '+(bad?'chst-bad':'chst-ok');
+    el.textContent=bad?'DEFECTO':'OK';
+    return;
+  }
+  const v=parseFloat(document.getElementById('inp_'+k)?.value);
+  if(isNaN(v)){el.className='chst chst-idle';el.textContent='—';return;}
+  // Use curChar temporarily
+  const saved=curChar;
+  curChar=JSON.parse(JSON.stringify(c));
+  if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];}
+  const st=classify(v);
+  curChar=saved;
+  el.className='chst '+(st==='FUERA'?'chst-bad':(st==='CERCA'?'chst-warn':'chst-ok'));
+  el.textContent=st==='FUERA'?'FUERA':st==='CERCA'?'CERCA':'OK';
+}
+function setGNGVal(k,val){
+  const el=document.getElementById('st_'+k);if(!el)return;
+  const row=document.getElementById('crow_'+k);if(row)row.dataset.gng=val;
+  el.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');
+  el.textContent=val==='RECHAZO'?'RECHAZO':'OK';
+}
+function registerAll(){
+  const chars=sideChars();
+  let registered=0,anyBad=false,anyWarn=false;
+  chars.forEach(c=>{
+    const saved=curChar;
+    curChar=JSON.parse(JSON.stringify(c));
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.t==='num'){
+      const v=parseFloat(document.getElementById('inp_'+c.k)?.value);
+      if(!isNaN(v)){
+        const st=classify(v);
+        const r={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:st,comentario:getComent()};
+        curData().push(r);maybeSend(r);registered++;
+        if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;
+      }
+    } else if(c.t==='gng'){
+      const row=document.getElementById('crow_'+c.k);
+      const val=row?.dataset.gng;
+      if(val){
+        const r={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val,status:val==='RECHAZO'?'FUERA':'OK',comentario:getComent()};
+        curData().push(r);maybeSend(r);registered++;
+        if(val==='RECHAZO')anyBad=true;
+      }
+    } else if(c.t==='vis'){
+      const v=document.getElementById('inp_'+c.k)?.value||'OK';
+      const st=v==='OK'?'OK':'DEFECTO';
+      const r={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:st,comentario:getComent()};
+      curData().push(r);maybeSend(r);registered++;
+      if(st==='DEFECTO')anyBad=true;
+    }
+    curChar=saved;
+  });
+  if(registered===0){alert('No hay mediciones ingresadas.');return;}
+  // Clear inputs
+  chars.forEach(c=>{
+    const inp=document.getElementById('inp_'+c.k);if(inp)inp.value='';
+    const row=document.getElementById('crow_'+c.k);if(row)delete row.dataset.gng;
+    const st=document.getElementById('st_'+c.k);if(st){st.className='chst chst-idle';st.textContent='—';}
+  });
+  document.getElementById('comentarios').value='';
+  // Update verdict
+  const vd=document.getElementById('verdict');
+  if(anyBad){vd.className='verdict v-bad verdict-mini';vd.textContent='FUERA DE SPEC — DETENER';}
+  else if(anyWarn){vd.className='verdict v-warn verdict-mini';vd.textContent='CERCA DEL LIMITE — ajustar pronto';}
+  else{vd.className='verdict v-ok verdict-mini';vd.textContent='DENTRO DE SPEC — '+registered+' dimensiones registradas';}
+  // Restore curChar and re-render
+  if(focusedKey)focusCharRow(focusedKey);
+  persist();
+  updateSummaryStats();
+}
+function updateSummaryStats(){
+  // Count all entries today
+  let total=0,fuera=0,lastPieza='—';
+  Object.values(data).forEach(arr=>{
+    arr.forEach(r=>{
+      total++;
+      if(r.status==='FUERA'||r.status==='DEFECTO')fuera++;
+      if(r.pieza)lastPieza=r.pieza;
+    });
+  });
+  document.getElementById('n').textContent=total;
+  document.getElementById('avg').textContent=lastPieza;
+  document.getElementById('out').textContent=fuera;
+  document.getElementById('out').style.color=fuera>0?'#ff7a7a':'#5fdc8f';
+}
 window.addEventListener('resize',drawChart);
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
