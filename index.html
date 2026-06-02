@@ -16,7 +16,7 @@ h1{font-size:18px;color:#fff;margin-bottom:2px}
 .sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
 .sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:9px 18px;font-size:14px;font-weight:bold;cursor:pointer}
 .sidebtns button.act{background:#2E75B6;color:#fff}
-.grid{display:grid;grid-template-columns:380px 1fr;gap:12px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:12px}
 .card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
 .card h2{font-size:14px;margin-bottom:10px}
 .row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px}
@@ -61,13 +61,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   <div><label>Mecánico</label><select id="mec"></select></div>
   <div><label>Inspector</label><input id="insp"></div>
     </div>
-<div style="display:flex;gap:8px;align-items:center;background:#13202c;border:1px solid #243447;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;flex-wrap:wrap">
-  <span style="color:#8aa0b8">Conexión central (Power Automate):</span>
-  <input id="flowUrl" placeholder="Pegue aquí la URL del flujo HTTP de Power Automate" style="flex:1;min-width:260px;padding:6px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:12px">
-  <label style="color:#8aa0b8;display:flex;align-items:center;gap:5px"><input type="checkbox" id="autoSend" style="width:auto"> Enviar automático</label>
-  <span id="connState" style="color:#65788f">● sin configurar</span>
-  <button onclick="saveCfg()" style="padding:6px 12px;font-size:12px">Guardar URL</button>
-</div>
+<input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
 
 <div class="charbar">
   <div style="flex:0 0 auto">
@@ -83,7 +77,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <select id="charSel" onchange="onChar()"></select>
     <div class="spec" id="specTxt"></div>
   </div>
-  <div style="flex:0 0 auto"><label>&nbsp;</label><button onclick="exportCSV()">Exportar CSV</button> <button onclick="sendAll()" style="background:#2e7d4f">Enviar todo al central</button></div>
+  <div style="flex:0 0 auto"><label>&nbsp;</label><button onclick="exportCSV()">Exportar CSV</button></div>
 </div>
 
 <div class="grid">
@@ -127,7 +121,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   </div>
   <div class="card">
     <h2>Gráfico de control</h2>
-    <canvas id="chart" height="470"></canvas>
+    <canvas id="chart" height="560"></canvas>
     <div class="note" id="reactionNote"></div>
   </div>
 </div>
