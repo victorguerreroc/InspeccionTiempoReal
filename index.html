@@ -324,7 +324,7 @@ function updateConn(){const c=cfg();const s=document.getElementById('connState')
   if(!c.url){s.textContent='● sin configurar';s.style.color='#65788f';}
   else{s.textContent=c.auto?'● conectado (envío automático)':'● configurado (envío manual)';s.style.color='#5fdc8f';}}
 function rowPayload(r){
-  return {plano:curPlano,part_number:document.getElementById('dash').value,lado:curSide,
+  return {modo:curMode,plano:curPlano,part_number:document.getElementById('dash').value,lado:curSide,
     OP:document.getElementById('op').value,maquina:document.getElementById('maq').value,
     mecanico:document.getElementById('mec').value,inspector:document.getElementById('insp').value,
     turno:autoTurno(),caracteristica:curChar.k,
