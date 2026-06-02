@@ -333,7 +333,11 @@ function rowPayload(r){
     fecha:new Date().toISOString()};
 }
 async function sendRow(r){const c=cfg();if(!c.url)return;
-  try{await fetch(c.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(rowPayload(r))});
+  try{
+    const p=rowPayload(r);
+    const fd=new FormData();
+    fd.append('data',JSON.stringify(p));
+    await fetch(c.url,{method:'POST',mode:'no-cors',body:fd});
     flash('✓ enviado','#5fdc8f');}
   catch(e){flash('⚠ no se pudo enviar (se guardó local)','#ffce6b');}
 }
