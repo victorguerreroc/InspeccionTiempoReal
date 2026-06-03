@@ -168,7 +168,7 @@ function setMode(m){curMode=m;
   document.getElementById('btnProceso').classList.toggle('act',m==='proceso');
   document.getElementById('btnSierra').classList.toggle('act',m==='sierra');
   if(m==='sierra')setSide('B');
-  else{buildCharList();onChar();}}
+  else{buildCharList();buildCharForm2();onChar();}}
 function sideChars(){
   let cs=APP.planos[curPlano].chars.filter(c=>c.sides.includes(curSide));
   if(curMode==='proceso')cs=cs.filter(c=>PROCESO_KEYS.includes(c.k));
