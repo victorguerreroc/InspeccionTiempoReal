@@ -82,25 +82,46 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 
 </div>
 
-<div class="grid">
+<div class="grid" id="mainGrid">
+  <!-- CARD MACHINE 1 -->
   <div class="card">
-    <h2 id="charTitle">Características de inspección</h2>
+    <h2 id="charTitle" style="font-size:12px" >Características — <span id="maq1label">Máquina 1</span></h2>
     <div class="verdict v-idle verdict-mini" id="verdict">Ingrese mediciones y presione Registrar Todo</div>
     <div class="form-header">
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
     <div class="charform" id="charForm"></div>
-    <div style="margin-top:6px">
-      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios generales</label>
-      <textarea id="comentarios" placeholder="Observaciones adicionales..."></textarea>
+    <div style="margin-top:4px">
+      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:2px">Comentarios</label>
+      <textarea id="comentarios" placeholder="Observaciones..."></textarea>
     </div>
     <button class="reg-all-btn" onclick="registerAll()">&#10003; Registrar Todo</button>
-    <div class="stats" style="margin-top:10px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n">0</div></div>
-      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:14px">—</div></div>
+    <div class="stats" style="margin-top:6px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n">0</div></div>
+      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:13px">—</div></div>
       <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div>
-      <div class="stat"><div class="l">Cpk activo</div><div class="v" id="cpk">—</div></div></div>
-    <div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk">—</div></div></div>
+    <div class="tblwrap" style="margin-top:6px"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </div>
+  <!-- CARD MACHINE 2 (only in dual mode) -->
+  <div class="card" id="card2" style="display:none">
+    <h2 style="font-size:12px;color:#b388ff">Características — <span id="maq2label">Máquina 2</span></h2>
+    <div class="verdict v-idle verdict-mini" id="verdict2">Ingrese mediciones y presione Registrar Todo</div>
+    <div class="form-header">
+      <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
+      <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
+    </div>
+    <div class="charform" id="charForm2"></div>
+    <div style="margin-top:4px">
+      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:2px">Comentarios</label>
+      <textarea id="comentarios2" placeholder="Observaciones..."></textarea>
+    </div>
+    <button class="reg-all-btn" onclick="registerAll2()" style="background:#6a3fa0">&#10003; Registrar Máq 2</button>
+    <div class="stats" style="margin-top:6px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n2">0</div></div>
+      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg2" style="font-size:13px">—</div></div>
+      <div class="stat"><div class="l">Fuera</div><div class="v" id="out2">0</div></div>
+      <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk2">—</div></div></div>
+    <div class="tblwrap" style="margin-top:6px"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody2"></tbody></table></div>
   </div>
 
   <div class="card" style="display:flex;flex-direction:column;gap:10px">
@@ -478,15 +499,6 @@ function registerAll(){
         curData().push(r);maybeSend(r);registered++;
         if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;
       }
-      if(dual){
-        const v2=parseFloat(document.getElementById('inp2_'+c.k)?.value);
-        if(!isNaN(v2)){
-          const st2=classify(v2);
-          const r2={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v2,status:st2,comentario:getComent(),_maq2:true};
-          curData().push(r2);maybeSendDual(r2,maq2val,mec2val);registered++;
-          if(st2==='FUERA')anyBad=true;if(st2==='CERCA')anyWarn=true;
-        }
-      }
     } else if(c.t==='gng'){
       const row=document.getElementById('crow_'+c.k);
       const val=row?.dataset.gng;
@@ -495,27 +507,12 @@ function registerAll(){
         curData().push(r);maybeSend(r);registered++;
         if(val==='RECHAZO')anyBad=true;
       }
-      if(dual){
-        const val2=row?.dataset.gng2;
-        if(val2){
-          const r2={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:val2,status:val2==='RECHAZO'?'FUERA':'OK',comentario:getComent(),_maq2:true};
-          curData().push(r2);maybeSendDual(r2,maq2val,mec2val);registered++;
-          if(val2==='RECHAZO')anyBad=true;
-        }
-      }
     } else if(c.t==='vis'){
       const v=document.getElementById('inp_'+c.k)?.value||'OK';
       const st=v==='OK'?'OK':'DEFECTO';
       const r={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:st,comentario:getComent()};
       curData().push(r);maybeSend(r);registered++;
       if(st==='DEFECTO')anyBad=true;
-      if(dual){
-        const v2=document.getElementById('inp2_'+c.k)?.value||'OK';
-        const st2=v2==='OK'?'OK':'DEFECTO';
-        const r2={n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v2,status:st2,comentario:getComent(),_maq2:true};
-        curData().push(r2);maybeSendDual(r2,maq2val,mec2val);registered++;
-        if(st2==='DEFECTO')anyBad=true;
-      }
     }
     curChar=saved;
   });
@@ -561,7 +558,16 @@ function toggleDual(){
   document.getElementById('dualFields').classList.toggle('show',dualMode);
   const w=document.getElementById('chart2wrap');
   if(w)w.style.display=dualMode?'block':'none';
+  const card2=document.getElementById('card2');
+  if(card2)card2.style.display=dualMode?'block':'none';
+  const grid=document.getElementById('mainGrid');
+  if(grid)grid.classList.toggle('dual3',dualMode);
+  if(dualMode){
+    const m2=document.getElementById('maq2')?.value||'Máquina 2';
+    const l2=document.getElementById('maq2label');if(l2)l2.textContent=m2;
+  }
   buildCharForm();
+  buildCharForm2();
 }
 function isDual(){return dualMode&&curMode!=='sierra';}
 
@@ -651,6 +657,88 @@ function drawChart2(){
   // Update title
   const t2=document.getElementById('chartTitle2');
   if(t2)t2.textContent='📊 '+maq2val+' — '+curChar.label;
+}
+
+
+function buildCharForm2(){
+  const cf=document.getElementById('charForm2');if(!cf)return;
+  cf.innerHTML='';
+  sideChars().forEach(c=>{
+    const isOmit=curSide==='T'&&TOL_OMIT_TOP.includes(c.k);
+    let limTxt='';
+    if(c.k==='oal'){const L=getDashLimits();limTxt=L[0]!=null?L[0].toFixed(3)+' - '+L[1].toFixed(3)+' pulg':'Seleccione dash';}
+    else if(c.t==='gng')limTxt='GO/NO-GO . '+c.instr;
+    else if(c.t==='vis')limTxt='Inspeccion visual';
+    else if(c.lo!=null)limTxt=c.lo+' - '+c.hi+' '+(c.unit||'')+' . '+c.instr;
+    else limTxt=c.instr;
+    let inputHtml='';
+    if(c.t==='num'){
+      inputHtml='<div class="charinput"><input type="number" step="0.0001" id="inp2_'+c.k+'" placeholder="0.0000" oninput="liveStatus2(\"'+c.k+'\")"></div>';
+    } else if(c.t==='gng'){
+      inputHtml='<div class="charinput"><div class="gng-wrap"><button class="ok" onclick="setGNGVal2(\"'+c.k+'\",\"OK\")">Conforme</button><button class="rej" onclick="setGNGVal2(\"'+c.k+'\",\"RECHAZO\")">Rechazo</button></div></div>';
+    } else if(c.t==='vis'){
+      inputHtml='<div class="charinput"><select id="inp2_'+c.k+'" onchange="liveStatus2(\"'+c.k+'\")"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
+    }
+    const row=document.createElement('div');
+    row.className='charrow'+(isOmit?' omit-row':'');
+    row.id='crow2_'+c.k;
+    row.onclick=()=>focusCharRow(c.k);
+    const critDot=c.crit?'<span class="crit-dot"></span>':'';
+    const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
+    row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="st2_'+c.k+'">-</div>';
+    cf.appendChild(row);
+  });
+}
+
+function registerAll2(){
+  const chars=sideChars();
+  let registered=0,anyBad=false,anyWarn=false;
+  const maq2val=document.getElementById('maq2')?.value||'';
+  const mecval=document.getElementById('mec').value;
+  chars.forEach(c=>{
+    const saved=curChar;
+    curChar=JSON.parse(JSON.stringify(c));
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.t==='num'){
+      const v=parseFloat(document.getElementById('inp2_'+c.k)?.value);
+      if(!isNaN(v)){
+        const st=classify(v);
+        const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2').value.trim(),serie:document.getElementById('nserie2').value.trim(),val:v,status:st,comentario:document.getElementById('comentarios2').value.trim(),_maq2:true};
+        curData().push(r);maybeSendDual(r,maq2val,mecval);registered++;
+        if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;
+      }
+    } else if(c.t==='gng'){
+      const row=document.getElementById('crow2_'+c.k);
+      const val=row?.dataset.gng2;
+      if(val){
+        const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2').value.trim(),serie:document.getElementById('nserie2').value.trim(),val,status:val==='RECHAZO'?'FUERA':'OK',comentario:document.getElementById('comentarios2').value.trim(),_maq2:true};
+        curData().push(r);maybeSendDual(r,maq2val,mecval);registered++;
+        if(val==='RECHAZO')anyBad=true;
+      }
+    } else if(c.t==='vis'){
+      const v=document.getElementById('inp2_'+c.k)?.value||'OK';
+      const st=v==='OK'?'OK':'DEFECTO';
+      const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2').value.trim(),serie:document.getElementById('nserie2').value.trim(),val:v,status:st,comentario:document.getElementById('comentarios2').value.trim(),_maq2:true};
+      curData().push(r);maybeSendDual(r,maq2val,mecval);registered++;
+      if(st==='DEFECTO')anyBad=true;
+    }
+    curChar=saved;
+  });
+  if(registered===0){alert('No hay mediciones ingresadas para Máquina 2.');return;}
+  // Clear maq2 inputs
+  chars.forEach(c=>{
+    const inp=document.getElementById('inp2_'+c.k);if(inp)inp.value='';
+    const row=document.getElementById('crow2_'+c.k);if(row)delete row.dataset.gng2;
+    const st=document.getElementById('st2_'+c.k);if(st){st.className='chst chst-idle';st.textContent='—';}
+  });
+  document.getElementById('comentarios2').value='';
+  const vd2=document.getElementById('verdict2');
+  if(vd2){
+    if(anyBad){vd2.className='verdict v-bad verdict-mini';vd2.textContent='FUERA DE SPEC — DETENER';}
+    else if(anyWarn){vd2.className='verdict v-warn verdict-mini';vd2.textContent='CERCA DEL LIMITE';}
+    else{vd2.className='verdict v-ok verdict-mini';vd2.textContent='DENTRO DE SPEC — '+registered+' registradas';}
+  }
+  drawChart2();persist();updateSummaryStats();
 }
 
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
