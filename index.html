@@ -542,6 +542,12 @@ function updateSummaryStats(){
 
 function buildCharForm2(){
   const cf=document.getElementById('charForm2');if(!cf)return;
+  // Save current values before rebuild
+  const savedVals={};
+  cf.querySelectorAll('input[type=number]').forEach(el=>{ if(el.value) savedVals[el.id]=el.value; });
+  cf.querySelectorAll('select').forEach(el=>{ savedVals[el.id]=el.value; });
+  const savedGNG={};
+  cf.querySelectorAll('.charrow[data-gng-m2]').forEach(row=>{ savedGNG[row.id]=row.dataset.gngM2; });
   cf.innerHTML='';
   const dual=false;
   sideChars().forEach(c=>{
@@ -567,6 +573,28 @@ function buildCharForm2(){
     const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
     row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="m2st_'+c.k+'">-</div>';
     cf.appendChild(row);
+  });
+  // Restore saved values after rebuild
+  Object.keys(savedVals).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value=savedVals[id];
+  });
+  Object.keys(savedGNG).forEach(rowId=>{
+    const row=document.getElementById(rowId);
+    if(row){row.dataset.gngM2=savedGNG[rowId];
+      const val=savedGNG[rowId];
+      row.querySelectorAll('.gng-wrap button').forEach(b=>b.classList.remove('gng-sel'));
+      const sel=row.querySelector(val==='OK'?'.ok':'.rej');if(sel)sel.classList.add('gng-sel');
+      const stEl=document.getElementById('m2st_'+rowId.replace('crow2_',''));
+      if(stEl){stEl.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');stEl.textContent=val==='RECHAZO'?'RECHAZO':'OK';}
+    }
+  });
+  // Re-run liveStatusM2 for num inputs with values
+  Object.keys(savedVals).forEach(id=>{
+    if(id.startsWith('m2inp_')&&savedVals[id]){
+      const k=id.replace('m2inp_','');
+      liveStatusM2(k);
+    }
   });
 }
 
