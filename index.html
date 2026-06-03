@@ -77,7 +77,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
 <div><h1>Inspección en Tiempo Real — Familia Guns / Carriers</h1>
 <div class="sub">Teclee la medición y el gráfico de control se actualiza al instante · TechShop International S.A.</div></div>
-<button onclick="showConfirmBoth()" style="padding:6px 14px;font-size:12px;flex-shrink:0;background:#1a5c3a;border:none;border-radius:6px;color:#fff;font-weight:bold;cursor:pointer">✓ Registrar Ambas</button>&nbsp;<button onclick="exportCSV()" style="padding:6px 14px;font-size:12px;flex-shrink:0">⬇ Exportar CSV</button>
+
 </div>
 <div class="sub" id="clock" style="font-size:13px;color:#5bb8ff;margin-bottom:8px"></div>
 
@@ -87,8 +87,9 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   <div><label>OP (Orden de Producción)</label><input id="op" placeholder="OP 20 / OP 30"></div>
   <div><label>Mecánico</label><select id="mec"></select></div>
   <div><label>Inspector</label><input id="insp"></div>
-  <div style="display:flex;align-items:center;gap:4px">
+  <div style="display:flex;align-items:center;gap:4px;justify-content:space-between">
     <div class="sidebtns"><button id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button><button id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button><button id="btnSierra" onclick="setMode('sierra')" style="background:#7b4fa6;color:#fff">Corte Sierra</button><span style="width:10px;display:inline-block"></span><button id="btnT" class="act" onclick="setSide('T')">TOP</button><button id="btnB" onclick="setSide('B')">BOTTOM</button></div>
+    <div style="display:flex;gap:6px;flex-shrink:0"><button onclick="showConfirmBoth()" style="padding:6px 14px;font-size:12px;background:#1a5c3a;border:none;border-radius:6px;color:#fff;font-weight:bold;cursor:pointer;white-space:nowrap">✓ Registrar Ambas</button><button onclick="exportCSV()" style="padding:6px 14px;font-size:12px;white-space:nowrap">⬇ Exportar CSV</button></div>
   </div>
     </div>
 <input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
