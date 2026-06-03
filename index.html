@@ -104,14 +104,14 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 
 <div class="grid">
 <div class="card">
-    <h2 id="charTitle">Características de inspección</h2>
-    <div class="verdict v-idle verdict-mini" id="verdict">Ingrese mediciones y presione Registrar Todo</div>
     <div style="margin-bottom:6px"><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Máquina 1</label><select id="maq" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
     <div class="form-header">
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
+    <div class="verdict v-idle verdict-mini" id="verdict" style="margin-bottom:6px">Sin mediciones</div>
     <button class="reg-all-btn" onclick="showConfirmMaq1()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
+    <span id="charTitle" style="display:none"></span>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
@@ -126,15 +126,15 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div class="stat"><div class="l">Cpk activo</div><div class="v" id="cpk">—</div></div></div>
     <div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
-<div class="card">
-    <h2 id="charTitle2">Características de inspección</h2>
-    <div class="verdict v-idle verdict-mini" id="verdict2">Ingrese mediciones y presione Registrar Todo</div>
+<div class="card" style="border-color:#3d2a5e">
     <div style="margin-bottom:6px"><label style="font-size:10px;color:#b388ff;display:block;margin-bottom:2px">Máquina 2</label><select id="maq2" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
     <div class="form-header">
       <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
     </div>
     <button class="reg-all-btn" onclick="showConfirmMaq2()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
+    <div class="verdict v-idle verdict-mini" id="verdict2" style="margin-bottom:6px">Sin mediciones</div>
+    <span id="charTitle2" style="display:none"></span>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
