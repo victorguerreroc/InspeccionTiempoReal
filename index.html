@@ -103,9 +103,15 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
 
-  <div class="card">
-    <h2>Gráfico de control</h2>
-    <canvas id="chart" height="560"></canvas>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div>
+      <h2 id="chartTitle1" style="font-size:12px;margin-bottom:4px">📊 Gráfico — Máquina 1</h2>
+      <canvas id="chart" height="260"></canvas>
+    </div>
+    <div id="chart2wrap" style="display:none">
+      <h2 id="chartTitle2" style="font-size:12px;margin-bottom:4px;color:#b388ff">📊 Gráfico — Máquina 2</h2>
+      <canvas id="chart2" height="260"></canvas>
+    </div>
     <div class="note" id="reactionNote"></div>
   </div>
 </div>
@@ -277,7 +283,7 @@ function render(){
     else document.getElementById('cpk').textContent='—';
   }else{document.getElementById('avg').textContent='—';document.getElementById('cpk').textContent='—';}
   document.getElementById('out').textContent=out;document.getElementById('out').style.color=out>0?'#ff7a7a':'#e6edf5';
-  drawChart();persist();
+  drawChart();drawChart2();persist();
 }
 function drawChart(){
   const d=curData(),cv=document.getElementById('chart'),ctx=cv.getContext('2d');
@@ -396,6 +402,8 @@ function focusCharRow(k){
   curChar=JSON.parse(JSON.stringify(base));
   if(curChar.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
   document.getElementById('charTitle').textContent='Gráfico: '+curChar.label;
+  const t1=document.getElementById('chartTitle1');if(t1)t1.textContent='📊 '+(document.getElementById('maq').value||'Máq 1')+' — '+curChar.label;
+  drawChart2();
   // Show reaction note
   let react='';
   if(curChar.crit&&curChar.k==='sello')react='<span class="danger">REGLA:</span> si toca o cae fuera de 2.820–2.823, DETENER y ajustar/cambiar inserto (F0.20). Sobredimensionado = scrap irrecuperable.';
@@ -551,10 +559,101 @@ function toggleDual(){
   dualMode=!dualMode;
   document.getElementById('btnDual').classList.toggle('act',dualMode);
   document.getElementById('dualFields').classList.toggle('show',dualMode);
+  const w=document.getElementById('chart2wrap');
+  if(w)w.style.display=dualMode?'block':'none';
   buildCharForm();
 }
 function isDual(){return dualMode&&curMode!=='sierra';}
-window.addEventListener('resize',drawChart);
+
+function drawChart2(){
+  const cv=document.getElementById('chart2');
+  if(!cv||!isDual()){return;}
+  const ctx=cv.getContext('2d');
+  const W=cv.width=cv.clientWidth,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad=58;
+  if(!curChar){return;}
+  // Get data for maq2 - filter by maq2 value
+  const maq2val=document.getElementById('maq2')?.value||'';
+  const k=keyOf();
+  const allEntries=data[k]||[];
+  // For chart2 we show entries that have _maq2 flag
+  const d2=allEntries.filter(r=>r._maq2);
+  if(curChar.t==='gng'){
+    if(!d2.length){
+      ctx.fillStyle='#8aa0b8';ctx.font='13px Arial';ctx.fillText('Sin datos Máq 2',pad,H/2);return;
+    }
+    d2.forEach((r,i)=>{
+      const x=pad+(i/(Math.max(29,d2.length-1)))*(W-pad-16);
+      const ok=r.val==='OK';
+      ctx.fillStyle=ok?'#2e7d4f':'#C00000';
+      ctx.fillRect(x-7,ok?H/2:pad,14,H/2-pad);
+    });
+    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.fillText('OK (arriba) / RECHAZO (abajo)',pad,20);
+    return;
+  }
+  const vals=d2.filter(r=>typeof r.val==='number').map(r=>r.val);
+  if(!vals.length){
+    ctx.fillStyle='#8aa0b8';ctx.font='13px Arial';
+    ctx.fillText('Sin datos Máq 2 — '+maq2val,pad,H/2);return;
+  }
+  let lo=curChar.lo,hi=curChar.hi;
+  if(lo==null||hi==null){lo=Math.min(...vals);hi=Math.max(...vals);}
+  let ylo=lo-((hi-lo)||1)*0.5,yhi=hi+((hi-lo)||1)*0.5;
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const sd=vals.length>1?Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1)):0;
+  if(sd>0){ylo=Math.min(ylo,avg-3.5*sd);yhi=Math.max(yhi,avg+3.5*sd);}
+  const y=v=>H-pad-((v-ylo)/(yhi-ylo))*(H-2*pad);
+  const x=i=>pad+(i/(Math.max(29,d2.length-1)))*(W-pad-16);
+  // Grid
+  ctx.fillStyle='#65788f';ctx.font='10px Arial';
+  for(let t=0;t<=3;t++){const vv=ylo+(yhi-ylo)*t/3;ctx.fillText(vv.toFixed(3),4,y(vv)+3);}
+  // Spec lines
+  function hl2(val,c,lbl){
+    if(val==null)return;
+    ctx.strokeStyle=c;ctx.setLineDash([]);ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pad,y(val));ctx.lineTo(W-16,y(val));ctx.stroke();
+    ctx.fillStyle=c;ctx.font='10px Arial';ctx.fillText(lbl,W-90,y(val)-3);
+  }
+  hl2(curChar.hi,'#C00000','LSE '+curChar.hi);
+  hl2(curChar.lo,'#C00000','LIE '+curChar.lo);
+  // Sigma bands
+  if(sd>0){
+    const ucl=avg+3*sd,lcl=avg-3*sd;
+    function band2(a,b,color){
+      const ya=y(Math.min(Math.max(a,ylo),yhi)),yb=y(Math.min(Math.max(b,ylo),yhi));
+      ctx.fillStyle=color;ctx.fillRect(pad,Math.min(ya,yb),W-pad-16,Math.abs(yb-ya));
+    }
+    band2(avg-sd,avg+sd,'rgba(179,136,255,0.10)');
+    band2(avg+sd,avg+2*sd,'rgba(179,136,255,0.07)');band2(avg-2*sd,avg-sd,'rgba(179,136,255,0.07)');
+    band2(avg+2*sd,ucl,'rgba(192,0,0,0.08)');band2(lcl,avg-2*sd,'rgba(192,0,0,0.08)');
+    function cl2(val,color,lbl,dash){
+      if(val<ylo||val>yhi)return;
+      ctx.strokeStyle=color;ctx.setLineDash(dash||[]);ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(pad,y(val));ctx.lineTo(W-16,y(val));ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=color;ctx.font='10px Arial';ctx.fillText(lbl,pad+4,y(val)-2);
+    }
+    cl2(ucl,'#b388ff','UCL '+ucl.toFixed(4),[5,3]);
+    cl2(avg,'#b388ff','X̄ '+avg.toFixed(4),[2,2]);
+    cl2(lcl,'#b388ff','LCL '+lcl.toFixed(4),[5,3]);
+  }
+  // Line and points
+  ctx.strokeStyle='#9c6ff0';ctx.lineWidth=1.8;ctx.beginPath();
+  d2.filter(r=>typeof r.val==='number').forEach((r,i)=>{
+    const px=x(i),py=y(r.val);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  });ctx.stroke();
+  d2.filter(r=>typeof r.val==='number').forEach((r,i)=>{
+    const px=x(i),py=y(r.val);
+    ctx.fillStyle=r.status==='FUERA'?'#ff7a7a':(r.status==='CERCA'?'#ffce6b':'#b388ff');
+    ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();
+  });
+  ctx.fillStyle='#65788f';ctx.font='11px Arial';ctx.fillText('Muestra →',pad,H-8);
+  // Update title
+  const t2=document.getElementById('chartTitle2');
+  if(t2)t2.textContent='📊 '+maq2val+' — '+curChar.label;
+}
+
+window.addEventListener('resize',()=>{drawChart();drawChart2();});
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
 init();tickClock();
