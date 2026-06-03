@@ -65,9 +65,8 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   <div><label>Inspector</label><input id="insp"></div>
   <div style="align-self:flex-end"><button class="btn-dual" id="btnDual" onclick="toggleDual()" title="Activar inspección de 2 máquinas simultáneas">⊕ 2 Máquinas</button></div>
     </div>
-<div class="dual-fields" id="dualFields">
+<div class="dual-fields" id="dualFields" style="grid-template-columns:1fr;">
   <div><label>Máquina 2</label><select id="maq2"></select></div>
-  <div><label>Mecánico 2</label><select id="mec2"></select></div>
 </div>
 <input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
 
@@ -134,7 +133,6 @@ function init(){
   fillSelect('maq',APP.maquinas);
   fillSelect('maq2',APP.maquinas);
   fillSelect('mec',APP.mecanicos,m=>({v:m.id+' '+m.n,t:m.id+' — '+m.n}));
-  fillSelect('mec2',APP.mecanicos,m=>({v:m.id+' '+m.n,t:m.id+' — '+m.n}));
   onPlano();
 }
 function onPlano(){
@@ -362,7 +360,7 @@ function flash(t,c){const s=document.getElementById('connState');const old=s.tex
 function maybeSendDual(r,maq2,mec2){
   const c=cfg();if(!c.url||!c.auto)return;
   const p=rowPayload(r);
-  p.maquina=maq2;p.mecanico=mec2;
+  p.maquina=maq2;
   const fd=new FormData();fd.append('data',JSON.stringify(p));
   fetch(c.url,{method:'POST',mode:'no-cors',body:fd}).catch(()=>{});
 }
@@ -458,8 +456,8 @@ function registerAll(){
   const chars=sideChars();
   let registered=0,anyBad=false,anyWarn=false;
   const dual=isDual();
-  const maq2val=document.getElementById('maq2')?.value||'';
-  const mec2val=document.getElementById('mec2')?.value||'';
+  const maq2val=document.getElementById('maq2')?.value||''
+  const mec2val=document.getElementById('mec').value;
   chars.forEach(c=>{
     const saved=curChar;
     curChar=JSON.parse(JSON.stringify(c));
