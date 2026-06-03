@@ -469,6 +469,7 @@ function focusCharRow2(k){
   const t2=document.getElementById('chartTitle2');
   if(t2)t2.textContent='Grafico '+(document.getElementById('maq2')?.value||'Maq 2')+' - '+curChar2.label;
   drawChart2();
+  renderMaq2();
 }
 
 let previewVal=null,previewVal2=null,focusedKey2=null;
