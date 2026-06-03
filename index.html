@@ -5,7 +5,7 @@
 body{background:#0f1722;color:#e6edf5;padding:14px;font-size:14px}
 h1{font-size:16px;color:#fff;margin-bottom:1px}
 .sub{color:#8aa0b8;font-size:11px;margin-bottom:4px}
-.setup{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:6px 10px;margin-bottom:7px}
+.setup{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:6px 10px;margin-bottom:7px}
 .setup label{font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px}
 .setup input,.setup select{width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}
 .charbar{display:flex;gap:6px;align-items:center;background:#16212f;border:1px solid #243447;border-radius:8px;padding:7px 10px;margin-bottom:8px;flex-wrap:wrap}
@@ -60,12 +60,8 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   <div><label>Plano / Familia</label><select id="plano" onchange="onPlano()"></select></div>
   <div><label>Part Number (dash)</label><select id="dash" onchange="onChar()"></select></div>
   <div><label>OP (Orden de Producción)</label><input id="op" placeholder="OP 20 / OP 30"></div>
-  <div><label>Máquina</label><select id="maq"></select></div>
-  <div><label>Mecánico</label><select id="mec"></select></div>
   <div><label>Inspector</label><input id="insp"></div>
     </div>
-<div class="dual-fields" id="dualFields" style="grid-template-columns:1fr;">
-  <div><label>Máquina 2</label><select id="maq2" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value"></select></div>
 </div>
 <input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
 
@@ -91,6 +87,10 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Máquina</label><select id="maq" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Mecánico</label><select id="mec" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
+    </div>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:4px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:2px">Comentarios</label>
@@ -110,6 +110,10 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <div class="form-header">
       <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
+    </div>
+    <div style="margin-bottom:6px">
+      <label style="font-size:10px;color:#b388ff;display:block;margin-bottom:2px">Máquina 2</label>
+      <select id="maq2" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value"></select>
     </div>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:4px">
@@ -556,7 +560,6 @@ function updateSummaryStats(){
 function toggleDual(){
   dualMode=!dualMode;
   document.getElementById('btnDual').classList.toggle('act',dualMode);
-  document.getElementById('dualFields').classList.toggle('show',dualMode);
   const w=document.getElementById('chart2wrap');
   if(w)w.style.display=dualMode?'block':'none';
   const card2=document.getElementById('card2');
@@ -747,7 +750,6 @@ window.addEventListener('resize',()=>{drawChart();drawChart2();});
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
 // Activate dual mode by default BEFORE init
 document.getElementById('btnDual').classList.add('act');
-document.getElementById('dualFields').classList.add('show');
 const _w=document.getElementById('chart2wrap');if(_w)_w.style.display='block';
 const _c2=document.getElementById('card2');if(_c2)_c2.style.display='block';
 const _g=document.getElementById('mainGrid');if(_g)_g.classList.add('dual3');
