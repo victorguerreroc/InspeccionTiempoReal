@@ -70,6 +70,7 @@ select.big{font-size:13px;padding:7px}
   <div class="fg"><label>Turno</label><select id="fTurno" onchange="apply()"><option value="">Todos</option><option>Mañana 06-14</option><option>Tarde 14-22</option><option>Noche 22-06</option></select></div>
   <div class="fg" id="fgLado"><label>Lado</label><select id="fLado" onchange="apply()"><option value="">Todos</option><option value="T">TOP</option><option value="B">BOTTOM</option></select></div>
   <div class="fg"><label>Estado</label><select id="fEstado" onchange="apply()"><option value="">Todos</option><option value="OK">OK</option><option value="CERCA">Cerca</option><option value="FUERA">Fuera de spec</option><option value="DEFECTO">Defecto visual</option></select></div>
+  <div class="fg"><label>Característica</label><select id="fCaract" onchange="apply()"><option value="">Todas</option></select></div>
   <div class="fg"><label>Tipo de Defecto</label><select id="fDefecto" onchange="apply()"><option value="">Todos</option></select></div>
   <div class="fg"><label>Limpiar</label><button class="sec" onclick="clearF()" style="width:100%">✕ Limpiar filtros</button></div>
 </div>
@@ -208,16 +209,21 @@ function populateFilters(){
   fill('fMaq',uniq(allData.map(r=>r.maquina)));
   fill('fMec',uniq(allData.map(r=>r.mecanico)));
   fill('fDefecto',uniq(allData.filter(r=>r.caracteristica==='visual'&&r.valor&&r.valor!=='OK').map(r=>r.valor)));
+  // Característica: value=clave, texto=descripcion
+  const cmap={};allData.forEach(r=>{if(r.caracteristica)cmap[r.caracteristica]=r.descripcion||r.caracteristica;});
+  const cs=document.getElementById('fCaract'),pv=cs.value;cs.innerHTML='<option value="">Todas</option>';
+  Object.keys(cmap).sort((a,b)=>cmap[a].localeCompare(cmap[b])).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=cmap[k];cs.appendChild(o);});
+  if(pv)cs.value=pv;
 }
 function fill(id,arr){const s=document.getElementById(id),p=s.value;s.innerHTML='<option value="">Todos</option>';arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});if(p)s.value=p;}
-function clearF(){['fPlano','fDash','fMaq','fMec','fTurno','fLado','fEstado','fDefecto'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});setDefaultDates();apply();}
+function clearF(){['fPlano','fDash','fMaq','fMec','fTurno','fLado','fEstado','fDefecto','fCaract'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});setDefaultDates();apply();}
 
 function apply(){
   const desde=document.getElementById('fDesde').value, hasta=document.getElementById('fHasta').value;
   const fp=document.getElementById('fPlano').value, fd=document.getElementById('fDash').value;
   const fm=document.getElementById('fMaq').value, fc=document.getElementById('fMec').value;
   const ft=document.getElementById('fTurno').value, fl=document.getElementById('fLado').value;
-  const fe=document.getElementById('fEstado').value, fdef=document.getElementById('fDefecto').value;
+  const fe=document.getElementById('fEstado').value, fdef=document.getElementById('fDefecto').value, fcar=document.getElementById('fCaract').value;
   fData=allData.filter(r=>{
     if(desde && r._fecha && r._fecha<desde)return false;
     if(hasta && r._fecha && r._fecha>hasta)return false;
@@ -229,6 +235,7 @@ function apply(){
     if(fl && r.lado!==fl)return false;
     if(fe && r.estado!==fe)return false;
     if(fdef && r.valor!==fdef)return false;
+    if(fcar && r.caracteristica!==fcar)return false;
     return true;
   });
   renderAll();
