@@ -88,7 +88,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 
 <div class="setup">
   <div><label>Plano / Familia</label><select id="plano" onchange="onPlano()"></select></div>
-  <div><label>Part Number (dash)</label><select id="dash" onchange="onChar()"></select></div>
+  <div><label>Part Number (dash)</label><select id="dash" onchange="onDash()"></select></div>
   <div><label>OP (Orden de Producción)</label><input id="op" placeholder="OP 20 / OP 30"></div>
   <div><label>Mecánico</label><select id="mec"></select></div>
   <div><label>Inspector</label><input id="insp"></div>
@@ -184,6 +184,12 @@ function onPlano(){
   sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
   const P=APP.planos[curPlano];
   fillSelect('dash',P.dashes);
+  buildCharList();
+  buildCharForm2();
+  onChar();
+}
+function onDash(){
+  sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
   buildCharList();
   buildCharForm2();
   onChar();
