@@ -342,9 +342,16 @@ function render(){
 function drawChart(){
   const d=curData(),cv=document.getElementById('chart'),ctx=cv.getContext('2d');
   const W=cv.width=cv.clientWidth,H=cv.height;ctx.clearRect(0,0,W,H);const pad=58;
-  if(curChar.t==='gng'){d.forEach((r,i)=>{const x=pad+(i/(Math.max(29,d.length-1)))*(W-pad-16);const ok=r.val==='OK';
-    ctx.fillStyle=ok?'#2e7d4f':'#C00000';ctx.fillRect(x-7,ok?pad:H/2,14,H/2-pad);});
-    ctx.fillStyle='#8aa0b8';ctx.font='13px Arial';ctx.fillText('OK (arriba)  /  RECHAZO (abajo)',pad,26);return;}
+  if(curChar.t==='gng'||curChar.t==='vis'){
+    const xg=i=>pad+(i/(Math.max(29,d.length)))*(W-pad-16);
+    d.forEach((r,i)=>{const x=xg(i);const ok=r.status==='OK';
+      ctx.fillStyle=ok?'#2e7d4f':'#C00000';ctx.fillRect(x-7,ok?pad:H/2,14,H/2-pad);});
+    // Preview de la seleccion actual (antes de registrar)
+    let selOk=null;
+    if(curChar.t==='vis'){const sv=document.getElementById('inp_'+curChar.k)?.value;if(sv)selOk=(sv==='OK');}
+    else{const sg=document.getElementById('crow_'+curChar.k)?.dataset.gng;if(sg)selOk=(sg==='OK');}
+    if(selOk!==null){const x=xg(d.length);ctx.save();ctx.globalAlpha=0.5;ctx.fillStyle=selOk?'#2e7d4f':'#C00000';ctx.fillRect(x-7,selOk?pad:H/2,14,H/2-pad);ctx.restore();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.setLineDash([3,2]);ctx.strokeRect(x-7,selOk?pad:H/2,14,H/2-pad);ctx.setLineDash([]);}
+    ctx.fillStyle='#8aa0b8';ctx.font='13px Arial';ctx.fillText('OK (arriba)  /  RECHAZO-DEFECTO (abajo)',pad,26);return;}
   const vals=d.filter(r=>typeof r.val==='number').map(r=>r.val);
   let lo=curChar.lo,hi=curChar.hi;
   if(lo==null||hi==null){if(!vals.length){ctx.fillStyle='#8aa0b8';ctx.font='13px Arial';ctx.fillText('Sin límites (omitir / falta dash)',pad,H/2);return;}lo=Math.min(...vals);hi=Math.max(...vals);}
@@ -748,10 +755,15 @@ function drawChart2(){
   if(t2)t2.textContent='Grafico '+maq2val+' - '+cc2.label;
   const k2=keyOf2();
   const d2=data2[k2]||[];
-  if(cc2.t==='gng'){
-    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.fillText('OK (arriba) / RECHAZO (abajo)',pad,20);
-    d2.forEach((r,i)=>{const x=pad+(i/(Math.max(29,d2.length-1)))*(W-pad-16);const ok=r.val==='OK';
+  if(cc2.t==='gng'||cc2.t==='vis'){
+    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.fillText('OK (arriba) / RECHAZO-DEFECTO (abajo)',pad,20);
+    const xg=i=>pad+(i/(Math.max(29,d2.length)))*(W-pad-16);
+    d2.forEach((r,i)=>{const x=xg(i);const ok=r.status==='OK';
       ctx.fillStyle=ok?'#2e7d4f':'#C00000';ctx.fillRect(x-7,ok?pad:H/2,14,H/2-pad);});
+    let selOk=null;
+    if(cc2.t==='vis'){const sv=document.getElementById('m2inp_'+cc2.k)?.value;if(sv)selOk=(sv==='OK');}
+    else{const sg=document.getElementById('crow2_'+cc2.k)?.dataset.gngM2;if(sg)selOk=(sg==='OK');}
+    if(selOk!==null){const x=xg(d2.length);ctx.save();ctx.globalAlpha=0.5;ctx.fillStyle=selOk?'#2e7d4f':'#C00000';ctx.fillRect(x-7,selOk?pad:H/2,14,H/2-pad);ctx.restore();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.setLineDash([3,2]);ctx.strokeRect(x-7,selOk?pad:H/2,14,H/2-pad);ctx.setLineDash([]);}
     return;
   }
   const vals=d2.filter(r=>typeof r.val==='number').map(r=>r.val);
