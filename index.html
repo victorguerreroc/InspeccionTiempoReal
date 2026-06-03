@@ -588,6 +588,7 @@ function buildCharForm2(){
     const row=document.createElement('div');
     row.className='charrow'+(isOmit?' omit-row':'');
     row.id='crow2_'+c.k;
+    row.onclick=()=>focusCharRow2(c.k);
     const critDot=c.crit?'<span class="crit-dot"></span>':'';
     const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
     row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="m2st_'+c.k+'">-</div>';
