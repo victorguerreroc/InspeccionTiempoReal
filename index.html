@@ -239,6 +239,16 @@ function curData(){const k=keyOf();if(!data[k])data[k]=[];return data[k];}
 function renderMaq2(){
   const d=curData2(),tb=document.getElementById('tbody2');if(!tb)return;
   tb.innerHTML='';let out2=0;
+  // Update verdict2
+  const vd2=document.getElementById('verdict2');
+  if(vd2){
+    if(!d.length){vd2.className='verdict v-idle verdict-mini';vd2.textContent='Sin mediciones';}
+    else{const l=d[d.length-1];
+      if(l.status==='FUERA'||l.status==='DEFECTO'){vd2.className='verdict v-bad verdict-mini';vd2.textContent='FUERA DE SPEC — DETENER';}
+      else if(l.status==='CERCA'){vd2.className='verdict v-warn verdict-mini';vd2.textContent='CERCA DEL LIMITE — ajustar pronto';}
+      else{vd2.className='verdict v-ok verdict-mini';vd2.textContent='DENTRO DE SPEC';}
+    }
+  }
   d.slice().reverse().forEach(r=>{
     if(r.status==='FUERA'||r.status==='DEFECTO')out2++;
     const cls=r.status==='FUERA'||r.status==='DEFECTO'?'bad':(r.status==='OK'?'ok':(r.status==='CERCA'?'warn':''));
@@ -631,6 +641,12 @@ function liveStatusM2(k){
   }
   previewVal2=v;
   drawChart2();
+  // Update verdict2 live
+  const vd2el=document.getElementById('verdict2');
+  if(vd2el&&v!==null){const stEl=document.getElementById('m2st_'+k);const st2=stEl?.textContent||'';
+    if(st2==='FUERA'||st2==='DEFECTO'){vd2el.className='verdict v-bad verdict-mini';vd2el.textContent='FUERA DE SPEC — DETENER';}
+    else if(st2==='CERCA'){vd2el.className='verdict v-warn verdict-mini';vd2el.textContent='CERCA DEL LIMITE';}
+    else if(st2==='OK'){vd2el.className='verdict v-ok verdict-mini';vd2el.textContent='DENTRO DE SPEC';}}
 }
 
 function setGNGM2(k,val){
