@@ -16,7 +16,7 @@ h1{font-size:16px;color:#fff;margin-bottom:1px}
 .sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
 .sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:6px 14px;font-size:13px;font-weight:bold;cursor:pointer}
 .sidebtns button.act{background:#2E75B6;color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr 320px;gap:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
 .card h2{font-size:14px;margin-bottom:10px}
 .row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px}
@@ -80,63 +80,81 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 <div class="grid" id="mainGrid">
   <!-- CARD MACHINE 1 -->
   <div class="card">
-    <h2 id="charTitle" style="font-size:12px" >Características — <span id="maq1label">Máquina 1</span></h2>
-    <div class="verdict v-idle verdict-mini" id="verdict">Ingrese mediciones y presione Registrar Todo</div>
-    <div class="form-header">
-      <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
-      <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:6px">
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Máquina 1</label>
+        <select id="maq" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Máquina 2</label>
+        <select id="maq2" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value"></select></div>
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Mecánico</label>
+        <select id="mec" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">
-      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Máquina</label><select id="maq" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
-      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">Mecánico</label><select id="mec" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></select></div>
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">N° Pieza Máq 1</label>
+        <input id="npieza" placeholder="Ej: 1, 5, 50" style="width:100%;padding:5px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px"></div>
+      <div><label style="font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px">N° Pieza Máq 2</label>
+        <input id="npieza2" placeholder="Ej: 1, 5, 50" style="width:100%;padding:5px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px"></div>
     </div>
+    <div class="verdict v-idle verdict-mini" id="verdict">Ingrese mediciones y presione Registrar Todo</div>
+  </div>
+  <!-- CARD MACHINE 2 placeholder (merged into card1 header above) -->
+  <div class="card" style="border-color:#3d2a5e;display:none" id="card2dummy"></div>
+</div>
+
+<!-- FORMS ROW: 2 columns -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0">
+  <!-- FORM MAQ 1 -->
+  <div class="card" style="padding:10px">
+    <h3 style="font-size:11px;color:#8aa0b8;margin-bottom:6px">📋 Características — <span id="maq1label">Máquina 1</span></h3>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:4px">
-      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:2px">Comentarios</label>
-      <textarea id="comentarios" placeholder="Observaciones..."></textarea>
+      <textarea id="comentarios" placeholder="Comentarios Máq 1..." style="width:100%;padding:5px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px;resize:vertical;min-height:32px"></textarea>
     </div>
-    <button class="reg-all-btn" onclick="registerAll()">&#10003; Registrar Todo</button>
-    <div class="stats" style="margin-top:6px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n">0</div></div>
-      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:13px">—</div></div>
-      <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div>
-      <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk">—</div></div></div>
-    <div class="tblwrap" style="margin-top:6px"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
-  <!-- CARD MACHINE 2 (only in dual mode) -->
-  <div class="card" id="card2" style="border-color:#3d2a5e">
-    <h2 style="font-size:12px;color:#b388ff">Características — <span id="maq2label">Máquina 2</span></h2>
-    <div class="verdict v-idle verdict-mini" id="verdict2">Ingrese mediciones y presione Registrar Todo</div>
-    <div class="form-header">
-      <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
-      <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
-    </div>
-    <div style="margin-bottom:6px">
-      <label style="font-size:10px;color:#b388ff;display:block;margin-bottom:2px">Máquina 2</label>
-      <select id="maq2" style="width:100%;padding:4px 6px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value"></select>
-    </div>
+  <!-- FORM MAQ 2 -->
+  <div class="card" style="padding:10px;border-color:#3d2a5e">
+    <h3 style="font-size:11px;color:#b388ff;margin-bottom:6px">📋 Características — <span id="maq2label">Máquina 2</span></h3>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:4px">
-      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:2px">Comentarios</label>
-      <textarea id="comentarios2" placeholder="Observaciones..."></textarea>
+      <textarea id="comentarios2" placeholder="Comentarios Máq 2..." style="width:100%;padding:5px;background:#0f1722;border:1px solid #3d2a5e;border-radius:4px;color:#e6edf5;font-size:12px;resize:vertical;min-height:32px"></textarea>
     </div>
-    <button class="reg-all-btn" onclick="registerAll2()" style="background:#6a3fa0">&#10003; Registrar Máq 2</button>
-    <div class="stats" style="margin-top:6px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n2">0</div></div>
-      <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg2" style="font-size:13px">—</div></div>
-      <div class="stat"><div class="l">Fuera</div><div class="v" id="out2">0</div></div>
-      <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk2">—</div></div></div>
-    <div class="tblwrap" style="margin-top:6px"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody2"></tbody></table></div>
   </div>
+</div>
 
-  <div class="card" style="display:flex;flex-direction:column;gap:10px">
-    <div>
-      <h2 id="chartTitle1" style="font-size:12px;margin-bottom:4px">📊 Gráfico — Máquina 1</h2>
-      <canvas id="chart" height="260"></canvas>
-    </div>
-    <div id="chart2wrap" style="display:none">
-      <h2 id="chartTitle2" style="font-size:12px;margin-bottom:4px;color:#b388ff">📊 Gráfico — Máquina 2</h2>
-      <canvas id="chart2" height="260"></canvas>
-    </div>
-    <div class="note" id="reactionNote"></div>
+<!-- SINGLE REGISTER BUTTON -->
+<button onclick="registerBoth()" style="width:100%;padding:12px;font-size:15px;background:#2e7d4f;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
+
+<!-- STATS ROW -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+  <div class="stats"><div class="stat"><div class="l">Reg. Máq1</div><div class="v" id="n">0</div></div>
+    <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:13px">—</div></div>
+    <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div>
+    <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk">—</div></div></div>
+  <div class="stats"><div class="stat"><div class="l">Reg. Máq2</div><div class="v" id="n2">0</div></div>
+    <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg2" style="font-size:13px">—</div></div>
+    <div class="stat"><div class="l">Fuera</div><div class="v" id="out2">0</div></div>
+    <div class="stat"><div class="l">Cpk</div><div class="v" id="cpk2">—</div></div></div>
+</div>
+
+<!-- CHARTS ROW: side by side at bottom -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+  <div class="card" style="padding:10px">
+    <h2 id="chartTitle1" style="font-size:11px;margin-bottom:4px">📊 Gráfico — Máquina 1</h2>
+    <canvas id="chart" height="220"></canvas>
+    <div class="note" id="reactionNote" style="font-size:11px;margin-top:6px"></div>
+  </div>
+  <div class="card" style="padding:10px;border-color:#3d2a5e">
+    <h2 id="chartTitle2" style="font-size:11px;margin-bottom:4px;color:#b388ff">📊 Gráfico — Máquina 2</h2>
+    <canvas id="chart2" height="220"></canvas>
+  </div>
+</div>
+
+<!-- HISTORY TABLES -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+  <div class="card" style="padding:8px">
+    <div class="tblwrap"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </div>
+  <div class="card" style="padding:8px;border-color:#3d2a5e">
+    <div class="tblwrap"><table><thead><tr><th>#</th><th>Pieza</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody2"></tbody></table></div>
   </div>
 </div>
 
@@ -269,6 +287,8 @@ function classify(v){const c=curChar;if(c.lo==null||c.hi==null)return 'OK';
   const sp=c.hi-c.lo,m=(c.hi+c.lo)/2;if(Math.abs(v-m)>sp*0.4)return 'CERCA';return 'OK';}
 function getNpieza(){return document.getElementById('npieza').value.trim();}
 function getNserie(){return document.getElementById('nserie').value.trim();}
+function getNpieza2(){return document.getElementById('npieza2')?.value.trim()||'';}
+function getNserie2(){return document.getElementById('nserie2')?.value.trim()||'';}
 function getComent(){return document.getElementById('comentarios').value.trim();}
 function addMeas(){const v=parseFloat(document.getElementById('meas').value);if(isNaN(v))return;
   curData().push({n:curData().length+1,hora:now(),pieza:getNpieza(),serie:getNserie(),val:v,status:classify(v),comentario:getComent()});
@@ -479,6 +499,11 @@ function setGNGVal(k,val){
   el.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');
   el.textContent=val==='RECHAZO'?'RECHAZO':'OK';
 }
+
+function registerBoth(){
+  registerAll();
+  registerAll2();
+}
 function registerAll(){
   const chars=sideChars();
   let registered=0,anyBad=false,anyWarn=false;
@@ -553,8 +578,6 @@ function updateSummaryStats(){
 function toggleDual(){
   dualMode=!dualMode;
   document.getElementById('btnDual').classList.toggle('act',dualMode);
-  const w=document.getElementById('chart2wrap');
-  if(w)w.style.display=dualMode?'block':'none';
   if(dualMode){
     const m2=document.getElementById('maq2')?.value||'Máquina 2';
     const l2=document.getElementById('maq2label');if(l2)l2.textContent=m2;
