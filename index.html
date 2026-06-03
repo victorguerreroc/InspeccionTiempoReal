@@ -207,9 +207,9 @@ function buildCharForm(){
     else if(c.lo!=null)limTxt=c.lo+' - '+c.hi+' '+(c.unit||'')+' . '+c.instr;
     else limTxt=c.instr;
     let inputHtml='';
-    if(c.t==='num')inputHtml='<div class="charinput"><input type="number" step="0.0001" id="inp_'+c.k+'" placeholder="0.0000" oninput="liveStatus("'+c.k+'")"></div>';
-    else if(c.t==='gng')inputHtml='<div class="charinput"><div class="gng-wrap"><button class="ok" onclick="setGNGVal("'+c.k+'","OK")">Conforme</button><button class="rej" onclick="setGNGVal("'+c.k+'","RECHAZO")">Rechazo</button></div></div>';
-    else if(c.t==='vis')inputHtml='<div class="charinput"><select id="inp_'+c.k+'" onchange="liveStatus("'+c.k+'")"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
+    if(c.t==='num')inputHtml='<div class="charinput"><input type="number" step="0.0001" id="inp_'+c.k+'" placeholder="0.0000"></div>';
+    else if(c.t==='gng')inputHtml='<div class="charinput"><div class="gng-wrap"><button type="button" class="ok">Conforme</button><button type="button" class="rej">Rechazo</button></div></div>';
+    else if(c.t==='vis')inputHtml='<div class="charinput"><select id="inp_'+c.k+'"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
     const row=document.createElement('div');
     row.className='charrow'+(isOmit?' omit-row':'');
     row.id='crow_'+c.k;
@@ -218,6 +218,12 @@ function buildCharForm(){
     const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
     row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="st_'+c.k+'">-</div>';
     cf.appendChild(row);
+    const k=c.k;
+    if(c.t==='num'){const el=document.getElementById('inp_'+k);if(el)el.addEventListener('input',()=>liveStatus(k));}
+    else if(c.t==='gng'){const okb=row.querySelector('.gng-wrap .ok'),rjb=row.querySelector('.gng-wrap .rej');
+      if(okb)okb.addEventListener('click',e=>{e.stopPropagation();setGNGVal(k,'OK');});
+      if(rjb)rjb.addEventListener('click',e=>{e.stopPropagation();setGNGVal(k,'RECHAZO');});}
+    else if(c.t==='vis'){const el=document.getElementById('inp_'+k);if(el)el.addEventListener('change',()=>liveStatus(k));}
   });
   const first=sideChars()[0];if(first)focusCharRow(first.k);
 }
@@ -584,11 +590,11 @@ function buildCharForm2(){
     else limTxt=c.instr;
     let inputHtml='';
     if(c.t==='num'){
-      inputHtml='<div class="charinput"><input type="number" step="0.0001" id="m2inp_'+c.k+'" placeholder="0.0000" oninput="liveStatusM2(\"'+c.k+'\")"></div>';
+      inputHtml='<div class="charinput"><input type="number" step="0.0001" id="m2inp_'+c.k+'" placeholder="0.0000"></div>';
     } else if(c.t==='gng'){
-      inputHtml='<div class="charinput"><div class="gng-wrap"><button class="ok" onclick="setGNGM2(\"'+c.k+'\",\"OK\")">Conforme</button><button class="rej" onclick="setGNGM2(\"'+c.k+'\",\"RECHAZO\")">Rechazo</button></div></div>';
+      inputHtml='<div class="charinput"><div class="gng-wrap"><button type="button" class="ok">Conforme</button><button type="button" class="rej">Rechazo</button></div></div>';
     } else if(c.t==='vis'){
-      inputHtml='<div class="charinput"><select id="m2inp_'+c.k+'" onchange="liveStatusM2(\"'+c.k+'\")"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
+      inputHtml='<div class="charinput"><select id="m2inp_'+c.k+'"><option value="OK">OK - Sin defecto</option><option>Rosca deforme</option><option>Golpes</option><option>Cuñero deforme</option><option>Refrente Plano</option><option>Marcas en diámetro de sello</option></select></div>';
     }
     const row=document.createElement('div');
     row.className='charrow'+(isOmit?' omit-row':'');
@@ -598,6 +604,12 @@ function buildCharForm2(){
     const omitLbl=isOmit?'<span class="omit-lbl">(omitir)</span>':'';
     row.innerHTML='<div><div class="charname">'+c.label+critDot+omitLbl+'</div><div class="charlimits">'+limTxt+'</div></div>'+inputHtml+'<div class="chst chst-idle" id="m2st_'+c.k+'">-</div>';
     cf.appendChild(row);
+    const k=c.k;
+    if(c.t==='num'){const el=document.getElementById('m2inp_'+k);if(el)el.addEventListener('input',()=>liveStatusM2(k));}
+    else if(c.t==='gng'){const okb=row.querySelector('.gng-wrap .ok'),rjb=row.querySelector('.gng-wrap .rej');
+      if(okb)okb.addEventListener('click',e=>{e.stopPropagation();setGNGM2(k,'OK');});
+      if(rjb)rjb.addEventListener('click',e=>{e.stopPropagation();setGNGM2(k,'RECHAZO');});}
+    else if(c.t==='vis'){const el=document.getElementById('m2inp_'+k);if(el)el.addEventListener('change',()=>liveStatusM2(k));}
   });
   // Restore saved values after rebuild
   Object.keys(savedVals).forEach(id=>{
@@ -805,7 +817,7 @@ function collectMaq1(){
   chars.forEach(c => {
     const saved = curChar;
     curChar = JSON.parse(JSON.stringify(c));
-    if(c.k==='oal'){const L=getDashLimits();cc2.lo=L[0];cc2.hi=L[1];cc2.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
     if(c.t==='num'){
       const v = parseFloat(document.getElementById('inp_'+c.k)?.value);
       if(!isNaN(v)) results.push({label:c.label, val:v, status:classify(v), type:'num'});
@@ -828,7 +840,7 @@ function collectMaq2(){
   chars.forEach(c => {
     const saved = curChar;
     curChar = JSON.parse(JSON.stringify(c));
-    if(c.k==='oal'){const L=getDashLimits();cc2.lo=L[0];cc2.hi=L[1];cc2.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
     if(c.t==='num'){
       const v = parseFloat(document.getElementById('m2inp_'+c.k)?.value);
       if(!isNaN(v)) results.push({label:c.label, val:v, status:classify(v), type:'num'});
