@@ -181,15 +181,26 @@ function init(){
   fillSelect('maq',APP.maquinas);
   fillSelect('maq2',APP.maquinas);
   fillSelect('mec',APP.mecanicos,m=>({v:m.id+' '+m.n,t:m.id+' — '+m.n}));
+  // Explicitly set first plano
+  const planoEl=document.getElementById('plano');
+  if(planoEl&&planoEl.options.length>0){
+    planoEl.selectedIndex=0;
+    curPlano=planoEl.value;
+  }
   onPlano();
 }
 function onPlano(){
   curPlano=document.getElementById('plano').value;
+  if(!curPlano||!APP.planos[curPlano])return;
   const P=APP.planos[curPlano];
   fillSelect('dash',P.dashes);
   buildCharList();
   buildCharForm2();
   onChar();
+  // Update maq labels
+  const l1=document.getElementById('maq1label');
+  const maqEl=document.getElementById('maq');
+  if(l1&&maqEl&&maqEl.value)l1.textContent=maqEl.value;
 }
 function setMode(m){curMode=m;
   document.getElementById('btnSetup').classList.toggle('act',m==='setup');
