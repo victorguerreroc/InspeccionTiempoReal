@@ -46,7 +46,32 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 .note{font-size:12px;color:#8aa0b8;margin-top:10px;line-height:1.55}
 .danger{color:#ff7a7a;font-weight:bold}
 .tblwrap{max-height:230px;overflow-y:auto}
-.omitbadge{display:inline-block;background:#3d5170;color:#cdd9e6;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:6px}.charform{overflow-y:auto;max-height:540px;margin-bottom:6px}.charrow{display:grid;grid-template-columns:1fr 140px 62px;gap:6px;align-items:center;padding:5px 4px;border-bottom:1px solid #1e2d3d;cursor:pointer;border-left:3px solid transparent}.charrow:hover{background:#1a2a3a}.charrow.focused{background:#1a2a3a;border-left-color:#2E75B6}.charname{color:#e6edf5;font-size:11px;font-weight:bold;margin-bottom:1px}.charlimits{color:#8aa0b8;font-size:9px}.crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff7a7a;margin-left:4px;vertical-align:middle}.charinput input[type=number]{width:100%;padding:4px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:14px;text-align:center}.charinput input[type=number]:focus{border-color:#2E75B6;outline:none}.gng-wrap{display:flex;gap:3px}.gng-wrap button{flex:1;padding:5px 2px;font-size:11px;border-radius:4px}.charinput select{width:100%;padding:5px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:11px}.chst{padding:3px 5px;border-radius:8px;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap}.chst-idle{background:#1a2330;color:#8aa0b8}.chst-ok{background:#10331f;color:#5fdc8f}.chst-warn{background:#3a2e10;color:#ffce6b}.chst-bad{background:#3a1414;color:#ff7a7a}.chst-omit{background:#3d5170;color:#cdd9e6}.reg-all-btn{width:100%;padding:10px;font-size:14px;background:#2e7d4f;border-radius:8px;margin-top:6px}.form-header{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}.form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}.form-header input{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}.verdict-mini{padding:5px 10px;border-radius:6px;text-align:center;font-weight:bold;font-size:12px;margin-bottom:6px}
+.omitbadge{display:inline-block;background:#3d5170;color:#cdd9e6;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:6px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:1000;justify-content:center;align-items:flex-start;padding-top:40px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#16212f;border:1px solid #243447;border-radius:12px;padding:20px;width:90%;max-width:900px;max-height:85vh;overflow-y:auto}
+.modal-box h2{font-size:16px;color:#fff;margin-bottom:4px}
+.modal-sub{font-size:12px;color:#8aa0b8;margin-bottom:14px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.modal-section h3{font-size:13px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #243447}
+.modal-section h3.maq1{color:#5fdc8f}
+.modal-section h3.maq2{color:#b388ff}
+.conf-row{display:grid;grid-template-columns:1fr 120px 80px;gap:6px;padding:5px 4px;border-bottom:1px solid #1e2d3d;font-size:12px;align-items:center}
+.conf-row:hover{background:#1a2a3a}
+.conf-char{color:#e6edf5}
+.conf-val{text-align:center;font-weight:bold;font-family:monospace;font-size:13px}
+.conf-st{text-align:center;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:bold}
+.conf-st.ok{background:#10331f;color:#5fdc8f}
+.conf-st.warn{background:#3a2e10;color:#ffce6b}
+.conf-st.bad{background:#3a1414;color:#ff7a7a}
+.conf-st.none{background:#1a2330;color:#65788f}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid #243447}
+.btn-confirm{background:#2e7d4f;color:#fff;border:none;border-radius:6px;padding:10px 24px;font-size:14px;font-weight:bold;cursor:pointer}
+.btn-confirm:hover{filter:brightness(1.1)}
+.btn-cancel{background:#243447;color:#8aa0b8;border:none;border-radius:6px;padding:10px 24px;font-size:14px;font-weight:bold;cursor:pointer}
+.btn-cancel:hover{background:#2d3f54;color:#e6edf5}
+.conf-warning{background:#3a1414;border:1px solid #C00000;border-radius:6px;padding:8px 12px;color:#ff7a7a;font-size:12px;margin-bottom:10px;display:none}
+.charform{overflow-y:auto;max-height:540px;margin-bottom:6px}.charrow{display:grid;grid-template-columns:1fr 140px 62px;gap:6px;align-items:center;padding:5px 4px;border-bottom:1px solid #1e2d3d;cursor:pointer;border-left:3px solid transparent}.charrow:hover{background:#1a2a3a}.charrow.focused{background:#1a2a3a;border-left-color:#2E75B6}.charname{color:#e6edf5;font-size:11px;font-weight:bold;margin-bottom:1px}.charlimits{color:#8aa0b8;font-size:9px}.crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff7a7a;margin-left:4px;vertical-align:middle}.charinput input[type=number]{width:100%;padding:4px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:14px;text-align:center}.charinput input[type=number]:focus{border-color:#2E75B6;outline:none}.gng-wrap{display:flex;gap:3px}.gng-wrap button{flex:1;padding:5px 2px;font-size:11px;border-radius:4px}.charinput select{width:100%;padding:5px;background:#0f1722;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:11px}.chst{padding:3px 5px;border-radius:8px;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap}.chst-idle{background:#1a2330;color:#8aa0b8}.chst-ok{background:#10331f;color:#5fdc8f}.chst-warn{background:#3a2e10;color:#ffce6b}.chst-bad{background:#3a1414;color:#ff7a7a}.chst-omit{background:#3d5170;color:#cdd9e6}.reg-all-btn{width:100%;padding:10px;font-size:14px;background:#2e7d4f;border-radius:8px;margin-top:6px}.form-header{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}.form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}.form-header input{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}.verdict-mini{padding:5px 10px;border-radius:6px;text-align:center;font-weight:bold;font-size:12px;margin-bottom:6px}
 </style></head><body>
 
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
@@ -86,7 +111,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
-    <button class="reg-all-btn" onclick="registerAll()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
+    <button class="reg-all-btn" onclick="showConfirm()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
@@ -109,7 +134,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
     </div>
-    <button class="reg-all-btn" onclick="registerAll2()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
+    <button class="reg-all-btn" onclick="showConfirm()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
@@ -125,7 +150,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   </div>
 
 </div>
-<button onclick="registerBoth()" style="width:100%;padding:11px;font-size:14px;background:#1a5c3a;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
+<button onclick="showConfirm()" style="width:100%;padding:11px;font-size:14px;background:#1a5c3a;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
 
 
 <script>
@@ -680,6 +705,103 @@ function drawChart2(){
   ctx.fillStyle='#65788f';ctx.font='10px Arial';ctx.fillText('Muestra →',pad,H-6);
 }
 
+
+let pendingMaq1 = [];
+let pendingMaq2 = [];
+
+function collectMaq1(){
+  const chars = sideChars();
+  const results = [];
+  chars.forEach(c => {
+    const saved = curChar;
+    curChar = JSON.parse(JSON.stringify(c));
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.t==='num'){
+      const v = parseFloat(document.getElementById('inp_'+c.k)?.value);
+      if(!isNaN(v)) results.push({label:c.label, val:v, status:classify(v), type:'num'});
+    } else if(c.t==='gng'){
+      const row = document.getElementById('crow_'+c.k);
+      const val = row?.dataset.gng;
+      if(val) results.push({label:c.label, val, status:val==='RECHAZO'?'FUERA':'OK', type:'gng'});
+    } else if(c.t==='vis'){
+      const v = document.getElementById('inp_'+c.k)?.value||'OK';
+      results.push({label:c.label, val:v, status:v==='OK'?'OK':'DEFECTO', type:'vis'});
+    }
+    curChar = saved;
+  });
+  return results;
+}
+
+function collectMaq2(){
+  const chars = sideChars();
+  const results = [];
+  chars.forEach(c => {
+    const saved = curChar;
+    curChar = JSON.parse(JSON.stringify(c));
+    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    if(c.t==='num'){
+      const v = parseFloat(document.getElementById('m2inp_'+c.k)?.value);
+      if(!isNaN(v)) results.push({label:c.label, val:v, status:classify(v), type:'num'});
+    } else if(c.t==='gng'){
+      const row = document.getElementById('crow2_'+c.k);
+      const val = row?.dataset.gngM2;
+      if(val) results.push({label:c.label, val, status:val==='RECHAZO'?'FUERA':'OK', type:'gng'});
+    } else if(c.t==='vis'){
+      const v = document.getElementById('m2inp_'+c.k)?.value||'OK';
+      results.push({label:c.label, val:v, status:v==='OK'?'OK':'DEFECTO', type:'vis'});
+    }
+    curChar = saved;
+  });
+  return results;
+}
+
+function buildConfirmTable(rows){
+  if(!rows.length) return '<div style="color:#65788f;font-size:12px;padding:10px">Sin mediciones ingresadas</div>';
+  return rows.map(r => {
+    const stCls = r.status==='FUERA'||r.status==='DEFECTO' ? 'bad' : r.status==='CERCA' ? 'warn' : r.status==='OK' ? 'ok' : 'none';
+    const valFmt = typeof r.val === 'number' ? r.val.toFixed(4) : r.val;
+    return `<div class="conf-row">
+      <span class="conf-char">${r.label}</span>
+      <span class="conf-val">${valFmt}</span>
+      <span class="conf-st ${stCls}">${r.status}</span>
+    </div>`;
+  }).join('');
+}
+
+function showConfirm(){
+  pendingMaq1 = collectMaq1();
+  pendingMaq2 = collectMaq2();
+
+  if(!pendingMaq1.length && !pendingMaq2.length){
+    alert('No hay mediciones ingresadas en ninguna máquina.');
+    return;
+  }
+
+  const maq1 = document.getElementById('maq')?.value || 'Máquina 1';
+  const maq2 = document.getElementById('maq2')?.value || 'Máquina 2';
+
+  document.getElementById('confMaq1Title').textContent = '🔵 ' + maq1 + ' (' + pendingMaq1.length + ' dims)';
+  document.getElementById('confMaq2Title').textContent = '🟣 ' + maq2 + ' (' + pendingMaq2.length + ' dims)';
+  document.getElementById('confBody1').innerHTML = buildConfirmTable(pendingMaq1);
+  document.getElementById('confBody2').innerHTML = buildConfirmTable(pendingMaq2);
+
+  // Show warning if any out of spec
+  const anyBad = [...pendingMaq1,...pendingMaq2].some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confWarning').style.display = anyBad ? 'block' : 'none';
+
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function closeConfirm(){
+  document.getElementById('confirmModal').classList.remove('show');
+}
+
+function confirmAndSend(){
+  closeConfirm();
+  registerAll();
+  registerAll2();
+}
+
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
@@ -689,4 +811,26 @@ document.getElementById('autoSend').checked=localStorage.getItem('autoSend')==='
 updateConn();
 // botón enviar todo lo pendiente
 
-</script><div style="display:none"><span id="specTxt"></span><div id="numInput"></div><div id="gngInput"></div><div id="visInput"></div><div id="omitInput"></div><label id="measLbl"></label></div></body></html>
+</script><div style="display:none"><span id="specTxt"></span><div id="numInput"></div><div id="gngInput"></div><div id="visInput"></div><div id="omitInput"></div><label id="measLbl"></label></div>
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h2>📋 Confirmar Registro</h2>
+    <div class="modal-sub">Revise los datos antes de enviar. Solo se registran las dimensiones con valor ingresado.</div>
+    <div class="conf-warning" id="confWarning">⚠️ Hay mediciones FUERA DE SPEC — verifique antes de confirmar.</div>
+    <div class="modal-grid">
+      <div class="modal-section">
+        <h3 class="maq1" id="confMaq1Title">Máquina 1</h3>
+        <div id="confBody1"></div>
+      </div>
+      <div class="modal-section">
+        <h3 class="maq2" id="confMaq2Title">Máquina 2</h3>
+        <div id="confBody2"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeConfirm()">← Corregir</button>
+      <button class="btn-confirm" onclick="confirmAndSend()">✓ Confirmar y Enviar</button>
+    </div>
+  </div>
+</div>
+</body></html>
