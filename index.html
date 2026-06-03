@@ -219,6 +219,7 @@ function buildCharList(){buildCharForm();}
 function buildCharForm(){
   const cf=document.getElementById('charForm');if(!cf)return;
   cf.innerHTML='';
+  const dual=false;
   sideChars().forEach(c=>{
     const isOmit=curSide==='T'&&TOL_OMIT_TOP.includes(c.k);
     let limTxt='';
@@ -277,7 +278,7 @@ function onChar(){
     spec=L[0]!=null?`Límites OAL ${document.getElementById('dash').value}: ${(+L[0]).toFixed(3)} – ${(+L[1]).toFixed(3)} pulg`:'Seleccione dash';}
   else if(curChar.t==='gng'){spec='GO: entra suave/completo = OK · juego o no entra = RECHAZO';}
   else if(curChar.t==='num'&&curChar.lo!=null){spec=`Límites: ${curChar.lo} – ${curChar.hi} ${curChar.unit||''}  (nom ${curChar.nom??'—'})`;}
-  document.getElementById('specTxt').textContent=spec;
+  const stEl=document.getElementById('specTxt');if(stEl)stEl.textContent=spec;
   // omitir sugerido en TOP
   let react='';
   if(curChar.crit&&curChar.k==='sello')react='<span class="danger">REGLA:</span> si toca o cae fuera de 2.820–2.823, o se acerca (≤2.821 / ≥2.822), DETENER y ajustar/cambiar inserto (F0.20). Sobredimensionado = scrap irrecuperable.';
@@ -285,10 +286,10 @@ function onChar(){
   else if(curSide==='T'&&TOL_OMIT_TOP.includes(curChar.k))react='En el lado TOP esta característica normalmente se OMITE (bandas pequeñas / diámetro mayor). Use el botón Omitir si no aplica.';
   else react='Líneas rojas = límites de especificación del plano (LSE/LIE). Líneas y bandas moradas = control estadístico 6σ (UCL/LC/LCL) calculadas de las mediciones. Un punto fuera de ±3σ o 7 seguidos del mismo lado de la LC = señal de proceso descontrolado: DETENER y consultar F0.20.';
   document.getElementById('reactionNote').innerHTML=react;
-  document.getElementById('numInput').style.display=curChar.t==='num'?'block':'none';
-  document.getElementById('gngInput').style.display=curChar.t==='gng'?'block':'none';
-  document.getElementById('omitInput').style.display=(curChar.t==='omit'||(curSide==='T'&&TOL_OMIT_TOP.includes(curChar.k)))?'block':'none';
-  document.getElementById('measLbl').textContent='Medición ('+(curChar.unit||'')+')';
+  (document.getElementById('numInput')||{style:{}}).style.display=curChar.t==='num'?'block':'none';
+  (document.getElementById('gngInput')||{style:{}}).style.display=curChar.t==='gng'?'block':'none';
+  (document.getElementById('omitInput')||{style:{}}).style.display=(curChar.t==='omit'||(curSide==='T'&&TOL_OMIT_TOP.includes(curChar.k)))?'block':'none';
+  (document.getElementById('measLbl')||{}).textContent='Medición ('+(curChar.unit||'')+')';
   render();
 }
 function now(){const n=new Date();return n.toLocaleDateString('es-CR',{day:'2-digit',month:'2-digit'})+' '+n.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});}
