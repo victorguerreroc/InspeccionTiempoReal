@@ -65,7 +65,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   <div><label>Inspector</label><input id="insp"></div>
     </div>
 <div class="dual-fields" id="dualFields" style="grid-template-columns:1fr;">
-  <div><label>Máquina 2</label><select id="maq2"></select></div>
+  <div><label>Máquina 2</label><select id="maq2" onchange="const l=document.getElementById('maq2label');if(l)l.textContent=this.value"></select></div>
 </div>
 <input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
 
@@ -167,6 +167,7 @@ function onPlano(){
   const P=APP.planos[curPlano];
   fillSelect('dash',P.dashes);
   buildCharList();
+  buildCharForm2();
   onChar();
 }
 function setMode(m){curMode=m;
@@ -744,14 +745,13 @@ function registerAll2(){
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
-init();tickClock();
-// Activate dual mode by default
+// Activate dual mode by default BEFORE init
 document.getElementById('btnDual').classList.add('act');
 document.getElementById('dualFields').classList.add('show');
 const _w=document.getElementById('chart2wrap');if(_w)_w.style.display='block';
 const _c2=document.getElementById('card2');if(_c2)_c2.style.display='block';
 const _g=document.getElementById('mainGrid');if(_g)_g.classList.add('dual3');
-buildCharForm2();
+init();tickClock();
 document.getElementById('flowUrl').value=localStorage.getItem('flowUrl')||'';
 document.getElementById('autoSend').checked=localStorage.getItem('autoSend')==='1';
 updateConn();
