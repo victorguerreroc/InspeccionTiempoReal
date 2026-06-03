@@ -111,7 +111,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
-    <button class="reg-all-btn" onclick="showConfirm()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
+    <button class="reg-all-btn" onclick="showConfirmMaq1()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
@@ -134,7 +134,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
     </div>
-    <button class="reg-all-btn" onclick="showConfirm()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
+    <button class="reg-all-btn" onclick="showConfirmMaq2()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:6px">
       <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
@@ -150,7 +150,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
   </div>
 
 </div>
-<button onclick="showConfirm()" style="width:100%;padding:11px;font-size:14px;background:#1a5c3a;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
+<button onclick="showConfirmBoth()" style="width:100%;padding:11px;font-size:14px;background:#1a5c3a;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
 
 
 <script>
@@ -825,12 +825,57 @@ function closeConfirm(){
   document.getElementById('confirmModal').classList.remove('show');
 }
 
+
+function showConfirmMaq1(){
+  const rows=collectMaq1();
+  if(!rows.length){alert('No hay mediciones ingresadas para Maquina 1.');return;}
+  const maq1=document.getElementById('maq')?.value||'Maquina 1';
+  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+rows.length+' dims)';
+  document.getElementById('confBody1').innerHTML=buildConfirmTable(rows);
+  document.getElementById('confMaq2Title').textContent='';
+  document.getElementById('confBody2').innerHTML='';
+  const anyBad=rows.some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confWarning').style.display=anyBad?'block':'none';
+  document.getElementById('confirmModal').dataset.mode='maq1';
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function showConfirmMaq2(){
+  const rows=collectMaq2();
+  if(!rows.length){alert('No hay mediciones ingresadas para Maquina 2.');return;}
+  const maq2=document.getElementById('maq2')?.value||'Maquina 2';
+  document.getElementById('confMaq1Title').textContent='';
+  document.getElementById('confBody1').innerHTML='';
+  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+rows.length+' dims)';
+  document.getElementById('confBody2').innerHTML=buildConfirmTable(rows);
+  const anyBad=rows.some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confWarning').style.display=anyBad?'block':'none';
+  document.getElementById('confirmModal').dataset.mode='maq2';
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function showConfirmBoth(){
+  const r1=collectMaq1(),r2=collectMaq2();
+  if(!r1.length&&!r2.length){alert('No hay mediciones ingresadas.');return;}
+  const maq1=document.getElementById('maq')?.value||'Maquina 1';
+  const maq2=document.getElementById('maq2')?.value||'Maquina 2';
+  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+r1.length+' dims)';
+  document.getElementById('confBody1').innerHTML=buildConfirmTable(r1);
+  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+r2.length+' dims)';
+  document.getElementById('confBody2').innerHTML=buildConfirmTable(r2);
+  const anyBad=[...r1,...r2].some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confWarning').style.display=anyBad?'block':'none';
+  document.getElementById('confirmModal').dataset.mode='both';
+  document.getElementById('confirmModal').classList.add('show');
+}
 function confirmAndSend(){
+  const mode=document.getElementById('confirmModal').dataset.mode||'both';
   closeConfirm();
   previewVal=null;
   previewVal2=null;
-  registerAll();
-  registerAll2();
+  if(mode==='maq1'){registerAll();}
+  else if(mode==='maq2'){registerAll2();}
+  else{registerAll();registerAll2();}
 }
 
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
