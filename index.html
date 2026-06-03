@@ -91,7 +91,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
     <div class="sidebtns"><button id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button><button id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button><button id="btnSierra" onclick="setMode('sierra')" style="background:#7b4fa6;color:#fff">Corte Sierra</button><span style="width:10px;display:inline-block"></span><button id="btnT" class="act" onclick="setSide('T')">TOP</button><button id="btnB" onclick="setSide('B')">BOTTOM</button></div>
   </div>
     </div>
-<div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:-36px;margin-bottom:4px;padding-right:2px"><button onclick="showConfirmBoth()" style="padding:6px 16px;font-size:13px;background:#1a5c3a;border:none;border-radius:6px;color:#fff;font-weight:bold;cursor:pointer;white-space:nowrap">✓ Registrar Ambas</button><button onclick="exportCSV()" style="padding:6px 16px;font-size:13px;font-weight:bold;white-space:nowrap">⬇ Exportar CSV</button></div>
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:-36px;margin-bottom:4px;padding-right:2px"><button onclick="showConfirmAll()" style="padding:6px 16px;font-size:13px;background:#1a5c3a;border:none;border-radius:6px;color:#fff;font-weight:bold;cursor:pointer;white-space:nowrap">✓ Registrar Todo (TOP+BOTTOM)</button><button onclick="exportCSV()" style="padding:6px 16px;font-size:13px;font-weight:bold;white-space:nowrap">⬇ Exportar CSV</button></div>
 <input type="hidden" id="flowUrl"><input type="hidden" id="autoSend" checked><span id="connState" style="display:none"></span>
 
 
@@ -150,6 +150,7 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
 const APP={"planos":{"CG1.C.31.XR Rev C":{"chars":[{"k":"rug","label":"Rugosidad menor a 70 µin","t":"gng","lo":null,"hi":null,"nom":null,"unit":"","crit":false,"sides":["T","B"],"instr":"Rugosímetro"},{"k":"sello","label":"Diámetro Interno 2.8215 ±.0015","t":"num","lo":2.82,"hi":2.823,"nom":2.8215,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Bore Gage"},{"k":"prof_rosca","label":"Prof. Rosca .722 ±.005","t":"num","lo":0.717,"hi":0.727,"nom":0.722,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"dl_185_top","label":"Distancia Lineal 1.850 ±.015","t":"num","lo":1.835,"hi":1.865,"nom":1.85,"unit":"pulg","crit":false,"sides":["T"],"instr":"Calib. profundidad"},{"k":"dl_188_bot","label":"Distancia Lineal 1.88 ±.015","t":"num","lo":1.865,"hi":1.895,"nom":1.88,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calib. profundidad"},{"k":"gro_diam","label":"Diámetro Groover 2.705 ±.005","t":"num","lo":2.7,"hi":2.71,"nom":2.705,"unit":"pulg","crit":false,"sides":["T"],"instr":"Cangrejo"},{"k":"gro_diam_b","label":"Diámetro Groover 2.5833-2.5917","t":"num","lo":2.5833,"hi":2.5917,"nom":2.5875,"unit":"pulg","crit":false,"sides":["B"],"instr":"Cangrejo"},{"k":"dl_2598_top","label":"Distancia Lineal 2.598 ±.005","t":"num","lo":2.593,"hi":2.603,"nom":2.598,"unit":"pulg","crit":false,"sides":["T"],"instr":"Calib. profundidad"},{"k":"dl_208_bot","label":"Distancia Lineal 2.080 ±.015","t":"num","lo":2.065,"hi":2.095,"nom":2.08,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calib. profundidad"},{"k":"gro_ancho","label":"Distancia Lineal .205 ±.005","t":"num","lo":0.2,"hi":0.21,"nom":0.205,"unit":"pulg","crit":false,"sides":["T"],"instr":"Calib. profundidad"},{"k":"rosca_go_top","label":"Rosca Interna 2.750-6 ACME-2G (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["T"],"instr":"Gage Rosca"},{"k":"rosca_go_bot","label":"Rosca Interna 2.750-5 ACME (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["B"],"instr":"Gage Rosca"},{"k":"rosca_menor","label":"Diámetro Menor rosca 2.5945-2.5985","t":"num","lo":2.5945,"hi":2.5985,"nom":2.5965,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"dl_2455","label":"Distancia Lineal .2455 ±.0075","t":"num","lo":0.238,"hi":0.253,"nom":0.2455,"unit":"pulg","crit":false,"sides":["T"],"instr":"Proyector"},{"k":"dl_1380","label":"Distancia Lineal 1.380-1.384","t":"num","lo":1.38,"hi":1.384,"nom":1.382,"unit":"pulg","crit":false,"sides":["T"],"instr":"Proyector"},{"k":"id_250","label":"Diámetro Interno 2.50 Ref","t":"num","lo":2.49,"hi":2.51,"nom":2.5,"unit":"pulg","crit":false,"sides":["T"],"instr":"Bore Gage"},{"k":"dl_3791","label":"Distancia Lineal 3.791 ±.030","t":"num","lo":3.761,"hi":3.821,"nom":3.791,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_3912","label":"Distancia Lineal 3.912 ±.030","t":"num","lo":3.882,"hi":3.942,"nom":3.912,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_200","label":"Distancia Lineal 2.000 ±.015","t":"num","lo":1.985,"hi":2.015,"nom":2.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"oal","label":"Largo Total (XX.000 ±1/64) — por dash","t":"num","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"pared","label":"Diámetro de Banda 2.975-2.980","t":"num","lo":2.975,"hi":2.980,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"}],"dashes":["CG1.C.31.1R.2","CG1.C.31.2R.2","CG1.C.31.3R.2","CG1.C.31.4R.2","CG1.C.31.5R.2","CG1.C.31.6R.2","CG1.C.31.7R.2","CG1.C.31.8R.2","CG1.C.31.9R.2","CG1.C.31.10R.2","CG1.C.31.11R.2","CG1.C.31.12R.2"],"oal":{"CG1.C.31.1R.2":[7.688,7.71925],"CG1.C.31.2R.2":[9.688,9.71925],"CG1.C.31.3R.2":[11.688,11.71925],"CG1.C.31.4R.2":[13.688,13.71925],"CG1.C.31.5R.2":[15.688,15.71925],"CG1.C.31.6R.2":[17.688,17.71925],"CG1.C.31.7R.2":[19.688,19.71925],"CG1.C.31.8R.2":[21.688,21.71925],"CG1.C.31.9R.2":[23.688,23.71925],"CG1.C.31.10R.2":[25.688,25.71925],"CG1.C.31.11R.2":[27.688,27.71925],"CG1.C.31.12R.2":[29.688,29.71925]},"oalTol":null,"sierraOal":{"CG1.C.31.1R.2":[7.759,7.779],"CG1.C.31.2R.2":[9.759,9.779],"CG1.C.31.3R.2":[11.759,11.779],"CG1.C.31.4R.2":[13.759,13.779],"CG1.C.31.5R.2":[15.759,15.779],"CG1.C.31.6R.2":[17.759,17.779],"CG1.C.31.7R.2":[19.759,19.779],"CG1.C.31.8R.2":[21.759,21.779],"CG1.C.31.9R.2":[23.759,23.779],"CG1.C.31.10R.2":[25.759,25.779],"CG1.C.31.11R.2":[27.759,27.779],"CG1.C.31.12R.2":[29.759,29.779]}},"COM-OGC.31 Rev B":{"chars":[{"k":"rug","label":"Rugosidad menor a 70 µin","t":"gng","lo":null,"hi":null,"nom":null,"unit":"","crit":false,"sides":["T","B"],"instr":"Rugosímetro"},{"k":"sello","label":"Diámetro Interno 2.8215 ±.0015","t":"num","lo":2.82,"hi":2.823,"nom":2.8215,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Bore Gage"},{"k":"dl_888","label":"Inicio de Rosca .888 ±.005","t":"num","lo":0.883,"hi":0.893,"nom":0.888,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calibrador"},{"k":"gro_diam","label":"Diámetro Groover 2.680 ±.005","t":"num","lo":2.675,"hi":2.685,"nom":2.68,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Cangrejo"},{"k":"dl_2159","label":"Distancia Lineal 2.159 ±.005","t":"num","lo":2.154,"hi":2.164,"nom":2.159,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"dl_138","label":"Distancia Lineal .138 ±.005","t":"num","lo":0.133,"hi":0.143,"nom":0.138,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"rosca_go","label":"Rosca Interna 2.750-6 ACME-2G (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Gage Rosca"},{"k":"rosca_menor","label":"Diámetro Menor rosca 2.5945-2.5985","t":"num","lo":2.5945,"hi":2.5985,"nom":2.5965,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"prof_rosca","label":"Prof. Rosca 1.980 Min","t":"num","lo":1.98,"hi":1.995,"nom":1.98,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Micro Hite"},{"k":"dl_400","label":"Distancia Lineal 4.00 ±.015","t":"num","lo":3.985,"hi":4.015,"nom":4.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Proyector"},{"k":"id_2530","label":"Diámetro Interno 2.530 ±.005","t":"num","lo":2.47,"hi":2.53,"nom":2.53,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"radio_ext","label":"Radio Externo .50 ±.015","t":"num","lo":0.485,"hi":0.515,"nom":0.5,"unit":"pulg","crit":false,"sides":["B"],"instr":"Proyector"},{"k":"dl_7375","label":"Distancia Lineal 7.375 ±.030","t":"num","lo":7.345,"hi":7.405,"nom":7.375,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_200","label":"Distancia Lineal 2.000 ±.015","t":"num","lo":1.985,"hi":2.015,"nom":2.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_5625","label":"Distancia Lineal 5.625 ±.030","t":"num","lo":5.595,"hi":5.655,"nom":5.625,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"oal","label":"Largo Total (XX.000 ±1/64) — por dash","t":"num","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"od_2975","label":"Diámetro Externo 2.975-2.980","t":"num","lo":2.975,"hi":2.98,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"},{"k":"pared","label":"Diámetro de Banda 2.975-2.980","t":"num","lo":2.975,"hi":2.980,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"}],"dashes":["COM-OGC.31.010.06.N","COM-OGC.31.010.06.E","COM-OGC.31.015.06.N","COM-OGC.31.015.06.E","COM-OGC.31.015.06.EE","COM-OGC.31.020.06.N","COM-OGC.31.020.06.E","COM-OGC.31.020.06.EE","COM-OGC.31.025.06.N","COM-OGC.31.025.06.E","COM-OGC.31.025.06.EE","COM-OGC.31.030.06.N"],"oalNom":{"COM-OGC.31.010.06.N":13,"COM-OGC.31.010.06.E":15,"COM-OGC.31.015.06.N":17,"COM-OGC.31.015.06.E":19,"COM-OGC.31.015.06.EE":21,"COM-OGC.31.020.06.N":23,"COM-OGC.31.020.06.E":26,"COM-OGC.31.020.06.EE":28,"COM-OGC.31.025.06.N":30,"COM-OGC.31.025.06.E":32,"COM-OGC.31.025.06.EE":34,"COM-OGC.31.030.06.N":36},"oalTol":0.015625,"sierraOal":{"COM-OGC.31.010.06.N":[13.070,13.100],"COM-OGC.31.010.06.E":[15.070,15.100],"COM-OGC.31.015.06.N":[17.070,17.100],"COM-OGC.31.015.06.E":[19.070,19.100],"COM-OGC.31.015.06.EE":[21.070,21.100],"COM-OGC.31.020.06.N":[23.070,23.100],"COM-OGC.31.020.06.E":[26.070,26.100],"COM-OGC.31.020.06.EE":[28.070,28.100],"COM-OGC.31.025.06.N":[30.070,30.100],"COM-OGC.31.025.06.E":[32.070,32.100],"COM-OGC.31.025.06.EE":[34.070,34.100],"COM-OGC.31.030.06.N":[36.070,36.100]}},"COM-OGC.31 Rev B (2-SPF)":{"chars":[{"k":"rug","label":"Rugosidad menor a 70 µin","t":"gng","lo":null,"hi":null,"nom":null,"unit":"","crit":false,"sides":["T","B"],"instr":"Rugosímetro"},{"k":"sello","label":"Diámetro Interno 2.8215 ±.0015","t":"num","lo":2.82,"hi":2.823,"nom":2.8215,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Bore Gage"},{"k":"dl_888","label":"Inicio de Rosca .888 ±.005","t":"num","lo":0.883,"hi":0.893,"nom":0.888,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calibrador"},{"k":"gro_diam","label":"Diámetro Groover 2.680 ±.005","t":"num","lo":2.675,"hi":2.685,"nom":2.68,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Cangrejo"},{"k":"dl_2159","label":"Distancia Lineal 2.159 ±.005","t":"num","lo":2.154,"hi":2.164,"nom":2.159,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"dl_138","label":"Distancia Lineal .138 ±.005","t":"num","lo":0.133,"hi":0.143,"nom":0.138,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"rosca_go","label":"Rosca Interna 2.750-6 ACME-2G (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Gage Rosca"},{"k":"rosca_menor","label":"Diámetro Menor rosca 2.5945-2.5985","t":"num","lo":2.5945,"hi":2.5985,"nom":2.5965,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"prof_rosca","label":"Prof. Rosca 1.980 Min","t":"num","lo":1.98,"hi":1.995,"nom":1.98,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Micro Hite"},{"k":"dl_400","label":"Distancia Lineal 4.00 ±.015","t":"num","lo":3.985,"hi":4.015,"nom":4.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Proyector"},{"k":"id_2530","label":"Diámetro Interno 2.530 ±.005","t":"num","lo":2.47,"hi":2.53,"nom":2.53,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"radio_ext","label":"Radio Externo .50 ±.015","t":"num","lo":0.485,"hi":0.515,"nom":0.5,"unit":"pulg","crit":false,"sides":["B"],"instr":"Proyector"},{"k":"dl_8375","label":"Distancia Lineal 8.375 ±.030","t":"num","lo":8.345,"hi":8.405,"nom":8.375,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_600","label":"Distancia Lineal 6.000 ±.015","t":"num","lo":5.985,"hi":6.015,"nom":6.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_5625","label":"Distancia Lineal 5.625 ±.030","t":"num","lo":5.595,"hi":5.655,"nom":5.625,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"oal","label":"Largo Total (XX.000 ±1/64) — por dash","t":"num","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"od_2975","label":"Diámetro Externo 2.975-2.980","t":"num","lo":2.975,"hi":2.98,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"},{"k":"pared","label":"Diámetro de Banda 2.975-2.980","t":"num","lo":2.975,"hi":2.980,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"}],"dashes":["COM-OGC.31.020.02.N","COM-OGC.31.020.02.E","COM-OGC.31.030.02.N"],"oalNom":{"COM-OGC.31.020.02.N":20,"COM-OGC.31.020.02.E":26,"COM-OGC.31.030.02.N":32},"oalTol":0.015625,"sierraOal":{"COM-OGC.31.020.02.N":[20.070,20.100],"COM-OGC.31.020.02.E":[26.070,26.100],"COM-OGC.31.030.02.N":[32.070,32.100]}},"COM-RC.XX Rev D":{"chars":[{"k":"rug","label":"Rugosidad menor a 70 µin","t":"gng","lo":null,"hi":null,"nom":null,"unit":"","crit":false,"sides":["T","B"],"instr":"Rugosímetro"},{"k":"sello","label":"Diámetro Interno 2.8215 ±.0015","t":"num","lo":2.82,"hi":2.823,"nom":2.8215,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Bore Gage"},{"k":"dl_888","label":"Inicio de Rosca .888 ±.005","t":"num","lo":0.883,"hi":0.893,"nom":0.888,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calibrador"},{"k":"gro_diam","label":"Diámetro Groover 2.680 ±.005","t":"num","lo":2.675,"hi":2.685,"nom":2.68,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Cangrejo"},{"k":"dl_2159","label":"Distancia Lineal 2.159 ±.005","t":"num","lo":2.154,"hi":2.164,"nom":2.159,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"dl_138","label":"Distancia Lineal .138 ±.005","t":"num","lo":0.133,"hi":0.143,"nom":0.138,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"rosca_go","label":"Rosca Interna 2.750-6 ACME-2G (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Gage Rosca"},{"k":"rosca_menor","label":"Diámetro Menor rosca 2.5945-2.5985","t":"num","lo":2.5945,"hi":2.5985,"nom":2.5965,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"prof_rosca","label":"Prof. Rosca 1.980 Min","t":"num","lo":1.98,"hi":1.995,"nom":1.98,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Micro Hite"},{"k":"id_2530","label":"Diámetro Interno 2.50 Ref","t":"num","lo":2.49,"hi":2.51,"nom":2.5,"unit":"pulg","crit":false,"sides":["T"],"instr":"Bore Gage"},{"k":"dl_7375","label":"Distancia Lineal 6.587 ±.030","t":"num","lo":6.557,"hi":6.617,"nom":6.587,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_200","label":"Distancia Lineal 2.000 ±.015","t":"num","lo":1.985,"hi":2.015,"nom":2.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_5625","label":"Distancia Lineal 5.617 ±.030","t":"num","lo":5.587,"hi":5.647,"nom":5.617,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"oal","label":"Largo Total (XX.000 ±1/64) — por dash","t":"num","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"od_2975","label":"Diámetro Externo 2.975-2.980","t":"num","lo":2.975,"hi":2.98,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"},{"k":"pared","label":"Diámetro de Banda 2.975-2.980","t":"num","lo":2.975,"hi":2.980,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"}],"dashes":["COM-RC.XX.010.06.N","COM-RC.XX.010.06.E","COM-RC.XX.015.06.N","COM-RC.XX.015.06.E","COM-RC.XX.015.06.EE","COM-RC.XX.020.06.N","COM-RC.XX.020.06.E","COM-RC.XX.020.06.EE","COM-RC.XX.025.06.N","COM-RC.XX.025.06.E","COM-RC.XX.025.06.EE","COM-RC.XX.030.06.N"],"oal":{"COM-RC.XX.010.06.N":[12.188,12.21925],"COM-RC.XX.010.06.E":[14.188,14.21925],"COM-RC.XX.015.06.N":[16.188,16.21925],"COM-RC.XX.015.06.E":[18.188,18.21925],"COM-RC.XX.015.06.EE":[20.188,20.21925],"COM-RC.XX.020.06.N":[22.188,22.21925],"COM-RC.XX.020.06.E":[24.188,24.21925],"COM-RC.XX.020.06.EE":[26.188,26.21925],"COM-RC.XX.025.06.N":[28.188,28.21925],"COM-RC.XX.025.06.E":[30.188,30.21925],"COM-RC.XX.025.06.EE":[32.188,32.21925],"COM-RC.XX.030.06.N":[34.188,34.21925]},"oalTol":null,"sierraOal":{"COM-RC.XX.010.06.N":[12.259,12.279],"COM-RC.XX.010.06.E":[14.259,14.279],"COM-RC.XX.015.06.N":[16.259,16.279],"COM-RC.XX.015.06.E":[18.259,18.279],"COM-RC.XX.015.06.EE":[20.259,20.279],"COM-RC.XX.020.06.N":[22.259,22.279],"COM-RC.XX.020.06.E":[24.259,24.279],"COM-RC.XX.020.06.EE":[26.259,26.279],"COM-RC.XX.025.06.N":[28.259,28.279],"COM-RC.XX.025.06.E":[30.259,30.279],"COM-RC.XX.025.06.EE":[32.259,32.279],"COM-RC.XX.030.06.N":[34.259,34.279]}},"OG3.RC.31 Rev C":{"chars":[{"k":"rug","label":"Rugosidad menor a 70 µin","t":"gng","lo":null,"hi":null,"nom":null,"unit":"","crit":false,"sides":["T","B"],"instr":"Rugosímetro"},{"k":"sello","label":"Diámetro Interno 2.8215 ±.0015","t":"num","lo":2.82,"hi":2.823,"nom":2.8215,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Bore Gage"},{"k":"dl_888","label":"Inicio de Rosca .888 ±.005","t":"num","lo":0.883,"hi":0.893,"nom":0.888,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calibrador"},{"k":"prof_rosca","label":"Prof. Rosca 1.980 Min","t":"num","lo":1.98,"hi":1.995,"nom":1.98,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Micro Hite"},{"k":"gro_diam","label":"Diámetro Groover 2.680 ±.005","t":"num","lo":2.675,"hi":2.685,"nom":2.68,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Cangrejo"},{"k":"dl_2159","label":"Distancia Lineal 2.159 ±.005","t":"num","lo":2.154,"hi":2.164,"nom":2.159,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"dl_138","label":"Distancia Lineal .138 ±.005","t":"num","lo":0.133,"hi":0.143,"nom":0.138,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Calib. profundidad"},{"k":"rosca_go","label":"Rosca Interna 2.754-6 ACME-2G (GO)","t":"gng","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":true,"sides":["T","B"],"instr":"Gage Rosca"},{"k":"rosca_menor","label":"Diámetro Menor rosca 2.5945-2.5985","t":"num","lo":2.5945,"hi":2.5985,"nom":2.5965,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"diam_pista","label":"Diámetro Pista 2.5915","t":"num","lo":2.5873,"hi":2.5957,"nom":2.5915,"unit":"pulg","crit":false,"sides":["T","B"],"instr":"Bore Gage"},{"k":"id_2530","label":"Diámetro Interno 2.530 ±.005","t":"num","lo":2.525,"hi":2.535,"nom":2.53,"unit":"pulg","crit":false,"sides":["T"],"instr":"Bore Gage"},{"k":"oal","label":"Largo Total (XX.000 ±1/64) — por dash","t":"num","lo":null,"hi":null,"nom":null,"unit":"pulg","crit":false,"sides":["B"],"instr":"Proyector"},{"k":"dl_8375","label":"Distancia Lineal 8.375 ±.030","t":"num","lo":8.345,"hi":8.405,"nom":8.375,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_200","label":"Distancia Lineal 2.000 ±.015","t":"num","lo":1.985,"hi":2.015,"nom":2.0,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"dl_5625","label":"Distancia Lineal 5.625 ±.030","t":"num","lo":5.595,"hi":5.655,"nom":5.625,"unit":"pulg","crit":false,"sides":["B"],"instr":"Micro Hite"},{"k":"od_2975","label":"Diámetro Externo 2.975-2.980","t":"num","lo":2.975,"hi":2.98,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"},{"k":"pared","label":"Diámetro de Banda 2.975-2.980","t":"num","lo":2.975,"hi":2.980,"nom":2.9775,"unit":"pulg","crit":false,"sides":["B"],"instr":"Calibrador"}],"dashes":["OG3.RC.31.010.06.N","OG3.RC.31.010.06.E","OG3.RC.31.015.06.N","OG3.RC.31.015.06.E","OG3.RC.31.015.06.EE","OG3.RC.31.020.06.N","OG3.RC.31.020.06.E","OG3.RC.31.020.06.EE","OG3.RC.31.025.06.N","OG3.RC.31.025.06.E","OG3.RC.31.025.06.EE","OG3.RC.31.030.06.N"],"oalNom":{"OG3.RC.31.010.06.N":14,"OG3.RC.31.010.06.E":16,"OG3.RC.31.015.06.N":18,"OG3.RC.31.015.06.E":20,"OG3.RC.31.015.06.EE":22,"OG3.RC.31.020.06.N":24,"OG3.RC.31.020.06.E":26,"OG3.RC.31.020.06.EE":28,"OG3.RC.31.025.06.N":30,"OG3.RC.31.025.06.E":32,"OG3.RC.31.025.06.EE":34,"OG3.RC.31.030.06.N":36},"oalTol":0.015625,"sierraOal":{"OG3.RC.31.010.06.N":[14.080,14.100],"OG3.RC.31.010.06.E":[16.080,16.100],"OG3.RC.31.015.06.N":[18.080,18.100],"OG3.RC.31.015.06.E":[20.080,20.100],"OG3.RC.31.015.06.EE":[22.080,22.100],"OG3.RC.31.020.06.N":[24.080,24.100],"OG3.RC.31.020.06.E":[26.080,26.100],"OG3.RC.31.020.06.EE":[28.080,28.100],"OG3.RC.31.025.06.N":[30.080,30.100],"OG3.RC.31.025.06.E":[32.080,32.100],"OG3.RC.31.025.06.EE":[34.080,34.100],"OG3.RC.31.030.06.N":[36.080,36.100]}}},"maquinas":["Mori 1","Mori 2","Mori 3","Mori 4","Mori 5","Mori 6","Mori 7","Mori 8","Mori 9","Mori 10","Mori 11","Mori 12","Mori 13","Mori 14","Mori 15","Sierra Behringer 2","Sierra Behringer 3","Sierra Cosen","Torno Convencional","Torno Haas 1","Torno Haas 2","Torno Haas 3","Torno Haas 4","Torno Haas 5","Torno Haas 6","Torno Haas 7","Torno Haas 8","Torno Haas 9","Torno Haas 10","Torno Haas 11","Torno Haas 12","Torno Haas 13","Torno Haas 14","Torno Haas 15","Torno Haas 16","Torno Haas 17","Torno Haas 18","Torno Haas 19","Torno Haas 20","Torno Haas 21","Torno Haas 22","Torno Haas 23","Torno Haas 24","Torno Haas 25","Torno Haas 26","Torno Haas 27","Torno Haas 28","Torno Haas 29","Torno Haas 30","Torno Haas 40"],"mecanicos":[{"id":"2013","n":"Joselin Figueroa Liz"},{"id":"2037","n":"Luis Rene Castillo J"},{"id":"2156","n":"Alvaro Castro"},{"id":"2162","n":"Kenneth Andres Varga"},{"id":"2206","n":"Andres Chavez Vindas"},{"id":"2231","n":"Steven Chacon Porras"},{"id":"2325","n":"Calderon Segura Ruth"},{"id":"2365","n":"Kevin Segura R"},{"id":"2386","n":"Rafael Arroyo Ureña"},{"id":"2501","n":"Terry Duran Gonzalez"},{"id":"2565","n":"Navarro Jimenez Dign"},{"id":"2595","n":"Diego Velasquez Argu"},{"id":"2602","n":"Carlos Quiros Rivera"},{"id":"2609","n":"Josue Zuniga Gomez"},{"id":"2610","n":"Jesus Alfaro Alpizar"},{"id":"2611","n":"Luis Carlos Carvajal"},{"id":"2645","n":"Maikel Contreras Fal"},{"id":"2674","n":"Luis Mauricio Villal"},{"id":"2684","n":"Jason Jose Chavarria"},{"id":"2704","n":"Aldair Steven Mendoz"},{"id":"2705","n":"Donato Josimar Bland"},{"id":"2712","n":"Kevin Japheth Maillo"},{"id":"2723","n":"Christian Jose Jimen"},{"id":"2727","n":"Jhoeykel David Matey"},{"id":"2729","n":"Jhandrey Charles Spe"},{"id":"2734","n":"David Otilio Leiva S"},{"id":"2737","n":"Alejandro Corrales H"},{"id":"2742","n":"Deyrron Jamil Martin"},{"id":"2743","n":"Josell Enrique Barra"},{"id":"2745","n":"Brandon Josue Mora"},{"id":"2746","n":"Ivan Andres Rosales"},{"id":"2747","n":"Joseft Javier Nieto"},{"id":"2751","n":"Juan David Ferrerosa"},{"id":"2768","n":"Jeffrey Guzman Rojas"},{"id":"2773","n":"Joseph Pablo Gonzale"},{"id":"2777","n":"Gerardo Antonio Varg"},{"id":"2790","n":"Peter Anderson Gonza"},{"id":"2803","n":"Keylor Fabricio Cerd"},{"id":"2806","n":"Sammy Taheshi Tsvi A"},{"id":"2809","n":"Yaneisha Rosheyka Sc"},{"id":"2810","n":"Johan Andrei Perez V"},{"id":"2816","n":"Franco Herrera Garci"},{"id":"2830","n":"Sebastian Delgado Ra"},{"id":"2832","n":"Elvis Josue Bojorge"},{"id":"2836","n":"Justin Duvalier More"},{"id":"2838","n":"Oscar Aguilar Martin"},{"id":"2842","n":"Geovany Alberto Mira"},{"id":"2846","n":"Jonathan Chaverri Ri"},{"id":"2848","n":"Erick Morales Vargas"},{"id":"2852","n":"Ayram Jorell Ferreto"},{"id":"2858","n":"Imanol David Retana"},{"id":"2859","n":"Maria Jose Fernandez"},{"id":"2860","n":"Marco Vinicio Corder"},{"id":"2864","n":"Christopher Jimenez"},{"id":"2865","n":"Luciano Antonio Alfa"},{"id":"2866","n":"Luis Antonio Lopez"},{"id":"2870","n":"Alejandro Vinicio Lo"},{"id":"2873","n":"Juan Esteban Mendez"},{"id":"2875","n":"Elias Cambronero Agu"},{"id":"2876","n":"Ronald Francisco Cam"},{"id":"2878","n":"Obed Isaac Canda Jim"},{"id":"2879","n":"Jonaykel Adrian Muno"},{"id":"2880","n":"Marlon Antonio Garme"},{"id":"2881","n":"Robert Ulises Rivera"},{"id":"2882","n":"Marco Gerardo Valenz"},{"id":"2883","n":"Wendell Montenegro S"},{"id":"2885","n":"Jonathan Mauricio Ba"},{"id":"2889","n":"Antony Esteven Quiro"},{"id":"2891","n":"Brandon Eduardo Cald"},{"id":"2893","n":"Carlos Alberto Delga"},{"id":"2894","n":"Oscar Manuel Solera"}]};
 const TOL_OMIT_TOP=["dl_661","dl_8375","dl_7375","dl_5625","dl_3791","rosca_mayor","od_2975","pared","dl_080","dl_08","dl_200"]; // en TOP se omiten bandas/diam mayor
 let curPlano,curSide='T',curChar,curChar2,curMode='setup',data={},data2={},dualMode=true;
+let sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
 const PROCESO_KEYS=['sello','oal','rosca_go','rosca_go_top','rosca_go_bot','visual'];
 const SIERRA_KEYS=['oal'];
 const VISUAL_CHAR={k:'visual',label:'Inspección Visual',t:'vis',lo:null,hi:null,nom:null,unit:'',crit:false,sides:['T','B'],instr:'Visual'};
@@ -175,6 +176,7 @@ function init(){
 }
 function onPlano(){
   curPlano=document.getElementById('plano').value;
+  sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
   const P=APP.planos[curPlano];
   fillSelect('dash',P.dashes);
   buildCharList();
@@ -182,18 +184,20 @@ function onPlano(){
   onChar();
 }
 function setMode(m){curMode=m;
+  sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
   document.getElementById('btnSetup').classList.toggle('act',m==='setup');
   document.getElementById('btnProceso').classList.toggle('act',m==='proceso');
   document.getElementById('btnSierra').classList.toggle('act',m==='sierra');
-  if(m==='sierra')setSide('B');
-  else{buildCharList();buildCharForm2();onChar();}}
-function sideChars(){
-  let cs=APP.planos[curPlano].chars.filter(c=>c.sides.includes(curSide));
+  if(m==='sierra'){curSide='B';document.getElementById('btnT').classList.remove('act');document.getElementById('btnB').classList.add('act');}
+  buildCharList();buildCharForm2();onChar();}
+function charsForSide(side){
+  let cs=APP.planos[curPlano].chars.filter(c=>c.sides.includes(side));
   if(curMode==='proceso')cs=cs.filter(c=>PROCESO_KEYS.includes(c.k));
   if(curMode==='sierra')cs=cs.filter(c=>SIERRA_KEYS.includes(c.k));
   if(curMode!=='sierra'&&!cs.find(c=>c.k==='visual'))cs=[...cs,VISUAL_CHAR];
   return cs;
 }
+function sideChars(){return charsForSide(curSide);}
 function buildCharList(){buildCharForm();}
 function buildCharForm(){
   const cf=document.getElementById('charForm');if(!cf)return;
@@ -227,10 +231,13 @@ function buildCharForm(){
   });
   const first=sideChars()[0];if(first)focusCharRow(first.k);
 }
-function setSide(s){curSide=s;
+function setSide(s){
+  if(s!==curSide)snapshotSide();
+  curSide=s;
   document.getElementById('btnT').classList.toggle('act',s==='T');
   document.getElementById('btnB').classList.toggle('act',s==='B');
   buildCharList();buildCharForm2();onChar();
+  restoreSide();
 }
 function getDashLimits(){
   const P=APP.planos[curPlano],d=document.getElementById('dash').value;
@@ -579,12 +586,6 @@ function updateSummaryStats(){
 
 function buildCharForm2(){
   const cf=document.getElementById('charForm2');if(!cf)return;
-  // Save current values before rebuild
-  const savedVals={};
-  cf.querySelectorAll('input[type=number]').forEach(el=>{ if(el.value) savedVals[el.id]=el.value; });
-  cf.querySelectorAll('select').forEach(el=>{ savedVals[el.id]=el.value; });
-  const savedGNG={};
-  cf.querySelectorAll('.charrow[data-gng-m2]').forEach(row=>{ savedGNG[row.id]=row.dataset.gngM2; });
   cf.innerHTML='';
   const dual=false;
   sideChars().forEach(c=>{
@@ -617,28 +618,6 @@ function buildCharForm2(){
       if(okb)okb.addEventListener('click',e=>{e.stopPropagation();setGNGM2(k,'OK');});
       if(rjb)rjb.addEventListener('click',e=>{e.stopPropagation();setGNGM2(k,'RECHAZO');});}
     else if(c.t==='vis'){const el=document.getElementById('m2inp_'+k);if(el)el.addEventListener('change',()=>liveStatusM2(k));}
-  });
-  // Restore saved values after rebuild
-  Object.keys(savedVals).forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.value=savedVals[id];
-  });
-  Object.keys(savedGNG).forEach(rowId=>{
-    const row=document.getElementById(rowId);
-    if(row){row.dataset.gngM2=savedGNG[rowId];
-      const val=savedGNG[rowId];
-      row.querySelectorAll('.gng-wrap button').forEach(b=>b.classList.remove('gng-sel'));
-      const sel=row.querySelector(val==='OK'?'.ok':'.rej');if(sel)sel.classList.add('gng-sel');
-      const stEl=document.getElementById('m2st_'+rowId.replace('crow2_',''));
-      if(stEl){stEl.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');stEl.textContent=val==='RECHAZO'?'RECHAZO':'OK';}
-    }
-  });
-  // Re-run liveStatusM2 for num inputs with values
-  Object.keys(savedVals).forEach(id=>{
-    if(id.startsWith('m2inp_')&&savedVals[id]){
-      const k=id.replace('m2inp_','');
-      liveStatusM2(k);
-    }
   });
   // Ensure chart2 has a focused characteristic (like Maquina 1)
   const cs2=sideChars();
@@ -962,7 +941,132 @@ function confirmAndSend(){
   previewVal2=null;
   if(mode==='maq1'){registerAll();}
   else if(mode==='maq2'){registerAll2();}
+  else if(mode==='all'){registerAllSides();}
   else{registerAll();registerAll2();}
+}
+
+
+function classifyVals(v,lo,hi,k){if(lo==null||hi==null)return 'OK';if(v>hi||v<lo)return 'FUERA';if(k==='sello'&&(v>=2.822||v<=2.821))return 'CERCA';const sp=hi-lo,m=(hi+lo)/2;if(Math.abs(v-m)>sp*0.4)return 'CERCA';return 'OK';}
+
+function snapshotSide(){
+  const cs=sideChars();
+  const b1=sideBuf.m1[curSide]={}, b2=sideBuf.m2[curSide]={};
+  cs.forEach(c=>{
+    if(c.t==='num'){
+      const v1=document.getElementById('inp_'+c.k); if(v1&&v1.value!=='')b1[c.k]={kind:'num',val:v1.value};
+      const v2=document.getElementById('m2inp_'+c.k); if(v2&&v2.value!=='')b2[c.k]={kind:'num',val:v2.value};
+    } else if(c.t==='gng'){
+      const g1=document.getElementById('crow_'+c.k); if(g1&&g1.dataset.gng)b1[c.k]={kind:'gng',val:g1.dataset.gng};
+      const g2=document.getElementById('crow2_'+c.k); if(g2&&g2.dataset.gngM2)b2[c.k]={kind:'gng',val:g2.dataset.gngM2};
+    } else if(c.t==='vis'){
+      const s1=document.getElementById('inp_'+c.k); if(s1&&s1.value&&s1.value!=='OK')b1[c.k]={kind:'vis',val:s1.value};
+      const s2=document.getElementById('m2inp_'+c.k); if(s2&&s2.value&&s2.value!=='OK')b2[c.k]={kind:'vis',val:s2.value};
+    }
+  });
+}
+
+function restoreSide(){
+  const b1=sideBuf.m1[curSide]||{}, b2=sideBuf.m2[curSide]||{};
+  Object.keys(b1).forEach(k=>{const e=b1[k];
+    if(e.kind==='gng'){setGNGVal(k,e.val);}
+    else{const el=document.getElementById('inp_'+k);if(el){el.value=e.val;liveStatus(k);}}
+  });
+  Object.keys(b2).forEach(k=>{const e=b2[k];
+    if(e.kind==='gng'){setGNGM2(k,e.val);}
+    else{const el=document.getElementById('m2inp_'+k);if(el){el.value=e.val;liveStatusM2(k);}}
+  });
+}
+
+function sendRecord(machine,side,c,r){
+  const cc=cfg();if(!cc.url||!cc.auto)return;
+  const maq=machine===1?document.getElementById('maq').value:document.getElementById('maq2').value;
+  const p={modo:curMode,plano:curPlano,part_number:document.getElementById('dash').value,lado:side,
+    OP:document.getElementById('op').value,maquina:maq,mecanico:document.getElementById('mec').value,
+    inspector:document.getElementById('insp').value,turno:autoTurno(),
+    caracteristica:c.k,descripcion:c.label,pieza:r.pieza||'',serie:r.serie||'',comentario:r.comentario||'',
+    valor:String(r.val),estado:r.status,fecha:new Date().toISOString()};
+  const fd=new FormData();fd.append('data',JSON.stringify(p));
+  fetch(cc.url,{method:'POST',mode:'no-cors',body:fd}).catch(()=>{});
+}
+
+function buildRecord(machine,side,c,e){
+  let val,status;
+  if(e.kind==='num'){val=parseFloat(e.val);if(isNaN(val))return null;
+    let lo=c.lo,hi=c.hi;if(c.k==='oal'){const L=getDashLimits();lo=L[0];hi=L[1];}
+    status=classifyVals(val,lo,hi,c.k);}
+  else if(e.kind==='gng'){val=e.val;status=val==='RECHAZO'?'FUERA':'OK';}
+  else{val=e.val;status=val==='OK'?'OK':'DEFECTO';}
+  const pieza=machine===1?(document.getElementById('npieza').value.trim()):(document.getElementById('npieza2')?.value.trim()||'');
+  const serie=machine===1?(document.getElementById('nserie').value.trim()):(document.getElementById('nserie2')?.value.trim()||'');
+  const com=machine===1?(document.getElementById('comentarios').value.trim()):(document.getElementById('comentarios2')?.value.trim()||'');
+  return {pieza,serie,val,status,comentario:com};
+}
+
+function collectBuf(machine){
+  const buf=machine===1?sideBuf.m1:sideBuf.m2;
+  const out=[];
+  ['T','B'].forEach(side=>{
+    const cs=charsForSide(side); const b=buf[side]||{};
+    cs.forEach(c=>{const e=b[c.k];if(!e)return;
+      const r=buildRecord(machine,side,c,e);if(!r)return;
+      let v=r.val; if(e.kind==='num')v=parseFloat(e.val).toFixed(4);
+      out.push({label:'['+(side==='T'?'TOP':'BOT')+'] '+c.label,val:v,status:r.status});
+    });
+  });
+  return out;
+}
+
+function showConfirmAll(){
+  snapshotSide();
+  const r1=collectBuf(1), r2=collectBuf(2);
+  if(!r1.length&&!r2.length){alert('No hay mediciones ingresadas (TOP ni BOTTOM).');return;}
+  const maq1=document.getElementById('maq').value||'Maquina 1', maq2=document.getElementById('maq2').value||'Maquina 2';
+  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+r1.length+')';
+  document.getElementById('confBody1').innerHTML=buildConfirmTable(r1);
+  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+r2.length+')';
+  document.getElementById('confBody2').innerHTML=buildConfirmTable(r2);
+  const anyBad=[...r1,...r2].some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confWarning').style.display=anyBad?'block':'none';
+  document.getElementById('confirmModal').dataset.mode='all';
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function registerAllSides(){
+  snapshotSide();
+  let total=0;
+  ['T','B'].forEach(side=>{
+    const cs=charsForSide(side);
+    [1,2].forEach(machine=>{
+      const buf=(machine===1?sideBuf.m1:sideBuf.m2)[side]||{};
+      cs.forEach(c=>{const e=buf[c.k];if(!e)return;
+        const r=buildRecord(machine,side,c,e);if(!r)return;
+        const key=[curPlano,document.getElementById('dash').value,side,c.k].join('|');
+        const store=machine===1?data:data2;
+        if(!store[key])store[key]=[];
+        const rec={n:store[key].length+1,hora:now(),pieza:r.pieza,serie:r.serie,val:r.val,status:r.status,comentario:r.comentario};
+        store[key].push(rec); sendRecord(machine,side,c,rec); total++;
+      });
+    });
+  });
+  if(total===0){alert('No hay mediciones ingresadas.');return;}
+  // Limpiar buffers e inputs visibles
+  sideBuf={m1:{T:{},B:{}},m2:{T:{},B:{}}};
+  sideChars().forEach(c=>{
+    const i1=document.getElementById('inp_'+c.k);if(i1&&i1.tagName==='INPUT')i1.value='';
+    const i2=document.getElementById('m2inp_'+c.k);if(i2&&i2.tagName==='INPUT')i2.value='';
+    const r1=document.getElementById('crow_'+c.k);if(r1)delete r1.dataset.gng;
+    const r2=document.getElementById('crow2_'+c.k);if(r2)delete r2.dataset.gngM2;
+    const s1=document.getElementById('st_'+c.k);if(s1){s1.className='chst chst-idle';s1.textContent='-';}
+    const s2=document.getElementById('m2st_'+c.k);if(s2){s2.className='chst chst-idle';s2.textContent='-';}
+    document.querySelectorAll('#crow_'+c.k+' .gng-wrap button,#crow2_'+c.k+' .gng-wrap button').forEach(b=>b.classList.remove('gng-sel'));
+  });
+  document.getElementById('comentarios').value='';
+  if(document.getElementById('comentarios2'))document.getElementById('comentarios2').value='';
+  previewVal=null;previewVal2=null;
+  const vd=document.getElementById('verdict');if(vd){vd.className='verdict v-ok verdict-mini';vd.textContent='Registradas '+total+' mediciones (TOP+BOTTOM)';}
+  const vd2=document.getElementById('verdict2');if(vd2){vd2.className='verdict v-ok verdict-mini';vd2.textContent='Registradas (TOP+BOTTOM)';}
+  render();renderMaq2();persist();updateSummaryStats();
+  alert('Se registraron '+total+' mediciones (TOP + BOTTOM, ambas maquinas).');
 }
 
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
