@@ -855,28 +855,30 @@ function closeConfirm(){
 
 
 function showConfirmMaq1(){
-  const rows=collectMaq1();
-  if(!rows.length){alert('No hay mediciones ingresadas para Maquina 1.');return;}
+  const r1=collectMaq1(),r2=collectMaq2();
+  if(!r1.length){alert('No hay mediciones ingresadas para Maquina 1.');return;}
   const maq1=document.getElementById('maq')?.value||'Maquina 1';
-  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+rows.length+' dims)';
-  document.getElementById('confBody1').innerHTML=buildConfirmTable(rows);
-  document.getElementById('confMaq2Title').textContent='';
-  document.getElementById('confBody2').innerHTML='';
-  const anyBad=rows.some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  const maq2=document.getElementById('maq2')?.value||'Maquina 2';
+  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+r1.length+' dims)';
+  document.getElementById('confBody1').innerHTML=buildConfirmTable(r1);
+  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+r2.length+' dims)';
+  document.getElementById('confBody2').innerHTML=buildConfirmTable(r2);
+  const anyBad=[...r1,...r2].some(r=>r.status==='FUERA'||r.status==='DEFECTO');
   document.getElementById('confWarning').style.display=anyBad?'block':'none';
   document.getElementById('confirmModal').dataset.mode='maq1';
   document.getElementById('confirmModal').classList.add('show');
 }
 
 function showConfirmMaq2(){
-  const rows=collectMaq2();
-  if(!rows.length){alert('No hay mediciones ingresadas para Maquina 2.');return;}
+  const r1=collectMaq1(),r2=collectMaq2();
+  if(!r2.length){alert('No hay mediciones ingresadas para Maquina 2.');return;}
+  const maq1=document.getElementById('maq')?.value||'Maquina 1';
   const maq2=document.getElementById('maq2')?.value||'Maquina 2';
-  document.getElementById('confMaq1Title').textContent='';
-  document.getElementById('confBody1').innerHTML='';
-  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+rows.length+' dims)';
-  document.getElementById('confBody2').innerHTML=buildConfirmTable(rows);
-  const anyBad=rows.some(r=>r.status==='FUERA'||r.status==='DEFECTO');
+  document.getElementById('confMaq1Title').textContent='Maq 1: '+maq1+' ('+r1.length+' dims)';
+  document.getElementById('confBody1').innerHTML=buildConfirmTable(r1);
+  document.getElementById('confMaq2Title').textContent='Maq 2: '+maq2+' ('+r2.length+' dims)';
+  document.getElementById('confBody2').innerHTML=buildConfirmTable(r2);
+  const anyBad=[...r1,...r2].some(r=>r.status==='FUERA'||r.status==='DEFECTO');
   document.getElementById('confWarning').style.display=anyBad?'block':'none';
   document.getElementById('confirmModal').dataset.mode='maq2';
   document.getElementById('confirmModal').classList.add('show');
