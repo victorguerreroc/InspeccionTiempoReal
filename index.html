@@ -206,7 +206,7 @@ function buildCharForm(){
 function setSide(s){curSide=s;
   document.getElementById('btnT').classList.toggle('act',s==='T');
   document.getElementById('btnB').classList.toggle('act',s==='B');
-  buildCharList();onChar();
+  buildCharList();buildCharForm2();onChar();
 }
 function getDashLimits(){
   const P=APP.planos[curPlano],d=document.getElementById('dash').value;
