@@ -559,16 +559,16 @@ function registerAll2(){
     if(c.t==='num'){
       const v=parseFloat(document.getElementById('m2inp_'+c.k)?.value);
       if(!isNaN(v)){const st=classify(v);
-        const r={n:0,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:document.getElementById('nserie2')?.value.trim()||'',val:v,status:st,comentario:document.getElementById('comentarios2')?.value.trim()||'',_maq2:true};
-        maybySendM2(r,maq2val,mecval);registered++;if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;}
+        const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:document.getElementById('nserie2')?.value.trim()||'',val:v,status:st,comentario:document.getElementById('comentarios2')?.value.trim()||'',_maq2:true};
+        curData().push(r);maybySendM2(r,maq2val,mecval);registered++;if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;}
     } else if(c.t==='gng'){
       const row=document.getElementById('crow2_'+c.k);const val=row?.dataset.gngM2;
-      if(val){const r={n:0,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val,status:val==='RECHAZO'?'FUERA':'OK',comentario:'',_maq2:true};
-        maybySendM2(r,maq2val,mecval);registered++;if(val==='RECHAZO')anyBad=true;}
+      if(val){const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val,status:val==='RECHAZO'?'FUERA':'OK',comentario:'',_maq2:true};
+        curData().push(r);maybySendM2(r,maq2val,mecval);registered++;if(val==='RECHAZO')anyBad=true;}
     } else if(c.t==='vis'){
       const v=document.getElementById('m2inp_'+c.k)?.value||'OK';const st=v==='OK'?'OK':'DEFECTO';
-      const r={n:0,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val:v,status:st,comentario:'',_maq2:true};
-      maybySendM2(r,maq2val,mecval);registered++;if(st==='DEFECTO')anyBad=true;
+      const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val:v,status:st,comentario:'',_maq2:true};
+      curData().push(r);maybySendM2(r,maq2val,mecval);registered++;if(st==='DEFECTO')anyBad=true;
     }
     curChar=saved;
   });
@@ -579,7 +579,7 @@ function registerAll2(){
     const row=document.getElementById('crow2_'+c.k);if(row)delete row.dataset.gngM2;
     const st=document.getElementById('m2st_'+c.k);if(st){st.className='chst chst-idle';st.textContent='—';}
   });
-  if(document.getElementById('comentarios2'))document.getElementById('comentarios2').value='';
+  if(document.getElementById('comentarios2'))document.getElementById('comentarios2').value='';drawChart2();persist();
   const vd2=document.getElementById('verdict2');
   if(vd2){if(anyBad){vd2.className='verdict v-bad verdict-mini';vd2.textContent='FUERA DE SPEC — DETENER';}
     else if(anyWarn){vd2.className='verdict v-warn verdict-mini';vd2.textContent='CERCA DEL LIMITE';}
