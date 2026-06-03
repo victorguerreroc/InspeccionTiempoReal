@@ -199,8 +199,11 @@ async function loadData(){
   b.textContent='🔄 Actualizar';b.disabled=false;
 }
 function setDefaultDates(){
+  const dEl=document.getElementById('fDesde'),hEl=document.getElementById('fHasta');
+  // Solo poner por defecto si estan vacios (no sobreescribir la seleccion del usuario en refresh)
+  if(dEl.value||hEl.value)return;
   const dates=allData.map(r=>r._fecha).filter(Boolean).sort();
-  if(dates.length){document.getElementById('fDesde').value=dates[0];document.getElementById('fHasta').value=dates[dates.length-1];}
+  if(dates.length){dEl.value=dates[0];hEl.value=dates[dates.length-1];}
 }
 function uniq(arr){return [...new Set(arr.filter(Boolean))].sort();}
 function populateFilters(){
