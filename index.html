@@ -440,6 +440,7 @@ function focusCharRow(k){
   const rn=document.getElementById('reactionNote');if(rn)rn.innerHTML=react;
   render();
 }
+let previewVal=null,previewVal2=null;
 function liveStatus(k){
   const c=sideChars().find(x=>x.k===k);if(!c)return;
   const el=document.getElementById('st_'+k);if(!el)return;
@@ -448,10 +449,10 @@ function liveStatus(k){
     const bad=v!=='OK';
     el.className='chst '+(bad?'chst-bad':'chst-ok');
     el.textContent=bad?'DEFECTO':'OK';
-    return;
+    previewVal=null;drawChart();return;
   }
   const v=parseFloat(document.getElementById('inp_'+k)?.value);
-  if(isNaN(v)){el.className='chst chst-idle';el.textContent='—';return;}
+  if(isNaN(v)){el.className='chst chst-idle';el.textContent='—';previewVal=null;drawChart();return;}
   // Use curChar temporarily
   const saved=curChar;
   curChar=JSON.parse(JSON.stringify(c));
@@ -460,6 +461,9 @@ function liveStatus(k){
   curChar=saved;
   el.className='chst '+(st==='FUERA'?'chst-bad':(st==='CERCA'?'chst-warn':'chst-ok'));
   el.textContent=st==='FUERA'?'FUERA':st==='CERCA'?'CERCA':'OK';
+  // Live chart preview
+  if(focusedKey!==k){focusedKey=k;const base=sideChars().find(x=>x.k===k);if(base){curChar=JSON.parse(JSON.stringify(base));if(curChar.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}document.getElementById('charTitle').textContent='Grafico: '+curChar.label;}}
+  previewVal=v;drawChart();
 }
 function setGNGVal(k,val){
   const el=document.getElementById('st_'+k);if(!el)return;
