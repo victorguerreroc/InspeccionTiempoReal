@@ -259,7 +259,11 @@ function renderMaq2(){
   if(d.length>0){const last=d[d.length-1];
     const avg2El=document.getElementById('avg2');if(avg2El)avg2El.textContent=last.pieza||'—';}
 }
-function curData2(){const k=keyOf();if(!data2[k])data2[k]=[];return data2[k];}
+function keyOf2(){return [curPlano,document.getElementById('dash').value,curSide,curChar2?curChar2.k:''].join('|');}
+function curData2(){const k=keyOf2();if(!data2[k])data2[k]=[];return data2[k];}
+function classifyChar(v,c){if(!c||c.lo==null||c.hi==null)return 'OK';if(v>c.hi||v<c.lo)return 'FUERA';if(c.k==='sello'&&(v>=2.822||v<=2.821))return 'CERCA';const sp=c.hi-c.lo,m=(c.hi+c.lo)/2;if(Math.abs(v-m)>sp*0.4)return 'CERCA';return 'OK';}
+function updateVerdict1(st){const vd=document.getElementById('verdict');if(!vd)return;if(st==='FUERA'||st==='DEFECTO'){vd.className='verdict v-bad verdict-mini';vd.textContent='FUERA DE SPEC \u2014 DETENER';}else if(st==='CERCA'){vd.className='verdict v-warn verdict-mini';vd.textContent='CERCA DEL LIMITE \u2014 ajustar pronto';}else{vd.className='verdict v-ok verdict-mini';vd.textContent='DENTRO DE SPEC';}}
+function updateVerdict2(st){const vd=document.getElementById('verdict2');if(!vd)return;if(st==='FUERA'||st==='DEFECTO'){vd.className='verdict v-bad verdict-mini';vd.textContent='FUERA DE SPEC \u2014 DETENER';}else if(st==='CERCA'){vd.className='verdict v-warn verdict-mini';vd.textContent='CERCA DEL LIMITE \u2014 ajustar pronto';}else{vd.className='verdict v-ok verdict-mini';vd.textContent='DENTRO DE SPEC';}}
 function persist(){try{localStorage.setItem('inspData',JSON.stringify(data));localStorage.setItem('inspData2',JSON.stringify(data2));}catch(e){}}
 
 function onChar(){
@@ -476,26 +480,20 @@ let previewVal=null,previewVal2=null,focusedKey2=null;
 function liveStatus(k){
   const c=sideChars().find(x=>x.k===k);if(!c)return;
   const el=document.getElementById('st_'+k);if(!el)return;
+  focusCharRow(k);
   if(c.t==='vis'){
     const v=document.getElementById('inp_'+k)?.value||'OK';
     const bad=v!=='OK';
     el.className='chst '+(bad?'chst-bad':'chst-ok');
     el.textContent=bad?'DEFECTO':'OK';
-    previewVal=null;drawChart();return;
+    previewVal=null;drawChart();updateVerdict1(bad?'DEFECTO':'OK');return;
   }
   const v=parseFloat(document.getElementById('inp_'+k)?.value);
   if(isNaN(v)){el.className='chst chst-idle';el.textContent='—';previewVal=null;drawChart();return;}
-  // Use curChar temporarily
-  const saved=curChar;
-  curChar=JSON.parse(JSON.stringify(c));
-  if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];}
-  const st=classify(v);
-  curChar=saved;
+  const st=classifyChar(v,curChar);
   el.className='chst '+(st==='FUERA'?'chst-bad':(st==='CERCA'?'chst-warn':'chst-ok'));
-  el.textContent=st==='FUERA'?'FUERA':st==='CERCA'?'CERCA':'OK';
-  // Live chart preview
-  if(focusedKey!==k){focusedKey=k;const base=sideChars().find(x=>x.k===k);if(base){curChar=JSON.parse(JSON.stringify(base));if(curChar.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}document.getElementById('charTitle').textContent='Grafico: '+curChar.label;}}
-  previewVal=v;drawChart();
+  el.textContent=st;
+  previewVal=v;drawChart();updateVerdict1(st);
 }
 function setGNGVal(k,val){
   const el=document.getElementById('st_'+k);if(!el)return;
@@ -505,6 +503,8 @@ function setGNGVal(k,val){
   }
   el.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');
   el.textContent=val==='RECHAZO'?'RECHAZO':'OK';
+  focusCharRow(k);previewVal=null;drawChart();
+  updateVerdict1(val==='RECHAZO'?'FUERA':'OK');
 }
 function registerAll(){
   const chars=sideChars();
@@ -621,33 +621,29 @@ function buildCharForm2(){
       liveStatusM2(k);
     }
   });
+  // Ensure chart2 has a focused characteristic (like Maquina 1)
+  const cs2=sideChars();
+  if(focusedKey2&&cs2.find(c=>c.k===focusedKey2))focusCharRow2(focusedKey2);
+  else if(cs2[0])focusCharRow2(cs2[0].k);
 }
 
 function liveStatusM2(k){
   const c=sideChars().find(x=>x.k===k);if(!c)return;
   const el=document.getElementById('m2st_'+k);if(!el)return;
-  if(c.t==='vis'){const v=document.getElementById('m2inp_'+k)?.value||'OK';el.className='chst '+(v!=='OK'?'chst-bad':'chst-ok');el.textContent=v!=='OK'?'DEFECTO':'OK';previewVal2=null;drawChart2();return;}
+  focusCharRow2(k);
+  if(c.t==='vis'){
+    const v=document.getElementById('m2inp_'+k)?.value||'OK';
+    const bad=v!=='OK';
+    el.className='chst '+(bad?'chst-bad':'chst-ok');
+    el.textContent=bad?'DEFECTO':'OK';
+    previewVal2=null;drawChart2();updateVerdict2(bad?'DEFECTO':'OK');return;
+  }
   const v=parseFloat(document.getElementById('m2inp_'+k)?.value);
   if(isNaN(v)){el.className='chst chst-idle';el.textContent='—';previewVal2=null;drawChart2();return;}
-  const saved=curChar;curChar=JSON.parse(JSON.stringify(c));
-  if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];}
-  const st=classify(v);curChar=saved;
+  const st=classifyChar(v,curChar2);
   el.className='chst '+(st==='FUERA'?'chst-bad':(st==='CERCA'?'chst-warn':'chst-ok'));
-  el.textContent=st==='FUERA'?'FUERA':st==='CERCA'?'CERCA':'OK';
-  if(focusedKey!==k){
-    focusedKey=k;
-    const base=sideChars().find(x=>x.k===k);
-    if(base){curChar=JSON.parse(JSON.stringify(base));
-      if(curChar.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}}
-  }
-  previewVal2=v;
-  drawChart2();
-  // Update verdict2 live
-  const vd2el=document.getElementById('verdict2');
-  if(vd2el&&v!==null){const stEl=document.getElementById('m2st_'+k);const st2=stEl?.textContent||'';
-    if(st2==='FUERA'||st2==='DEFECTO'){vd2el.className='verdict v-bad verdict-mini';vd2el.textContent='FUERA DE SPEC — DETENER';}
-    else if(st2==='CERCA'){vd2el.className='verdict v-warn verdict-mini';vd2el.textContent='CERCA DEL LIMITE';}
-    else if(st2==='OK'){vd2el.className='verdict v-ok verdict-mini';vd2el.textContent='DENTRO DE SPEC';}}
+  el.textContent=st;
+  previewVal2=v;drawChart2();updateVerdict2(st);
 }
 
 function setGNGM2(k,val){
@@ -658,6 +654,8 @@ function setGNGM2(k,val){
   }
   el.className='chst '+(val==='RECHAZO'?'chst-bad':'chst-ok');
   el.textContent=val==='RECHAZO'?'RECHAZO':'OK';
+  focusCharRow2(k);previewVal2=null;drawChart2();
+  updateVerdict2(val==='RECHAZO'?'FUERA':'OK');
 }
 
 function registerAll2(){
@@ -665,38 +663,43 @@ function registerAll2(){
   let registered=0,anyBad=false,anyWarn=false;
   const maq2val=document.getElementById('maq2')?.value||'';
   const mecval=document.getElementById('mec').value;
+  const npieza2=document.getElementById('npieza2')?.value.trim()||'';
+  const nserie2=document.getElementById('nserie2')?.value.trim()||'';
+  const coment2=document.getElementById('comentarios2')?.value.trim()||'';
   chars.forEach(c=>{
-    const saved=curChar;
-    curChar=JSON.parse(JSON.stringify(c));
-    if(c.k==='oal'){const L=getDashLimits();curChar.lo=L[0];curChar.hi=L[1];curChar.nom=L[0]!=null?(L[0]+L[1])/2:null;}
+    const saved=curChar2;
+    curChar2=JSON.parse(JSON.stringify(c));
+    if(c.k==='oal'){const L=getDashLimits();curChar2.lo=L[0];curChar2.hi=L[1];curChar2.nom=L[0]!=null?(L[0]+L[1])/2:null;}
     if(c.t==='num'){
       const v=parseFloat(document.getElementById('m2inp_'+c.k)?.value);
-      if(!isNaN(v)){const st=classify(v);
-        const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:document.getElementById('nserie2')?.value.trim()||'',val:v,status:st,comentario:document.getElementById('comentarios2')?.value.trim()||''};
+      if(!isNaN(v)){const st=classifyChar(v,curChar2);
+        const r={n:curData2().length+1,hora:now(),pieza:npieza2,serie:nserie2,val:v,status:st,comentario:coment2};
         curData2().push(r);maybySendM2(r,maq2val,mecval);registered++;if(st==='FUERA')anyBad=true;if(st==='CERCA')anyWarn=true;}
     } else if(c.t==='gng'){
       const row=document.getElementById('crow2_'+c.k);const val=row?.dataset.gngM2;
-      if(val){const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val,status:val==='RECHAZO'?'FUERA':'OK',comentario:''};
+      if(val){const r={n:curData2().length+1,hora:now(),pieza:npieza2,serie:nserie2,val,status:val==='RECHAZO'?'FUERA':'OK',comentario:coment2};
         curData2().push(r);maybySendM2(r,maq2val,mecval);registered++;if(val==='RECHAZO')anyBad=true;}
     } else if(c.t==='vis'){
       const v=document.getElementById('m2inp_'+c.k)?.value||'OK';const st=v==='OK'?'OK':'DEFECTO';
-      const r={n:curData().length+1,hora:now(),pieza:document.getElementById('npieza2')?.value.trim()||'',serie:'',val:v,status:st,comentario:''};
+      const r={n:curData2().length+1,hora:now(),pieza:npieza2,serie:nserie2,val:v,status:st,comentario:coment2};
       curData2().push(r);maybySendM2(r,maq2val,mecval);registered++;if(st==='DEFECTO')anyBad=true;
     }
-    curChar=saved;
+    curChar2=saved;
   });
-  if(registered===0)return;
-  // Clear inputs
+  if(registered===0){alert('No hay mediciones ingresadas para Maquina 2.');return;}
   chars.forEach(c=>{
     const inp=document.getElementById('m2inp_'+c.k);if(inp&&inp.type==='number')inp.value='';
     const row=document.getElementById('crow2_'+c.k);if(row)delete row.dataset.gngM2;
     const st=document.getElementById('m2st_'+c.k);if(st){st.className='chst chst-idle';st.textContent='—';}
   });
-  if(document.getElementById('comentarios2'))document.getElementById('comentarios2').value='';drawChart2();persist();renderMaq2();
+  if(document.getElementById('comentarios2'))document.getElementById('comentarios2').value='';
+  previewVal2=null;
   const vd2=document.getElementById('verdict2');
   if(vd2){if(anyBad){vd2.className='verdict v-bad verdict-mini';vd2.textContent='FUERA DE SPEC — DETENER';}
     else if(anyWarn){vd2.className='verdict v-warn verdict-mini';vd2.textContent='CERCA DEL LIMITE';}
     else{vd2.className='verdict v-ok verdict-mini';vd2.textContent='DENTRO DE SPEC — '+registered+' registradas';}}
+  if(focusedKey2)focusCharRow2(focusedKey2);
+  persist();drawChart2();renderMaq2();
 }
 
 function maybySendM2(r,maq2,mec){
@@ -704,7 +707,7 @@ function maybySendM2(r,maq2,mec){
   const p={modo:curMode,plano:curPlano,part_number:document.getElementById('dash').value,lado:curSide,
     OP:document.getElementById('op').value,maquina:maq2,mecanico:mec,
     inspector:document.getElementById('insp').value,turno:autoTurno(),
-    caracteristica:curChar.k,descripcion:curChar.label,
+    caracteristica:(curChar2||curChar).k,descripcion:(curChar2||curChar).label,
     pieza:r.pieza||'',serie:r.serie||'',comentario:r.comentario||'',
     valor:String(r.val),estado:r.status,fecha:new Date().toISOString()};
   const fd=new FormData();fd.append('data',JSON.stringify(p));
@@ -731,25 +734,20 @@ function drawChart2(){
   const maq2val=document.getElementById('maq2')?.value||'Maq 2';
   const t2=document.getElementById('chartTitle2');
   if(t2)t2.textContent='Grafico '+maq2val+' - '+cc2.label;
-  const k2=[curPlano,document.getElementById('dash').value,curSide,cc2.k].join('|');
+  const k2=keyOf2();
   const d2=data2[k2]||[];
-  if(!d2.length){
-    ctx.fillStyle='#1a1028';ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.textAlign='center';
-    ctx.fillText(maq2val+' - '+curChar.label,W/2,H/2-10);
-    ctx.fillStyle='#65788f';ctx.font='10px Arial';
-    ctx.fillText('Registre mediciones para ver el grafico',W/2,H/2+10);
-    ctx.textAlign='left';return;
-  }
   if(cc2.t==='gng'){
+    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.fillText('OK (arriba) / RECHAZO (abajo)',pad,20);
     d2.forEach((r,i)=>{const x=pad+(i/(Math.max(29,d2.length-1)))*(W-pad-16);const ok=r.val==='OK';
       ctx.fillStyle=ok?'#2e7d4f':'#C00000';ctx.fillRect(x-7,ok?pad:H/2,14,H/2-pad);});
-    ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.fillText('OK (arriba) / RECHAZO (abajo)',pad,20);return;
+    return;
   }
   const vals=d2.filter(r=>typeof r.val==='number').map(r=>r.val);
-  if(!vals.length)return;
   let lo=cc2.lo,hi=cc2.hi;
-  if(lo==null||hi==null){lo=Math.min(...vals);hi=Math.max(...vals);}
+  if(lo==null||hi==null){
+    if(!vals.length&&previewVal2===null){ctx.fillStyle='#8aa0b8';ctx.font='12px Arial';ctx.fillText('Sin limites',pad,H/2);return;}
+    const base=vals.length?vals:[previewVal2];lo=Math.min(...base);hi=Math.max(...base);
+  }
   let ylo=lo-((hi-lo)||1)*0.5,yhi=hi+((hi-lo)||1)*0.5;
   const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
   const sd=vals.length>1?Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1)):0;
