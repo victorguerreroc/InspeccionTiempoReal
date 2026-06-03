@@ -16,7 +16,7 @@ h1{font-size:16px;color:#fff;margin-bottom:1px}
 .sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
 .sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:6px 14px;font-size:13px;font-weight:bold;cursor:pointer}
 .sidebtns button.act{background:#2E75B6;color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr 300px;gap:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
 .card h2{font-size:14px;margin-bottom:10px}
 .row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px}
@@ -87,12 +87,15 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie" placeholder="Ej: SN-001"></div>
     </div>
+    <button class="reg-all-btn" onclick="registerAll()" style="margin-bottom:8px">&#10003; Registrar Máq 1</button>
     <div class="charform" id="charForm"></div>
     <div style="margin-top:6px">
-      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios generales</label>
-      <textarea id="comentarios" placeholder="Observaciones adicionales..."></textarea>
+      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
+      <textarea id="comentarios" placeholder="Observaciones..."></textarea>
     </div>
-    <button class="reg-all-btn" onclick="registerAll()">&#10003; Registrar Todo</button>
+    <h4 style="font-size:11px;color:#8aa0b8;margin-top:10px;margin-bottom:4px">📊 Gráfico de control</h4>
+    <canvas id="chart" height="220"></canvas>
+    <div class="note" id="reactionNote" style="font-size:10px;margin-top:4px"></div>
     <div class="stats" style="margin-top:10px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n">0</div></div>
       <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg" style="font-size:14px">—</div></div>
       <div class="stat"><div class="l">Fuera</div><div class="v" id="out">0</div></div>
@@ -106,23 +109,21 @@ canvas{background:#0f1722;border-radius:8px;width:100%}
       <div><label>N° Pieza</label><input id="npieza2" placeholder="Ej: 1, 5, 50"></div>
       <div><label>N° Serie</label><input id="nserie2" placeholder="Ej: SN-001"></div>
     </div>
+    <button class="reg-all-btn" onclick="registerAll2()" style="background:#6a3fa0;margin-bottom:8px">&#10003; Registrar Máq 2</button>
     <div class="charform" id="charForm2"></div>
     <div style="margin-top:6px">
-      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios generales</label>
-      <textarea id="comentarios2" placeholder="Observaciones adicionales..."></textarea>
+      <label style="font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px">Comentarios</label>
+      <textarea id="comentarios2" placeholder="Observaciones..."></textarea>
     </div>
-    <button class="reg-all-btn" onclick="registerAll2()" style="background:#6a3fa0">&#10003; Registrar Máq 2</button>
+    <h4 style="font-size:11px;color:#b388ff;margin-top:10px;margin-bottom:4px">📊 Gráfico de control</h4>
+    <canvas id="chart2" height="220"></canvas>
     <div class="stats" style="margin-top:10px"><div class="stat"><div class="l">Registrados</div><div class="v" id="n2">0</div></div>
       <div class="stat"><div class="l">Ultima pieza</div><div class="v" id="avg2" style="font-size:14px">—</div></div>
       <div class="stat"><div class="l">Fuera</div><div class="v" id="out2">0</div></div>
       <div class="stat"><div class="l">Cpk activo</div><div class="v" id="cpk2">—</div></div></div>
     <div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>#</th><th>Pieza</th><th>Serie</th><th>Hora</th><th>Caract.</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="tbody2"></tbody></table></div>
   </div>
-  <div class="card">
-    <h2>Gráfico de control</h2>
-    <canvas id="chart" height="560"></canvas>
-    <div class="note" id="reactionNote"></div>
-  </div>
+
 </div>
 <button onclick="registerBoth()" style="width:100%;padding:11px;font-size:14px;background:#1a5c3a;border-radius:8px;margin-top:8px;border:none;color:#fff;font-weight:bold;cursor:pointer">&#10003; Registrar Todo — Ambas Máquinas</button>
 
@@ -281,7 +282,7 @@ function render(){
     else document.getElementById('cpk').textContent='—';
   }else{document.getElementById('avg').textContent='—';document.getElementById('cpk').textContent='—';}
   document.getElementById('out').textContent=out;document.getElementById('out').style.color=out>0?'#ff7a7a':'#e6edf5';
-  drawChart();persist();
+  drawChart();drawChart2();persist();
 }
 function drawChart(){
   const d=curData(),cv=document.getElementById('chart'),ctx=cv.getContext('2d');
@@ -600,7 +601,27 @@ function registerBoth(){
   registerAll2();
 }
 
-window.addEventListener('resize',drawChart);
+
+function drawChart2(){
+  const cv=document.getElementById('chart2');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width=cv.clientWidth,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad=50;
+  if(!curChar){ctx.fillStyle='#8aa0b8';ctx.font='12px Arial';ctx.fillText('Seleccione una característica',pad,H/2);return;}
+  const maq2val=document.getElementById('maq2')?.value||'Máq 2';
+  const t2=document.getElementById('chartTitle2');
+  if(t2)t2.textContent='';
+  // Show placeholder - chart2 shows maq2 data when registered
+  ctx.fillStyle='#3d2a5e';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#b388ff';ctx.font='12px Arial';ctx.textAlign='center';
+  ctx.fillText(maq2val+' — '+curChar.label,W/2,H/2-10);
+  ctx.fillStyle='#65788f';ctx.font='10px Arial';
+  ctx.fillText('Registre mediciones para ver el gráfico',W/2,H/2+10);
+  ctx.textAlign='left';
+}
+
+window.addEventListener('resize',()=>{drawChart();drawChart2();});
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
 init();tickClock();
