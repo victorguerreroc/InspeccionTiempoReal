@@ -2,9 +2,9 @@
 <title>Dashboard de Calidad — TechShop International</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#0c1420;color:#e6edf5;padding:12px;font-size:13px}
+body{background:#0c1420;color:#eef4fb;padding:12px;font-size:13px}
 h1{font-size:19px;color:#fff}
-.sub{color:#8aa0b8;font-size:12px}
+.sub{color:#b9cadd;font-size:12px}
 a{color:#5bb8ff}
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px}
 button{background:#2E75B6;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:bold;cursor:pointer}
@@ -15,24 +15,24 @@ button.sec{background:#243447;color:#9fb3c8}
 .tab.act{background:#2E75B6;color:#fff;border-color:#2E75B6}
 .tab.sierra.act{background:#7b4fa6;border-color:#7b4fa6}
 .filters{background:#131e2c;border:1px solid #243447;border-radius:10px;padding:10px;margin-bottom:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.fg label{font-size:10px;color:#8aa0b8;display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
+.fg label{font-size:11px;color:#c2d4e6;font-weight:bold;display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
 .fg select,.fg input{width:100%;padding:6px;background:#0c1420;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;font-size:12px}
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:10px}
 .kpi{background:linear-gradient(160deg,#16212f,#111a26);border:1px solid #243447;border-radius:10px;padding:12px;position:relative;overflow:hidden}
-.kpi .l{font-size:10px;color:#8aa0b8;text-transform:uppercase;letter-spacing:.4px}
+.kpi .l{font-size:11px;color:#c2d4e6;font-weight:bold;text-transform:uppercase;letter-spacing:.4px}
 .kpi .v{font-size:26px;font-weight:bold;margin-top:4px;line-height:1}
-.kpi .s{font-size:11px;color:#65788f;margin-top:3px}
+.kpi .s{font-size:11px;color:#9fb3c8;margin-top:3px}
 .kpi.good .v{color:#5fdc8f}.kpi.warn .v{color:#ffce6b}.kpi.bad .v{color:#ff7a7a}
 .kpi .bar{position:absolute;bottom:0;left:0;height:3px;background:#2E75B6}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .grid1{display:block;margin-bottom:10px}
 .card{background:#131e2c;border:1px solid #243447;border-radius:10px;padding:12px}
 .card h2{font-size:13px;margin-bottom:4px}
-.card .hint{font-size:10px;color:#65788f;margin-bottom:8px}
+.card .hint{font-size:11px;color:#9fb3c8;margin-bottom:8px}
 canvas{width:100%;display:block}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:5px 7px;border-bottom:1px solid #1e2d3d;text-align:center}
-th{color:#8aa0b8;font-size:10px;text-transform:uppercase;position:sticky;top:0;background:#131e2c;cursor:pointer}
+th{color:#c2d4e6;font-size:10px;font-weight:bold;text-transform:uppercase;position:sticky;top:0;background:#131e2c;cursor:pointer}
 td.l,th.l{text-align:left}
 .tblwrap{max-height:340px;overflow-y:auto}
 .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold}
@@ -280,7 +280,7 @@ function renderKPIs(){
 
 // ---------- helpers de canvas ----------
 function setupCanvas(id,h){const cv=document.getElementById(id);const W=cv.width=cv.clientWidth;const H=cv.height=h||cv.height;const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);return {cv,ctx,W,H};}
-function noData(ctx,W,H){ctx.fillStyle='#65788f';ctx.font='13px Arial';ctx.textAlign='center';ctx.fillText('Sin datos para los filtros',W/2,H/2);ctx.textAlign='left';}
+function noData(ctx,W,H){ctx.fillStyle='#9fb3c8';ctx.font='13px Arial';ctx.textAlign='center';ctx.fillText('Sin datos para los filtros',W/2,H/2);ctx.textAlign='left';}
 
 function renderPareto(){
   const {ctx,W,H}=setupCanvas('cPareto',300);
@@ -304,7 +304,7 @@ function renderPareto(){
   pts.forEach(p=>{ctx.fillStyle='#ffce6b';ctx.beginPath();ctx.arc(p.x,p.y,3,0,7);ctx.fill();});
   // cumulative % labels
   let c2=0;ctx.fillStyle='#ffce6b';ctx.font='9px Arial';ctx.textAlign='center';items.forEach((it,i)=>{c2+=it.v;ctx.fillText(Math.round(c2/total*100)+'%',pts[i].x,pts[i].y-6);});
-  ctx.fillStyle='#65788f';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('Rechazos: '+total,pad,12);
+  ctx.fillStyle='#9fb3c8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('Rechazos: '+total,pad,12);
 }
 
 function renderTrend(){
@@ -318,11 +318,11 @@ function renderTrend(){
   const maxR=Math.max(5,...rates);
   const x=i=>pad+(days.length<=1?0:i/(days.length-1))*(W-pad-16);
   const y=v=>H-padB-(v/maxR)*(H-padT-padB);
-  ctx.strokeStyle='#1e2d3d';for(let t=0;t<=4;t++){const vv=maxR*t/4;ctx.beginPath();ctx.moveTo(pad,y(vv));ctx.lineTo(W-16,y(vv));ctx.stroke();ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText(vv.toFixed(0)+'%',pad-4,y(vv)+3);}
+  ctx.strokeStyle='#1e2d3d';for(let t=0;t<=4;t++){const vv=maxR*t/4;ctx.beginPath();ctx.moveTo(pad,y(vv));ctx.lineTo(W-16,y(vv));ctx.stroke();ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText(vv.toFixed(0)+'%',pad-4,y(vv)+3);}
   ctx.textAlign='center';
   ctx.strokeStyle='#5bb8ff';ctx.lineWidth=2;ctx.beginPath();rates.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
   rates.forEach((v,i)=>{ctx.fillStyle=v>5?'#ff7a7a':'#5fdc8f';ctx.beginPath();ctx.arc(x(i),y(v),4,0,7);ctx.fill();});
-  ctx.fillStyle='#65788f';ctx.font='9px Arial';
+  ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';
   const step=Math.ceil(days.length/8);
   days.forEach((d,i)=>{if(i%step===0||i===days.length-1)ctx.fillText(d.substring(5),x(i),H-padB+14);});
   ctx.fillStyle='#8aa0b8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('% rechazo diario',pad,12);
@@ -411,7 +411,7 @@ function renderHist(){
   function vline(val,c,lbl){if(val==null)return;const xx=x(val);ctx.strokeStyle=c;ctx.lineWidth=2;ctx.setLineDash(c==='#5bb8ff'?[4,3]:[]);ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,H-padB);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(lbl,xx,padT-2);}
   vline(sp.lo,'#C00000','LIE');vline(sp.hi,'#C00000','LSE');vline(sp.nom,'#5bb8ff','Nom');
   const mean=vals.reduce((a,b)=>a+b,0)/vals.length;vline(mean,'#5fdc8f','X̄');
-  ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='center';
   for(let t=0;t<=4;t++){const vv=lo+(hi-lo)*t/4;ctx.fillText(vv.toFixed(3),x(vv),H-padB+14);}
 }
 
@@ -428,7 +428,7 @@ function renderCtrl(){
   const pad=46,padB=24,padT=14;
   const x=i=>pad+(n<=1?0:i/(Math.max(29,n-1)))*(W-pad-16);
   const y=v=>H-padB-((v-ylo)/(yhi-ylo))*(H-padT-padB);
-  ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.textAlign='right';
+  ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';
   for(let t=0;t<=4;t++){const vv=ylo+(yhi-ylo)*t/4;ctx.fillText(vv.toFixed(3),pad-4,y(vv)+3);}
   function hl(val,c,lbl,dash){if(val==null||val<ylo||val>yhi)return;ctx.strokeStyle=c;ctx.setLineDash(dash||[]);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,y(val));ctx.lineTo(W-16,y(val));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText(lbl,pad+3,y(val)-2);}
   if(sd>0){hl(mean+3*sd,'#b388ff','UCL',[5,3]);hl(mean,'#b388ff','X̄',[2,2]);hl(mean-3*sd,'#b388ff','LCL',[5,3]);}
@@ -464,7 +464,7 @@ function renderTurno(){
     ctx.fillStyle=it.rate>5?'#C00000':it.rate>2?'#b8860b':'#2e7d4f';ctx.fillRect(x+14,H-padB-bh,bw-28,bh);
     ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(it.rate.toFixed(1)+'%',x+bw/2,H-padB-bh-4);
     ctx.fillStyle='#9fb3c8';ctx.font='10px Arial';ctx.fillText(it.t.split(' ')[0],x+bw/2,H-padB+16);
-    ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.fillText('('+it.rej+'/'+it.n+')',x+bw/2,H-padB+28);});
+    ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.fillText('('+it.rej+'/'+it.n+')',x+bw/2,H-padB+28);});
 }
 
 function switchSheet(s){
