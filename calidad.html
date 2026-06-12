@@ -2,85 +2,98 @@
 <title>Sistema de Calidad — TechShop International S.A.</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,Helvetica,sans-serif}
-body{background:#08141f;color:#b0c8df;font-size:14px;-webkit-font-smoothing:antialiased}
+body{background:#0d2d4a;color:#ffffff;font-size:15.4px;-webkit-font-smoothing:antialiased}
 html,body{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
-a{color:#4aabf0;text-decoration:none}
+a{color:#f8c874;text-decoration:none}
 a:hover{text-decoration:underline}
 
 /* ===== Barra superior ===== */
-.topbar{background:#04101a;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;height:54px;position:sticky;top:0;z-index:50;box-shadow:0 2px 14px rgba(0,0,0,.6);border-bottom:1px solid #0d2236}
-.topbar .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:1.5px;text-transform:uppercase}
-.topbar .logo .brand-logo{height:34px;width:auto;display:block}
-.topbar .site{font-weight:500;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#4a7a9a}
+.topbar{background:#0d2d4a;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;height:56px;position:sticky;top:0;z-index:50}
+.topbar .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17.6px;letter-spacing:1.5px;text-transform:uppercase}
+.topbar .logo .brand-logo{height:36px;width:auto;display:block}
+.topbar .site{font-weight:500;font-size:14.3px;letter-spacing:2px;text-transform:uppercase;color:#ffffff}
 .topbar .search{flex:1;max-width:520px;margin:0 auto}
-.topbar .search input{width:100%;padding:9px 13px;border:1px solid #163248;border-radius:5px;font-size:13px;background:#0a1e30;color:#c0d8ea}
-.topbar .search input::placeholder{color:#3a6080}
-.topbar .right{display:flex;align-items:center;gap:14px;font-size:12px}
+.topbar .search input{width:100%;padding:9px 13px;border:1px solid #1a4060;border-radius:5px;font-size:14.3px;background:#112e4a;color:#ffffff}
+.topbar .search input::placeholder{color:#7d9cb8}
+.topbar .right{display:flex;align-items:center;gap:14px;font-size:13.2px}
 .topbar .right .badge{background:rgba(255,255,255,.1);padding:4px 11px;border-radius:14px;color:#fff}
 
 /* ===== Layout ===== */
-.shell{display:flex;min-height:calc(100vh - 54px)}
-.sidenav{width:236px;background:#050f18;border-right:1px solid #0d2236;padding:14px 0;flex-shrink:0}
-.sidenav .nav-item{display:flex;align-items:center;padding:10px 20px;color:#6a90ac;font-size:13px;cursor:pointer;border-left:3px solid transparent;line-height:1.35}
-.sidenav .nav-item:hover{background:#0a1e2e;color:#d8eeff;text-decoration:none}
-.sidenav .nav-item.act{background:#0a1e2e;border-left-color:#c87c18;color:#ffffff;font-weight:600}
-.sidenav .nav-sep{height:1px;background:#0d2236;margin:10px 18px}
-.sidenav .nav-mini{padding:6px 20px;font-size:10px;color:#2a4a62;text-transform:uppercase;letter-spacing:1.5px}
+.shell{display:flex;height:calc(100vh - 56px)}
+.main{overflow-y:auto;scrollbar-width:none}
+.main::-webkit-scrollbar{width:0;display:none}
+.sidenav{width:248px;background:#0d2d4a;padding:14px 0;flex-shrink:0}
+.sidenav .nav-item{display:flex;align-items:center;padding:10px 20px;color:#ffffff;font-size:14.3px;cursor:pointer;border-left:3px solid transparent;line-height:1.35}
+.sidenav .nav-item:hover{background:#133550;color:#f8c874;text-decoration:none}
+.sidenav .nav-item.act{background:#133550;border-left-color:#f8c874;color:#f8c874;font-weight:600}
+.sidenav .nav-sep{height:1px;background:#163752;margin:10px 18px}
+.sidenav .nav-mini{padding:6px 20px;font-size:11px;color:#9db8d0;text-transform:uppercase;letter-spacing:1.5px}
 
-.main{flex:1;padding:26px 34px;min-width:0}
+.main{flex:1;padding:26px 34px;min-width:0;display:flex;flex-direction:column;min-height:0}
+.main>*{flex-shrink:0}
 
 /* ===== Encabezado de área ===== */
-.crumbs{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;color:#dceeff;margin-bottom:5px;flex-wrap:wrap;letter-spacing:.5px;text-transform:uppercase}
-.crumbs .c{cursor:pointer;color:#4aabf0}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;color:#ffffff;margin-bottom:5px;flex-wrap:wrap;letter-spacing:.5px;text-transform:uppercase}
+.crumbs .c{cursor:pointer;color:#f8c874}
 .crumbs .c:hover{text-decoration:underline}
-.crumbs .sep{color:#1a3a54;font-weight:400}
-.crumbs .here{color:#dceeff;cursor:default}
-.areadesc{color:#4a7090;font-size:13px;margin-bottom:16px}
+.crumbs .sep{color:#2c5478;font-weight:400}
+.crumbs .here{color:#ffffff;cursor:default}
+.areadesc{color:#ffffff;font-size:14.3px;margin-bottom:16px}
 
 /* ===== Hero ===== */
-.hero{border-radius:14px;overflow:hidden;margin-bottom:22px;border:1px solid #0d2236;box-shadow:0 14px 48px rgba(0,0,0,.65)}
-.hero .hero-img{display:block;width:100%;height:auto}
+.hero{display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:22px;flex:1 1 auto;min-height:0}
+.hero .hero-img{display:block;flex:0 0 auto;width:auto;max-width:72%;height:100%;object-fit:contain;
+ -webkit-mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 97%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 12%,#000 88%,transparent 100%);
+ -webkit-mask-composite:source-in;
+ mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 97%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 12%,#000 88%,transparent 100%);
+ mask-composite:intersect}
+.cert-card{flex:1 1 auto;min-width:0;max-height:100%;background:transparent;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cert-card .cert-img{width:100%;height:auto;flex:0 1 auto;min-height:0;object-fit:contain;border-radius:6px}
+.cert-card .cert-cap{text-align:center;padding-top:12px;flex-shrink:0}
+.cert-card .cert-cap .t{color:#ffffff;font-weight:800;font-size:16.5px;letter-spacing:.5px}
+.cert-card .cert-cap .s{color:#f8c874;font-size:12.7px;margin-top:4px}
+@media(max-width:980px){ .hero{flex-direction:column;align-items:center} .hero .hero-img{max-width:100%} .cert-card{flex:0 0 auto;width:100%;max-width:420px;max-height:none} .cert-card .cert-img{flex:0 0 auto} }
 
 /* ===== Policy div (oculta, incluida en overlay del hero) ===== */
 .policy{display:none!important}
 
 .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.toolbar .tcount{color:#3a6080;font-size:12px;margin-left:auto;letter-spacing:.5px}
-.btn{background:#0a1e30;border:1px solid #163248;border-radius:5px;padding:8px 16px;font-size:12px;color:#a0bcd4;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:1px}
-.btn:hover{background:#0d2640;border-color:#1e4a6a}
-.btn.primary{background:#c87c18;color:#fff;border-color:#c87c18}
-.btn.primary:hover{background:#b06c12;border-color:#b06c12}
+.toolbar .tcount{color:#ffffff;font-size:13.2px;margin-left:auto;letter-spacing:.5px}
+.btn{background:#112e4a;border:1px solid #1a4060;border-radius:5px;padding:8px 16px;font-size:13.2px;color:#ffffff;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:1px}
+.btn:hover{background:#133550;border-color:#244e70}
+.btn.primary{background:#f8c874;color:#0d2d4a;border-color:#f8c874}
+.btn.primary:hover{background:#e9b864;border-color:#e9b864}
 
 /* ===== Lista de documentos ===== */
-.doclist{background:#050f18;border:1px solid #0d2236;border-radius:10px;overflow:hidden}
-.doc-head,.doc-row{display:grid;grid-template-columns:2.6fr 1.2fr 1.4fr 1fr;align-items:center;gap:10px;padding:12px 20px}
-.doc-head{background:#030d16;border-bottom:1px solid #0d2236;font-size:10px;font-weight:700;color:#2a5070;text-transform:uppercase;letter-spacing:1px}
-.doc-row{border-bottom:1px solid #0a1c2c;cursor:pointer;font-size:13.5px}
+.doclist{background:#0d2d4a;border:1px solid #163752;border-radius:10px;overflow:hidden}
+.doc-head,.doc-row{display:grid;grid-template-columns:2.4fr .9fr 1.1fr 1.1fr 1.1fr;align-items:center;gap:10px;padding:12px 20px}
+.doc-head{background:#0d2d4a;border-bottom:1px solid #163752;font-size:11px;font-weight:700;color:#9db8d0;letter-spacing:1px}
+.doc-row{border-bottom:1px solid #133550;cursor:pointer;font-size:14.9px}
 .doc-row:last-child{border-bottom:none}
-.doc-row:hover{background:#08192a}
+.doc-row:hover{background:#112e4a}
 .doc-name{display:flex;align-items:center;min-width:0}
-.doc-name .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#cce2f8}
-.doc-name .txt .ext{color:#3a6080;font-weight:400;font-size:12px;margin-left:2px}
-.doc-meta{color:#3a6080;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.doc-by .who{display:inline-block;background:#0a1e30;color:#5a8aac;padding:2px 10px;border-radius:11px;font-size:11.5px}
+.doc-name .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#ffffff}
+.doc-name .txt .ext{color:#9db8d0;font-weight:400;font-size:13.2px;margin-left:2px}
+.doc-meta{color:#ffffff;font-size:13.8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-by .who{display:inline-block;background:#112e4a;color:#ffffff;padding:2px 10px;border-radius:11px;font-size:12.7px}
 .doc-link{text-align:right}
-.doc-link .open{font-size:11px;color:#4aabf0;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.tag-falta{background:#1e0808;color:#e06060;border:1px solid #4a1818;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:8px}
+.doc-link .open{font-size:12.1px;color:#f8c874;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.tag-falta{background:#1e0808;color:#ff8a8a;border:1px solid #4a1818;padding:2px 8px;border-radius:10px;font-size:12.1px;font-weight:700;margin-left:8px}
 
-.empty{padding:46px 20px;text-align:center;color:#2a5070}
+.empty{padding:46px 20px;text-align:center;color:#ffffff}
 
-.foot{margin-top:26px;border-top:1px solid #0d2236;padding:16px 0 28px;text-align:center}
-.foot-links a{color:#2a5070;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
-.foot-links a:hover{color:#4aabf0}
-.foot-dot{margin:0 10px;color:#0d2236}
-.foot-cr{color:#2a4a62;font-size:11px;margin-top:8px;letter-spacing:.5px}
+.foot{margin-top:auto;border-top:1px solid #163752;padding:16px 0 12px;text-align:center}
+.foot-links a{color:#ffffff;font-size:13.2px;letter-spacing:.5px;text-transform:uppercase}
+.foot-links a:hover{color:#f8c874}
+.foot-dot{margin:0 10px;color:#163752}
+.foot-cr{color:#ffffff;font-size:12.1px;margin-top:8px;letter-spacing:.5px}
 
 @media(max-width:820px){
  .sidenav{display:none}
  .topbar .search{display:none}
- .doc-head,.doc-row{grid-template-columns:2fr 1.2fr}
- .doc-by,.doc-link{display:none}
+ .doc-head,.doc-row{grid-template-columns:2fr .9fr}
+ .doc-head>div:nth-child(n+3),.doc-row>div:nth-child(n+3){display:none}
 }
 </style></head><body>
 
@@ -90,7 +103,7 @@ a:hover{text-decoration:underline}
      Cada carpeta de primer nivel es un objeto en TREE.
      Para AGREGAR un documento, añada un item a "items":
         { name:"Mi Documento", ext:"pdf", url:"<ENLACE SHAREPOINT>",
-          modified:"2026-06-10", by:"Nombre" }
+          rev:"A", autor:"Nombre", revisadoPor:"Nombre", aprobadoPor:"Nombre" }
      Para AGREGAR una subcarpeta:
         { name:"Subcarpeta", folder:true, items:[ ... ] }
      Deje url vacío ("") y aparecerá la etiqueta "Falta enlace".
@@ -103,55 +116,51 @@ const SHAREPOINT_ROOT = "";
 
 // Las 11 áreas viven DENTRO de "Documentos".
 const AREAS = [
-  { name:"1 Sistema de Gestión de Calidad", folder:true, items:[] },
-  { name:"2. Manufactura",  folder:true, items:[] },
-  { name:"3. Administración", folder:true, items:[] },
-  { name:"4. Calidad", folder:true, items:[] },
-  { name:"5. Capital Humano", folder:true, items:[] },
-  { name:"6. Comercial", folder:true, items:[] },
-  { name:"7. Mantenimiento", folder:true, items:[] },
-  { name:"8. Compras", folder:true, items:[] },
-  { name:"9. Laboratorio", folder:true, items:[] },
-  { name:"Salud Ocupacional", folder:true, items:[] },
-  { name:"z10. Bodega", folder:true, items:[] },
+  { name:"Portal del Sistema Integrado de Gestión", folder:true, items:[] },
+  { name:"Operaciones de Manufactura",  folder:true, items:[] },
+  { name:"Gestión Financiera y Administrativa", folder:true, items:[] },
+  { name:"Aseguramiento de la Calidad", folder:true, items:[] },
+  { name:"Gestión del Talento Humano", folder:true, items:[] },
+  { name:"Desarrollo de Negocios", folder:true, items:[] },
+  { name:"Gestión de Mantenimiento", folder:true, items:[] },
+  { name:"Gestión de Abastecimiento", folder:true, items:[] },
+  { name:"Laboratorio y Metrología", folder:true, items:[] },
+  { name:"Seguridad, Salud y Ambiente", folder:true, items:[] },
+  { name:"Logística y Almacenamiento", folder:true, items:[] },
 ];
 
 const TREE = [
- { name:"Documentos", icon:"documents",
+ { name:"Políticas y Directrices", icon:"shield",
+   desc:"Políticas y lineamientos internos de la empresa.", items:[] },
+ { name:"Información Documentada", icon:"documents",
    desc:"Documentación por área de la empresa.", items:AREAS },
- { name:"Planos de Productos", icon:"ruler",
+ { name:"Información Documentada Externa", icon:"globe",
+   desc:"Normas, regulaciones y documentos de origen externo.", items:[] },
+ { name:"Especificaciones Técnicas de Material", icon:"flask",
+   desc:"Especificaciones y fichas técnicas de materiales.", items:[] },
+ { name:"Planos e Ingeniería", icon:"ruler",
    desc:"Planos de producto (clientes e internos).", items:[
      { name:"Planos de Clientes", folder:true, items:[] },
      { name:"Planos Internos", folder:true, items:[] },
    ]},
- { name:"Especificaciones de Material", icon:"flask",
-   desc:"Especificaciones y fichas técnicas de materiales.", items:[] },
- { name:"Documentos Externos", icon:"globe",
-   desc:"Normas, regulaciones y documentos de origen externo.", items:[] },
- { name:"Políticas Internas", icon:"shield",
-   desc:"Políticas y lineamientos internos de la empresa.", items:[] },
- { name:"Área G&H", icon:"factory",
-   desc:"Documentación del Área G&H.", items:[] },
- { name:"Auditorías Internas", icon:"search",
+ { name:"Programa de Auditorías Internas", icon:"search",
    desc:"Programa, planes y reportes de auditorías internas.", items:[] },
- { name:"Auditorías Externas", icon:"clipboardCheck",
+ { name:"Auditorías de Certificación y Clientes", icon:"clipboardCheck",
    desc:"Reportes y seguimiento de auditorías externas / de cliente.", items:[] },
- { name:"Acciones Correctivas", icon:"wrench",
-   desc:"Acciones correctivas y preventivas (CAPA).", items:[] },
- { name:"No Conformidades", icon:"alert",
+ { name:"Gestión de No Conformidades", icon:"alert",
    desc:"Registro y seguimiento de no conformidades (NC).", items:[] },
+ { name:"Acciones Correctivas y Mejora Continua", icon:"wrench",
+   desc:"Acciones correctivas y preventivas (CAPA).", items:[] },
+ { name:"Documentación G&H", icon:"factory",
+   desc:"Documentación del Área G&H.", items:[] },
+ { name:"Documentación Obsoleta", icon:"folder",
+   desc:"Documentos obsoletos retirados del sistema (retención controlada).", items:[] },
 ];
 
-// Enlaces rápidos relacionados (otras páginas del proyecto)
-const QUICKLINKS = [
-  { name:"Inspección en Tiempo Real", url:"index.html" },
-  { name:"Dashboard de Calidad", url:"dashboard.html" },
-  { name:"QC por Lotes", url:"qc-lotes.html" },
-];
 </script>
 
 <div class="topbar">
-  <div class="logo" onclick="goRoot()" style="cursor:pointer"><img src="img/techshop.svg" alt="TechShop International S.A." class="brand-logo"></div>
+  <div class="logo" onclick="goRoot()" style="cursor:pointer"><img src="img/techshop-topbar.png" alt="TechShop International S.A." class="brand-logo"></div>
   <div class="site" id="siteName" onclick="goRoot()" style="cursor:pointer">Sistema de Calidad</div>
   <div class="search"><input id="q" placeholder="Buscar en el Sistema de Calidad…" oninput="onSearch()"></div>
 </div>
@@ -169,7 +178,14 @@ const QUICKLINKS = [
       <p>Nos esforzamos por alcanzar la excelencia y diferenciarnos de nuestros competidores mediante la entrega oportuna de productos conformes a precios competitivos.</p>
     </div>
     <div class="hero" id="hero" style="display:none">
-      <img class="hero-img" src="img/hero-final.jpg" alt="Política de Calidad — TechShop International S.A.">
+      <img class="hero-img" src="img/hero-oficial.jpg" alt="Política de Calidad — TechShop International S.A.">
+      <div class="cert-card">
+        <img class="cert-img" src="img/certificado.jpg?v=2" alt="Certificado de Registro AS9100D / ISO 9001:2015 — Amtivo">
+        <div class="cert-cap">
+          <div class="t">AS9100D · ISO 9001:2015</div>
+          <div class="s">Sistema de Gestión de Calidad Certificado</div>
+        </div>
+      </div>
     </div>
     <div class="crumbs" id="crumbs"></div>
     <div class="areadesc" id="areadesc"></div>
@@ -226,17 +242,11 @@ function navRow(tag,_iconName,label){
 }
 function buildNav(){
   const n=$("sidenav"); n.innerHTML="";
-  const home=navRow("div","home","Página Principal"); home.classList.add("act"); home.onclick=()=>{goRoot();}; n.appendChild(home);
+  const home=navRow("div","home","Portal del Sistema Integrado de Gestión"); home.classList.add("act"); home.onclick=()=>{goRoot();}; n.appendChild(home);
   TREE.forEach((area,i)=>{
     const it=navRow("div",area.icon||"folder",area.name);
     it.dataset.idx=i; it.onclick=()=>{ go([i]); };
     n.appendChild(it);
-  });
-  n.appendChild(el("div","nav-sep",""));
-  n.appendChild(el("div","nav-mini","Enlaces rápidos"));
-  QUICKLINKS.forEach(l=>{
-    const a=navRow("a","external",l.name); a.href=l.url;
-    n.appendChild(a);
   });
 }
 function el(tag,cls,txt){ const e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
@@ -259,8 +269,8 @@ function render(){
   highlightNav();
   renderCrumbs();
   const onRoot = (path.length===0);
-  $("hero").style.display = "none";
-  $("policy").style.display = onRoot ? "block":"none";
+  $("hero").style.display = onRoot ? "flex":"none";
+  $("policy").style.display = "none"; // la política ya está incluida en la imagen del banner
   $("crumbs").style.display = onRoot ? "none":"flex";
   $("areadesc").style.display = onRoot ? "none":"block";
   // En la portada solo se muestran política + imagen; la navegación está en el menú lateral.
@@ -295,7 +305,7 @@ function renderCrumbs(){
 function renderItems(items,treeRef){
   const list=$("doclist"); list.innerHTML="";
   const head=el("div","doc-head","");
-  head.innerHTML='<div>Nombre</div><div>Modificado</div><div>Modificado por</div><div></div>';
+  head.innerHTML='<div>Nombre del Documento</div><div>Revisión</div><div>Autor</div><div>Revisado por</div><div>Aprobado por</div>';
   list.appendChild(head);
 
   if(!items||items.length===0){
@@ -312,15 +322,13 @@ function renderItems(items,treeRef){
     if(!isFolder && it.ext){ const ex=el("span","ext","."+it.ext); txt.appendChild(ex); }
     name.appendChild(txt);
     if(!isFolder && !it.url){ name.appendChild(el("span","tag-falta","Falta enlace")); }
-    // Meta
-    const mod=el("div","doc-meta", isFolder ? "—" : (it.modified||"—"));
-    const by=el("div","doc-by",""); if(!isFolder && it.by){ const w=el("span","who",it.by); by.appendChild(w);} else { by.textContent=""; }
-    // Acción
-    const lk=el("div","doc-link","");
-    if(isFolder){ lk.innerHTML='<span class="open">Abrir ›</span>'; }
-    else if(it.url){ lk.innerHTML='<span class="open">Abrir ↗</span>'; }
+    // Metadatos del documento
+    const rev=el("div","doc-meta", isFolder ? "" : (it.rev||"—"));
+    const autor=el("div","doc-meta", isFolder ? "" : (it.autor||it.by||"—"));
+    const revisado=el("div","doc-meta", isFolder ? "" : (it.revisadoPor||"—"));
+    const aprobado=el("div","doc-meta", isFolder ? "" : (it.aprobadoPor||"—"));
 
-    row.appendChild(name); row.appendChild(mod); row.appendChild(by); row.appendChild(lk);
+    row.appendChild(name); row.appendChild(rev); row.appendChild(autor); row.appendChild(revisado); row.appendChild(aprobado);
 
     row.onclick=()=>{
       if(it._isArea){ go([i]); return; }
