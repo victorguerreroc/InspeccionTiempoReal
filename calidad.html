@@ -1,0 +1,380 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sistema de Calidad — TechShop International S.A.</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,Helvetica,sans-serif}
+body{background:#0d2d4a;color:#ffffff;font-size:15.4px;-webkit-font-smoothing:antialiased}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
+a{color:#f8c874;text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ===== Barra superior ===== */
+.topbar{background:#0d2d4a;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;height:56px;position:sticky;top:0;z-index:50}
+.topbar .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17.6px;letter-spacing:1.5px;text-transform:uppercase}
+.topbar .logo .brand-logo{height:36px;width:auto;display:block}
+.topbar .site{font-weight:500;font-size:14.3px;letter-spacing:2px;text-transform:uppercase;color:#ffffff}
+.topbar .search{flex:1;max-width:520px;margin:0 auto}
+.topbar .search input{width:100%;padding:9px 13px;border:1px solid #1a4060;border-radius:5px;font-size:14.3px;background:#112e4a;color:#ffffff}
+.topbar .search input::placeholder{color:#7d9cb8}
+.topbar .right{display:flex;align-items:center;gap:14px;font-size:13.2px}
+.topbar .right .badge{background:rgba(255,255,255,.1);padding:4px 11px;border-radius:14px;color:#fff}
+
+/* ===== Layout ===== */
+.shell{display:flex;height:calc(100vh - 56px)}
+.main{overflow-y:auto;scrollbar-width:none}
+.main::-webkit-scrollbar{width:0;display:none}
+.sidenav{width:248px;background:#0d2d4a;padding:14px 0;flex-shrink:0}
+.sidenav .nav-item{display:flex;align-items:center;padding:10px 20px;color:#ffffff;font-size:14.3px;cursor:pointer;border-left:3px solid transparent;line-height:1.35}
+.sidenav .nav-item:hover{background:#133550;color:#f8c874;text-decoration:none}
+.sidenav .nav-item.act{background:#133550;border-left-color:#f8c874;color:#f8c874;font-weight:600}
+.sidenav .nav-sep{height:1px;background:#163752;margin:10px 18px}
+.sidenav .nav-mini{padding:6px 20px;font-size:11px;color:#9db8d0;text-transform:uppercase;letter-spacing:1.5px}
+
+.main{flex:1;padding:26px 34px;min-width:0;display:flex;flex-direction:column;min-height:0}
+.main>*{flex-shrink:0}
+
+/* ===== Encabezado de área ===== */
+.crumbs{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;color:#ffffff;margin-bottom:5px;flex-wrap:wrap;letter-spacing:.5px;text-transform:uppercase}
+.crumbs .c{cursor:pointer;color:#f8c874}
+.crumbs .c:hover{text-decoration:underline}
+.crumbs .sep{color:#2c5478;font-weight:400}
+.crumbs .here{color:#ffffff;cursor:default}
+.areadesc{color:#ffffff;font-size:14.3px;margin-bottom:16px}
+
+/* ===== Hero ===== */
+.hero{display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:22px;flex:1 1 auto;min-height:0}
+.hero .hero-img{display:block;flex:0 0 auto;width:auto;max-width:72%;height:100%;object-fit:contain;
+ -webkit-mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 97%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 12%,#000 88%,transparent 100%);
+ -webkit-mask-composite:source-in;
+ mask-image:linear-gradient(to right,transparent 0,#000 14%,#000 97%,transparent 100%),linear-gradient(to bottom,transparent 0,#000 12%,#000 88%,transparent 100%);
+ mask-composite:intersect}
+.cert-card{flex:1 1 auto;min-width:0;max-height:100%;background:transparent;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cert-card .cert-img{width:100%;height:auto;flex:0 1 auto;min-height:0;object-fit:contain;border-radius:6px}
+.cert-card .cert-cap{text-align:center;padding-top:12px;flex-shrink:0}
+.cert-card .cert-cap .t{color:#ffffff;font-weight:800;font-size:16.5px;letter-spacing:.5px}
+.cert-card .cert-cap .s{color:#f8c874;font-size:12.7px;margin-top:4px}
+@media(max-width:980px){ .hero{flex-direction:column;align-items:center} .hero .hero-img{max-width:100%} .cert-card{flex:0 0 auto;width:100%;max-width:420px;max-height:none} .cert-card .cert-img{flex:0 0 auto} }
+
+/* ===== Policy div (oculta, incluida en overlay del hero) ===== */
+.policy{display:none!important}
+
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.toolbar .tcount{color:#ffffff;font-size:13.2px;margin-left:auto;letter-spacing:.5px}
+.btn{background:#112e4a;border:1px solid #1a4060;border-radius:5px;padding:8px 16px;font-size:13.2px;color:#ffffff;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:1px}
+.btn:hover{background:#133550;border-color:#244e70}
+.btn.primary{background:#f8c874;color:#0d2d4a;border-color:#f8c874}
+.btn.primary:hover{background:#e9b864;border-color:#e9b864}
+
+/* ===== Lista de documentos ===== */
+.doclist{background:#0d2d4a;border:1px solid #163752;border-radius:10px;overflow:hidden}
+.doc-head,.doc-row{display:grid;grid-template-columns:2.4fr .9fr 1.1fr 1.1fr 1.1fr;align-items:center;gap:10px;padding:12px 20px}
+.doc-head{background:#0d2d4a;border-bottom:1px solid #163752;font-size:11px;font-weight:700;color:#9db8d0;letter-spacing:1px}
+.doc-row{border-bottom:1px solid #133550;cursor:pointer;font-size:14.9px}
+.doc-row:last-child{border-bottom:none}
+.doc-row:hover{background:#112e4a}
+.doc-name{display:flex;align-items:center;min-width:0}
+.doc-name .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#ffffff}
+.doc-name .txt .ext{color:#9db8d0;font-weight:400;font-size:13.2px;margin-left:2px}
+.doc-meta{color:#ffffff;font-size:13.8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-by .who{display:inline-block;background:#112e4a;color:#ffffff;padding:2px 10px;border-radius:11px;font-size:12.7px}
+.doc-link{text-align:right}
+.doc-link .open{font-size:12.1px;color:#f8c874;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.tag-falta{background:#1e0808;color:#ff8a8a;border:1px solid #4a1818;padding:2px 8px;border-radius:10px;font-size:12.1px;font-weight:700;margin-left:8px}
+
+.empty{padding:46px 20px;text-align:center;color:#ffffff}
+
+.foot{margin-top:auto;border-top:1px solid #163752;padding:16px 0 12px;text-align:center}
+.foot-links a{color:#ffffff;font-size:13.2px;letter-spacing:.5px;text-transform:uppercase}
+.foot-links a:hover{color:#f8c874}
+.foot-dot{margin:0 10px;color:#163752}
+.foot-cr{color:#ffffff;font-size:12.1px;margin-top:8px;letter-spacing:.5px}
+
+@media(max-width:820px){
+ .sidenav{display:none}
+ .topbar .search{display:none}
+ .doc-head,.doc-row{grid-template-columns:2fr .9fr}
+ .doc-head>div:nth-child(n+3),.doc-row>div:nth-child(n+3){display:none}
+}
+</style></head><body>
+
+<!-- ============================================================
+     BLOQUE DE CONFIGURACIÓN — EDITE AQUÍ
+     ------------------------------------------------------------
+     Cada carpeta de primer nivel es un objeto en TREE.
+     Para AGREGAR un documento, añada un item a "items":
+        { name:"Mi Documento", ext:"pdf", url:"<ENLACE SHAREPOINT>",
+          rev:"A", autor:"Nombre", revisadoPor:"Nombre", aprobadoPor:"Nombre" }
+     Para AGREGAR una subcarpeta:
+        { name:"Subcarpeta", folder:true, items:[ ... ] }
+     Deje url vacío ("") y aparecerá la etiqueta "Falta enlace".
+     ============================================================ -->
+<script>
+const SITE = { company:"TechShop International S.A.", site:"Sistema de Calidad", mark:"TS" };
+
+// Pegue aquí el enlace raíz de la biblioteca de SharePoint (opcional, para el botón "Abrir en SharePoint")
+const SHAREPOINT_ROOT = "";
+
+// Las 11 áreas viven DENTRO de "Documentos".
+const AREAS = [
+  { name:"Portal del Sistema Integrado de Gestión", folder:true, items:[] },
+  { name:"Operaciones de Manufactura",  folder:true, items:[] },
+  { name:"Gestión Financiera y Administrativa", folder:true, items:[] },
+  { name:"Aseguramiento de la Calidad", folder:true, items:[] },
+  { name:"Gestión del Talento Humano", folder:true, items:[] },
+  { name:"Desarrollo de Negocios", folder:true, items:[] },
+  { name:"Gestión de Mantenimiento", folder:true, items:[] },
+  { name:"Gestión de Abastecimiento", folder:true, items:[] },
+  { name:"Laboratorio y Metrología", folder:true, items:[] },
+  { name:"Seguridad, Salud y Ambiente", folder:true, items:[] },
+  { name:"Logística y Almacenamiento", folder:true, items:[] },
+];
+
+const TREE = [
+ { name:"Políticas y Directrices", icon:"shield",
+   desc:"Políticas y lineamientos internos de la empresa.", items:[] },
+ { name:"Información Documentada", icon:"documents",
+   desc:"Documentación por área de la empresa.", items:AREAS },
+ { name:"Información Documentada Externa", icon:"globe",
+   desc:"Normas, regulaciones y documentos de origen externo.", items:[] },
+ { name:"Especificaciones Técnicas de Material", icon:"flask",
+   desc:"Especificaciones y fichas técnicas de materiales.", items:[] },
+ { name:"Planos e Ingeniería", icon:"ruler",
+   desc:"Planos de producto (clientes e internos).", items:[
+     { name:"Planos de Clientes", folder:true, items:[] },
+     { name:"Planos Internos", folder:true, items:[] },
+   ]},
+ { name:"Programa de Auditorías Internas", icon:"search",
+   desc:"Programa, planes y reportes de auditorías internas.", items:[] },
+ { name:"Auditorías de Certificación y Clientes", icon:"clipboardCheck",
+   desc:"Reportes y seguimiento de auditorías externas / de cliente.", items:[] },
+ { name:"Gestión de No Conformidades", icon:"alert",
+   desc:"Registro y seguimiento de no conformidades (NC).", items:[] },
+ { name:"Acciones Correctivas y Mejora Continua", icon:"wrench",
+   desc:"Acciones correctivas y preventivas (CAPA).", items:[] },
+ { name:"Documentación G&H", icon:"factory",
+   desc:"Documentación del Área G&H.", items:[] },
+ { name:"Documentación Obsoleta", icon:"folder",
+   desc:"Documentos obsoletos retirados del sistema (retención controlada).", items:[] },
+];
+
+</script>
+
+<div class="topbar">
+  <div class="logo" onclick="goRoot()" style="cursor:pointer"><img src="img/techshop-topbar.png" alt="TechShop International S.A." class="brand-logo"></div>
+  <div class="site" id="siteName" onclick="goRoot()" style="cursor:pointer">Sistema de Calidad</div>
+  <div class="search"><input id="q" placeholder="Buscar en el Sistema de Calidad…" oninput="onSearch()"></div>
+</div>
+
+<div class="shell">
+  <nav class="sidenav" id="sidenav"></nav>
+  <main class="main">
+    <div class="policy" id="policy" style="display:none">
+      <div class="ph">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <h2>Política de Calidad</h2>
+        <span class="norm">Norma AS9100</span>
+      </div>
+      <p>Estamos comprometidos a suministrar ensambles y componentes mecanizados excediendo las expectativas de nuestros clientes y cumpliendo los requisitos legales y reglamentarios, y a mejorar continuamente nuestro Sistema de Gestión de Calidad basado en la norma <span class="mark">AS9100</span>.</p>
+      <p>Nos esforzamos por alcanzar la excelencia y diferenciarnos de nuestros competidores mediante la entrega oportuna de productos conformes a precios competitivos.</p>
+    </div>
+    <div class="hero" id="hero" style="display:none">
+      <img class="hero-img" src="img/hero-oficial.jpg" alt="Política de Calidad — TechShop International S.A.">
+      <div class="cert-card">
+        <img class="cert-img" src="img/certificado.jpg?v=2" alt="Certificado de Registro AS9100D / ISO 9001:2015 — Amtivo">
+        <div class="cert-cap">
+          <div class="t">AS9100D · ISO 9001:2015</div>
+          <div class="s">Sistema de Gestión de Calidad Certificado</div>
+        </div>
+      </div>
+    </div>
+    <div class="crumbs" id="crumbs"></div>
+    <div class="areadesc" id="areadesc"></div>
+    <div class="toolbar" id="toolbar">
+      <button class="btn primary" id="spBtn" onclick="openSharePoint()" style="display:none">↗ Abrir en SharePoint</button>
+      <span class="tcount" id="tcount"></span>
+    </div>
+    <div class="doclist" id="doclist"></div>
+    <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let path=[]; // ruta de índices dentro del árbol; [] = raíz (lista de áreas)
+let searchMode=false;
+
+// ===== Iconos vectoriales (línea, estilo Lucide) — incrustados, sin dependencias =====
+const ICONS={
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.7V21h14V9.7"/><path d="M9.5 21v-6h5v6"/>',
+  documents:'<rect x="3" y="8" width="13" height="13" rx="2"/><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3"/>',
+  folder:'<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  ruler:'<path d="M3.5 16.5 16.5 3.5l4 4-13 13z"/><path d="M7 13l1.8 1.8"/><path d="M10.5 9.5l1.8 1.8"/><path d="M14 6l1.8 1.8"/>',
+  flask:'<path d="M9 3h6"/><path d="M10 3v6.2L5.2 18A2 2 0 0 0 7 21h10a2 2 0 0 0 1.8-3L14 9.2V3"/><path d="M8 15h8"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.8 3 2.8 15 0 18"/><path d="M12 3c-2.8 3-2.8 15 0 18"/>',
+  shield:'<path d="M12 3 5 6v5c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  factory:'<path d="M3 21V10l6 4V10l6 4V6l6 3v12z"/><path d="M3 21h18"/><path d="M8 17h2"/><path d="M14 17h2"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  clipboardCheck:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9z"/><path d="m9 13 2 2 4-4"/>',
+  wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18.3 5.7 21l6.6-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.3-.4-.4-2.3z"/>',
+  alert:'<path d="M10.3 4 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  external:'<path d="M15 3h6v6"/><path d="M21 3 11 13"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>',
+  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  fileText:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h5"/>'
+};
+function svgIcon(name){ const p=ICONS[name]||ICONS.file; return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'; }
+
+// Icono por extensión de archivo
+const EXT_ICO={pdf:"fileText",docx:"fileText",doc:"fileText",xlsx:"fileText",xls:"fileText",pptx:"fileText",ppt:"fileText",csv:"fileText",txt:"fileText"};
+function icoFor(it){ if(it.folder||it.items||it._isArea) return "folder"; return EXT_ICO[(it.ext||"").toLowerCase()]||"file"; }
+
+function init(){
+  $("siteName").textContent=SITE.site;
+  $("foot").textContent=SITE.company+" · "+SITE.site;
+  if(SHAREPOINT_ROOT) $("spBtn").style.display="inline-flex";
+  buildNav();
+  render();
+}
+
+function navRow(tag,_iconName,label){
+  const e=document.createElement(tag); e.className="nav-item";
+  const tx=document.createElement("span"); tx.textContent=label;
+  e.appendChild(tx); return e;
+}
+function buildNav(){
+  const n=$("sidenav"); n.innerHTML="";
+  const home=navRow("div","home","Portal del Sistema Integrado de Gestión"); home.classList.add("act"); home.onclick=()=>{goRoot();}; n.appendChild(home);
+  TREE.forEach((area,i)=>{
+    const it=navRow("div",area.icon||"folder",area.name);
+    it.dataset.idx=i; it.onclick=()=>{ go([i]); };
+    n.appendChild(it);
+  });
+}
+function el(tag,cls,txt){ const e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+
+// ===== Navegación =====
+function nodeAt(p){ let cur={items:TREE}; for(const i of p){ cur=cur.items[i]; } return cur; }
+function goRoot(){ $("q").value=""; searchMode=false; path=[]; render(); }
+function go(p){ $("q").value=""; searchMode=false; path=p.slice(); render(); }
+
+function highlightNav(){
+  const items=document.querySelectorAll(".sidenav .nav-item");
+  if(!items.length) return; // sin barra lateral
+  items.forEach(x=>x.classList.remove("act"));
+  if(path.length===0){ items[0].classList.add("act"); }
+  else { const t=document.querySelector('.sidenav .nav-item[data-idx="'+path[0]+'"]'); if(t)t.classList.add("act"); }
+}
+
+// ===== Render =====
+function render(){
+  highlightNav();
+  renderCrumbs();
+  const onRoot = (path.length===0);
+  $("hero").style.display = onRoot ? "flex":"none";
+  $("policy").style.display = "none"; // la política ya está incluida en la imagen del banner
+  $("crumbs").style.display = onRoot ? "none":"flex";
+  $("areadesc").style.display = onRoot ? "none":"block";
+  // En la portada solo se muestran política + imagen; la navegación está en el menú lateral.
+  $("toolbar").style.display = onRoot ? "none":"flex";
+  $("doclist").style.display = onRoot ? "none":"block";
+  if(onRoot){ return; }
+  const node=nodeAt(path);
+  $("areadesc").textContent=node.desc||"";
+  $("spBtn").style.display = SHAREPOINT_ROOT ? "inline-flex":"none";
+  renderItems(node.items||[]);
+}
+
+function renderRoot(){
+  $("areadesc").textContent="Documentación del Sistema de Gestión de Calidad. Seleccione un área para ver sus documentos.";
+  $("spBtn").style.display = SHAREPOINT_ROOT ? "inline-flex":"none";
+  renderItems(TREE.map(a=>({ name:a.name, folder:true, icon:a.icon, _isArea:true })), TREE);
+}
+
+function renderCrumbs(){
+  const c=$("crumbs"); c.innerHTML="";
+  const root=el("span","c","Documentos"); root.onclick=goRoot; c.appendChild(root);
+  let acc=[];
+  path.forEach((idx,k)=>{
+    acc.push(idx);
+    c.appendChild(el("span","sep","›"));
+    const node=nodeAt(acc);
+    if(k===path.length-1){ c.appendChild(el("span","here",node.name)); }
+    else { const s=el("span","c",node.name); const snap=acc.slice(); s.onclick=()=>go(snap); c.appendChild(s); }
+  });
+}
+
+function renderItems(items,treeRef){
+  const list=$("doclist"); list.innerHTML="";
+  const head=el("div","doc-head","");
+  head.innerHTML='<div>Nombre del Documento</div><div>Revisión</div><div>Autor</div><div>Revisado por</div><div>Aprobado por</div>';
+  list.appendChild(head);
+
+  if(!items||items.length===0){
+    const e=el("div","empty",""); e.innerHTML='<div>Esta carpeta está vacía.</div><div style="font-size:12px;margin-top:6px">Agregue documentos en el bloque de configuración del archivo.</div>';
+    list.appendChild(e); $("tcount").textContent="0 elementos"; return;
+  }
+
+  items.forEach((it,i)=>{
+    const isFolder = it.folder || it.items || it._isArea;
+    const row=el("div","doc-row","");
+    // Nombre
+    const name=el("div","doc-name","");
+    const txt=el("span","txt",""); txt.textContent=it.name;
+    if(!isFolder && it.ext){ const ex=el("span","ext","."+it.ext); txt.appendChild(ex); }
+    name.appendChild(txt);
+    if(!isFolder && !it.url){ name.appendChild(el("span","tag-falta","Falta enlace")); }
+    // Metadatos del documento
+    const rev=el("div","doc-meta", isFolder ? "" : (it.rev||"—"));
+    const autor=el("div","doc-meta", isFolder ? "" : (it.autor||it.by||"—"));
+    const revisado=el("div","doc-meta", isFolder ? "" : (it.revisadoPor||"—"));
+    const aprobado=el("div","doc-meta", isFolder ? "" : (it.aprobadoPor||"—"));
+
+    row.appendChild(name); row.appendChild(rev); row.appendChild(autor); row.appendChild(revisado); row.appendChild(aprobado);
+
+    row.onclick=()=>{
+      if(it._isArea){ go([i]); return; }
+      if(isFolder){
+        if(searchMode){ go(it._path); return; }
+        go(path.concat(i)); return;
+      }
+      if(it.url){ window.open(it.url,"_blank"); }
+      else { alert('Aún no se ha asignado el enlace de SharePoint para:\n\n"'+it.name+'"\n\nEdite el bloque de configuración y pegue la URL en el campo url.'); }
+    };
+    list.appendChild(row);
+  });
+  $("tcount").textContent=items.length+(items.length===1?" elemento":" elementos");
+}
+
+// ===== Búsqueda =====
+function flatten(items,trail,pathIdx){
+  let out=[];
+  (items||[]).forEach((it,i)=>{
+    const node={...it, _trail:trail, _path:pathIdx.concat(i)};
+    out.push(node);
+    if(it.folder||it.items) out=out.concat(flatten(it.items,trail.concat(it.name),pathIdx.concat(i)));
+  });
+  return out;
+}
+function onSearch(){
+  const term=$("q").value.trim().toLowerCase();
+  if(!term){ searchMode=false; render(); return; }
+  searchMode=true; highlightNav();
+  $("hero").style.display="none";
+  $("policy").style.display="none";
+  $("crumbs").style.display="flex";
+  $("areadesc").style.display="block";
+  $("toolbar").style.display="flex";
+  $("doclist").style.display="block";
+  // construir índice plano a partir de TREE
+  const flat=flatten(TREE,[],[]);
+  const hits=flat.filter(n=>n.name.toLowerCase().includes(term));
+  $("crumbs").innerHTML='<span class="here">Resultados de búsqueda</span>';
+  $("areadesc").textContent='“'+$("q").value+'” — '+hits.length+' coincidencia(s)';
+  $("spBtn").style.display="none";
+  // anotar ruta legible
+  hits.forEach(h=>{ h.modified=h.modified|| (h._trail.length?h._trail.join(" › "):"Documentos"); });
+  renderItems(hits,true);
+}
+
+init();
+</script>
+</body></html>
