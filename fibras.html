@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Fibras — Cenizas · TechShop QC</title>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#232636;--border:#2e3247;
+  --accent:#4f8ef7;--green:#22c55e;--yellow:#eab308;--red:#ef4444;
+  --c1:#7c3aed;--c2:#0891b2;
+  --text:#e2e8f0;--muted:#6b7280;--white:#fff;
+  --radius:10px;--btm-h:62px;
+}
+html,body{height:100%;overscroll-behavior:none}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;
+  display:flex;flex-direction:column;max-width:1200px;margin:0 auto;
+  box-shadow:0 0 60px rgba(0,0,0,.5)}
+
+/* TOP */
+.top{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:100;flex-shrink:0;min-height:40px}
+.logo{font-weight:800;font-size:14px;color:var(--white);white-space:nowrap;margin-right:4px}
+.logo span{color:var(--accent)}
+.nav-tabs{display:flex;gap:2px;flex:1}
+.ntab{padding:5px 10px;border-radius:6px;border:none;background:transparent;
+  color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;transition:.15s;white-space:nowrap}
+.ntab.active{background:var(--accent);color:#fff}
+.ntab:hover:not(.active){color:var(--text)}
+#fbadge{font-size:11px;padding:4px 9px;border-radius:20px;border:1px solid;cursor:pointer;
+  white-space:nowrap;transition:.2s;flex-shrink:0}
+#fbadge.ok{background:#14532d22;border-color:#22c55e55;color:var(--green)}
+#fbadge.none{background:#78350f22;border-color:#eab30855;color:var(--yellow)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:6px 8px 8px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.main::-webkit-scrollbar{display:none}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* FOLDER BANNER */
+.fbanner{background:var(--surface);border:2px dashed var(--border);border-radius:var(--radius);
+  padding:24px 16px;text-align:center;margin-bottom:14px}
+.fbanner .fi{font-size:36px;margin-bottom:8px}
+.fbanner h3{font-size:14px;font-weight:700;margin-bottom:5px}
+.fbanner p{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.fpath{font-size:10px;color:var(--accent);background:#0f1117;padding:6px 10px;
+  border-radius:6px;margin-bottom:12px;word-break:break-all;line-height:1.5}
+
+/* SECTION HEADERS */
+.sec{display:flex;align-items:center;gap:8px;margin-bottom:10px;margin-top:4px}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  white-space:nowrap;padding:3px 10px;border-radius:20px}
+.sec-gen{background:#1e293b;color:#94a3b8;border:1px solid var(--border)}
+.sec-c1{background:#3b0764;color:#c4b5fd;border:1px solid #7c3aed55}
+.sec-c2{background:#083344;color:#a5f3fc;border:1px solid #0891b255}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px;margin-bottom:6px}
+.card.c1{border-color:#7c3aed44}
+.card.c2{border-color:#0891b244}
+
+/* FIELDS */
+.fl{margin-bottom:5px}
+.fl:last-child{margin-bottom:0}
+.fl label{font-size:10px;color:var(--muted);display:block;margin-bottom:2px;font-weight:600}
+.fl input,.fl select{width:100%;background:var(--surface2);border:1.5px solid var(--border);
+  color:var(--text);border-radius:6px;padding:5px 7px;font-size:12px;outline:none;
+  transition:.15s;font-family:inherit;-webkit-appearance:none}
+
+/* 2-COL FIELDS WITHIN CARD */
+.card-fields{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.fl input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,142,247,.12)}
+.fl input[readonly]{opacity:.55;background:var(--surface);cursor:default}
+.fl input.c1{color:#c4b5fd;font-weight:700}
+.fl input.c1:focus{border-color:var(--c1);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.fl input.c2{color:#a5f3fc;font-weight:700}
+.fl input.c2:focus{border-color:var(--c2);box-shadow:0 0 0 3px rgba(8,145,178,.15)}
+.fl input.res{font-weight:800;font-size:16px}
+.fl input.res.c1{color:#a78bfa}
+.fl input.res.c2{color:#67e8f9}
+.gr2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* PCT BOX */
+.pct-box{border-radius:6px;padding:6px;text-align:center;margin-top:4px}
+.pct-box .pl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
+.pct-box .pv{font-size:20px;font-weight:800;font-family:monospace}
+.pct-box.c1b{background:#3b076422;border:1px solid #7c3aed44}
+.pct-box.c1b .pl{color:#a78bfa}.pct-box.c1b .pv{color:#c4b5fd}
+.pct-box.c2b{background:#08334422;border:1px solid #0891b244}
+.pct-box.c2b .pl{color:#67e8f9}.pct-box.c2b .pv{color:#a5f3fc}
+
+/* BUTTONS */
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:14px;
+  font-weight:700;cursor:pointer;transition:.15s;display:flex;align-items:center;
+  justify-content:center;gap:7px}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.88}
+.btn-s{background:var(--green);color:#fff}.btn-s:hover{opacity:.88}
+.btn-rc{background:var(--green);color:#fff;width:100%;padding:16px;font-size:16px;font-weight:700;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;letter-spacing:.3px}.btn-rc:hover{opacity:.88}.btn-rc:active{transform:scale(.98)}
+.btn-g{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-g:hover{color:var(--text);border-color:var(--text)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.brow{display:flex;gap:8px;margin-top:6px}
+.brow .btn{flex:1}
+.bsm{padding:9px 13px;font-size:12px;border-radius:8px;width:auto}
+
+/* HORIZONTAL LAYOUT */
+.horiz-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:stretch}
+.horiz-grid .card{display:flex;flex-direction:column}
+.horiz-grid .card .card-fields{flex:1}
+
+/* VISCOSIDAD SPEC */
+.vis-spec{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.vis-param{background:var(--surface2);border-radius:6px;padding:5px 8px;display:flex;flex-direction:column;gap:1px}
+.vis-full{grid-column:span 2}
+.vis-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.vis-val{font-size:12px;font-weight:700;color:var(--text);font-family:monospace}
+.vis-badge{margin-top:6px;text-align:center;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700}
+.vis-ok{background:#14532d22;color:#22c55e;border:1px solid #22c55e44}
+.vis-fail{background:#7f1d1d22;color:#ef4444;border:1px solid #ef444444}
+
+/* CHART */
+.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px;margin-top:8px;display:none}
+.chart-section.visible{display:block}
+.chart-title{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.7px;margin-bottom:10px;text-align:center}
+.chart-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end}
+.bar-group{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-row{display:flex;align-items:flex-end;gap:6px;height:80px;width:100%;justify-content:center}
+.bar{width:36px;border-radius:4px 4px 0 0;transition:.4s;position:relative;min-height:2px}
+.bar-c1{background:linear-gradient(to top,#7c3aed,#a78bfa)}
+.bar-c2{background:linear-gradient(to top,#0891b2,#67e8f9)}
+.bar-val{font-size:9px;font-weight:700;text-align:center;font-family:monospace}
+.bar-lbl{font-size:9px;color:var(--muted);text-align:center}
+.diff-badge{text-align:center;margin-top:8px;font-size:11px;font-weight:700;font-family:monospace;
+  padding:4px 10px;border-radius:20px;display:inline-block}
+.diff-ok{background:#14532d22;color:#22c55e;border:1px solid #22c55e44}
+.diff-warn{background:#78350f22;color:#eab308;border:1px solid #eab30844}
+.horiz-bottom{margin-top:10px}
+@media(max-width:700px){.horiz-grid{grid-template-columns:1fr}}
+
+/* COMPARISON */
+.cmp{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px;margin-bottom:10px}
+.cmp-row{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.cmp-row:last-child{border-bottom:none}
+.cmp-lbl{color:var(--muted);font-size:12px}
+.cmp-vals{display:flex;gap:14px}
+.cv1{color:#c4b5fd;font-weight:700;font-family:monospace;min-width:60px;text-align:right}
+.cv2{color:#a5f3fc;font-weight:700;font-family:monospace;min-width:60px;text-align:right}
+
+/* HISTORY */
+.hi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px;margin-bottom:9px}
+.hi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.hi-id{font-size:13px;font-weight:700}
+.hi-dt{font-size:11px;color:var(--muted)}
+.hi-caps{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600}
+.t-c1{background:#3b0764;color:#c4b5fd}
+.t-c2{background:#083344;color:#a5f3fc}
+.t-ok{background:#14532d;color:#86efac}
+.hi-sub{font-size:11px;color:var(--muted)}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .ei{font-size:40px;margin-bottom:10px}
+.empty p{font-size:13px;line-height:1.6}
+
+/* TOAST */
+#toast{position:fixed;bottom:calc(var(--btm-h) + 6px);left:50%;transform:translateX(-50%);
+  z-index:600;pointer-events:none;width:calc(100% - 24px);max-width:480px;
+  display:flex;flex-direction:column;gap:5px}
+.ti{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:11px 14px;font-size:13px;animation:su .2s ease;text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.ti.ok{border-color:var(--green);color:var(--green)}
+.ti.er{border-color:var(--red);color:var(--red)}
+.ti.wa{border-color:var(--yellow);color:var(--yellow)}
+@keyframes su{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#ov.h{display:none}
+.spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:sp .75s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* CAPS GRID — lado a lado */
+.caps-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.caps-grid .card{margin-bottom:0}
+.caps-grid .fl input{font-size:13px;padding:8px 7px}
+.caps-grid label{font-size:10px}
+.caps-grid .pct-box .pv{font-size:22px}
+
+@media print{.btm,.top,.btn{display:none!important}.page{display:block!important}
+  body{max-width:100%;box-shadow:none}}
+
+/* CERTIFICADO */
+.cert-controls{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:10px}
+.cert-mod-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.cert-mod-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.cert-mod-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.cert-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px}
+@media(max-width:700px){.cert-row{grid-template-columns:1fr 1fr}}
+.cert-action-row{display:flex;gap:8px;margin-top:8px}
+.cert-action-row .btn{flex:1;padding:10px;font-size:13px}
+
+.cert-paper{background:#fff;color:#111;font-family:Arial,sans-serif;border-radius:4px;
+  box-shadow:0 4px 32px rgba(0,0,0,.5);padding:24px 28px;max-width:900px;margin:0 auto;
+  border:1px solid #ccc;font-size:10.5px;line-height:1.4}
+.cert-hdr-tbl{width:100%;border-collapse:collapse;border:1.5px solid #111;margin-bottom:0}
+.cert-hdr-tbl td{padding:8px 10px;vertical-align:middle}
+.cert-hdr-left{width:220px;border-right:1.5px solid #111;font-size:9px;line-height:1.4;color:#222}
+.cert-hdr-left img{max-width:180px;max-height:55px;display:block;margin-bottom:4px}
+.cert-hdr-title{text-align:center;font-size:16px;font-weight:800;text-transform:uppercase;
+  letter-spacing:1px;padding:10px}
+.cert-divider{border:none;border-top:1.5px solid #111;margin:0}
+.cert-body-text{font-size:10px;text-align:justify;padding:7px 0;border-bottom:1px solid #bbb;
+  margin-bottom:6px;line-height:1.5}
+.cert-fields{width:100%;border-collapse:collapse;margin:6px 0}
+.cert-fields td{border:1px solid #bbb;padding:4px 8px;font-size:10.5px}
+.cert-fields .lbl{font-weight:700;background:#f5f5f5;width:160px;white-space:nowrap}
+.cert-section-title{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  text-align:center;padding:4px;background:#e8e8e8;border:1px solid #bbb;margin:8px 0 5px;color:#111}
+.cert-checks{display:flex;gap:24px;padding:6px 4px;font-size:10.5px;flex-wrap:wrap}
+.cert-checks span{display:flex;align-items:center;gap:5px}
+.cert-chk{font-size:13px;line-height:1}
+.cert-table{width:100%;border-collapse:collapse;font-size:9.5px;margin-top:4px}
+.cert-table th{background:#333;color:#fff;font-weight:700;padding:4px 6px;text-align:center;border:1px solid #555}
+.cert-table td{border:1px solid #bbb;padding:3px 6px;text-align:center;vertical-align:middle}
+.cert-table tr:nth-child(even) td{background:#f8f8f8}
+.cert-ok{color:#166534;font-weight:700}.cert-fail{color:#991b1b;font-weight:700}
+.cert-sig{width:100%;border-collapse:collapse;margin-top:14px}
+.cert-sig td{padding:8px 10px;vertical-align:bottom;font-size:10.5px;width:33%}
+.cert-sig .sig-line{border-top:1px solid #111;padding-top:4px;margin-top:20px;font-weight:700}
+.cert-doc-footer{font-size:9px;color:#777;text-align:right;margin-top:8px;border-top:1px solid #ddd;
+  padding-top:4px}
+
+#cert-preview{display:none;margin-top:10px}
+#cert-preview.visible{display:block}
+.cert-btn-row{display:flex;gap:8px;margin-top:8px;max-width:900px;margin-left:auto;margin-right:auto}
+.cert-btn-row .btn{flex:1;padding:11px;font-size:13px}
+
+@media print{
+  body > *:not(#mainArea){display:none!important}
+  #mainArea > *:not(.active){display:none!important}
+  .page.active > *:not(#cert-preview){display:none!important}
+  #cert-preview{display:block!important}
+  .cert-paper{box-shadow:none!important;margin:0!important;border:none!important}
+}
+
+/* TREND CHARTS */
+.trend-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-top:8px}
+.trend-title{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.trend-canvas{width:100%;height:170px;display:block;cursor:default}
+.trend-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.chart-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.cf-btn{padding:3px 9px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:.15s}
+.cf-btn:hover,.cf-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.cf-date{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:3px 6px;font-size:11px;width:112px}
+.cf-sep{color:var(--muted);font-size:11px}
+.cf-count{margin-left:auto;font-size:10px;color:var(--muted);font-family:monospace}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">Tech<span>shop</span> · Fibras</div>
+  <div class="nav-tabs">
+    <button class="ntab active" id="nt0" onclick="showPage(0)">Cenizas</button>
+    <button class="ntab" id="nt3" onclick="showPage(3)">Viscosidad</button>
+    <button class="ntab" id="nt4" onclick="showPage(4)">DSC</button>
+    <button class="ntab" id="nt1" onclick="showPage(1)">Historial</button>
+    <button class="ntab" id="nt2" onclick="showPage(2)">Config</button>
+    <button class="ntab" id="nt5" onclick="showPage(5)">Certificado</button>
+  </div>
+  <div id="fbadge" class="none" onclick="pickFolder()">📁 Carpeta</div>
+</div>
+
+<div class="main" id="mainArea">
+
+  <!-- ── PÁGINA: NUEVO REGISTRO ─────────────────────────── -->
+  <div class="page active" id="pgE">
+
+    <!-- FORM -->
+    <div id="formWrap">
+      <div class="horiz-grid">
+
+      <!-- DATOS GENERALES -->
+      <div class="card">
+        <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;text-align:center;background:#1e293b;padding:4px;border-radius:6px">Datos Generales</div>
+        <div class="card-fields" style="gap:3px">
+          <div class="fl" style="grid-column:span 2"><label>N° Prueba</label>
+            <input id="g_nprueba" type="text" readonly style="color:var(--accent);font-weight:800;font-family:monospace;opacity:1;background:var(--surface2)" placeholder="Auto…"></div>
+          <div class="fl"><label>Fecha</label><input id="g_fecha" type="date"></div>
+          <div class="fl"><label>OP</label><input id="g_op" type="text" placeholder="OP #" autocomplete="off"></div>
+          <div class="fl"><label>Lote de mandrell</label><input id="g_lote" type="text" placeholder="Lote" autocomplete="off"></div>
+          <div class="fl"><label>Heat</label><input id="g_heat" type="text" placeholder="Heat #" autocomplete="off"></div>
+          <div class="fl"><label>N° Parte</label><input id="g_ncap" type="text" placeholder="N° Parte" autocomplete="off"></div>
+          <div class="fl"><label>Temperatura (°C)</label>
+            <input id="g_temp" type="number" step="1" placeholder="565" value="565" inputmode="decimal"></div>
+          <div class="fl"><label>Tiempo de prueba (min)</label>
+            <input id="g_tiempo" type="number" step="1" placeholder="min" inputmode="decimal"></div>
+        </div>
+        <button class="btn btn-rc" id="btnGuardar" onclick="guardar()" style="margin-top:5px;padding:7px;font-size:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Registro Completado
+        </button>
+
+        <!-- COMPARACIÓN -->
+        <div id="cmpBox" class="cmp" style="display:none;margin-top:8px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+            color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between">
+            <span>Comparativa</span>
+            <span style="display:flex;gap:12px">
+              <span style="color:#c4b5fd">Cáp. 1</span>
+              <span style="color:#a5f3fc">Cáp. 2</span>
+            </span>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-lbl">Muestra (g)</span>
+            <div class="cmp-vals"><span class="cv1" id="cm_m1">—</span><span class="cv2" id="cm_m2">—</span></div>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-lbl">Residuo (g)</span>
+            <div class="cmp-vals"><span class="cv1" id="cm_r1">—</span><span class="cv2" id="cm_r2">—</span></div>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-lbl">% Cenizas</span>
+            <div class="cmp-vals"><span class="cv1" id="cm_p1">—</span><span class="cv2" id="cm_p2">—</span></div>
+          </div>
+          <div class="cmp-row" id="cmpDiff">
+            <span class="cmp-lbl">Diferencia %</span>
+            <div class="cmp-vals" style="flex:1;justify-content:flex-end"><span id="cm_diff" style="font-weight:700;font-family:monospace">—</span></div>
+          </div>
+        </div>
+      </div>
+
+        <!-- C1 -->
+        <div class="card c1" style="min-width:0">
+          <div style="font-size:10px;font-weight:800;color:#c4b5fd;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;text-align:center;background:#3b076433;padding:4px;border-radius:6px">Cápsula 1</div>
+          <div class="card-fields">
+            <div class="fl"><label>Cápsula vacía (g)</label>
+              <input id="c1_vacia" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calc(1)"></div>
+            <div class="fl"><label>Cápsula + muestra (g)</label>
+              <input id="c1_bruta" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcFromBruta(1)" class="c1"></div>
+            <div class="fl" style="grid-column:span 2"><label>Peso Muestra (g)</label>
+              <input id="c1_muestra" type="number" step="0.0001" placeholder="auto" readonly class="c1"></div>
+            <div class="fl"><label>Peso 15 min (g)</label>
+              <input id="c1_p15" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcStages(1)" class="c1"></div>
+            <div class="fl"><label>Reducción 15 min (g)</label>
+              <input id="c1_red" type="number" step="0.0001" placeholder="auto" readonly class="c1 res"></div>
+            <div class="fl"><label>Peso confirmación (g)</label>
+              <input id="c1_pconf" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcStages(1)" class="c1"></div>
+            <div class="fl"><label>Confirmación (g)</label>
+              <input id="c1_conf" type="number" step="0.0001" placeholder="auto" readonly class="c1 res"></div>
+            <div class="fl"><label>Residuo (g)</label>
+              <input id="c1_residuo" type="number" step="0.0001" placeholder="auto" readonly class="c1"></div>
+          </div>
+          <div class="pct-box c1b">
+            <div class="pl">% Cenizas</div>
+            <div class="pv" id="c1_pct">—</div>
+          </div>
+        </div>
+
+        <!-- C2 -->
+        <div class="card c2" style="min-width:0">
+          <div style="font-size:10px;font-weight:800;color:#a5f3fc;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;text-align:center;background:#08334433;padding:4px;border-radius:6px">Cápsula 2</div>
+          <div class="card-fields">
+            <div class="fl"><label>Cápsula vacía (g)</label>
+              <input id="c2_vacia" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calc(2)"></div>
+            <div class="fl"><label>Cápsula + muestra (g)</label>
+              <input id="c2_bruta" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcFromBruta(2)" class="c2"></div>
+            <div class="fl" style="grid-column:span 2"><label>Peso Muestra (g)</label>
+              <input id="c2_muestra" type="number" step="0.0001" placeholder="auto" readonly class="c2"></div>
+            <div class="fl"><label>Peso 15 min (g)</label>
+              <input id="c2_p15" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcStages(2)" class="c2"></div>
+            <div class="fl"><label>Reducción 15 min (g)</label>
+              <input id="c2_red" type="number" step="0.0001" placeholder="auto" readonly class="c2 res"></div>
+            <div class="fl"><label>Peso confirmación (g)</label>
+              <input id="c2_pconf" type="number" step="0.0001" placeholder="0.0000" inputmode="decimal" oninput="calcStages(2)" class="c2"></div>
+            <div class="fl"><label>Confirmación (g)</label>
+              <input id="c2_conf" type="number" step="0.0001" placeholder="auto" readonly class="c2 res"></div>
+            <div class="fl"><label>Residuo (g)</label>
+              <input id="c2_residuo" type="number" step="0.0001" placeholder="auto" readonly class="c2"></div>
+          </div>
+          <div class="pct-box c2b">
+            <div class="pl">% Cenizas</div>
+            <div class="pv" id="c2_pct">—</div>
+          </div>
+        </div>
+
+      </div><!-- /horiz-grid -->
+
+      <!-- GRÁFICO COMPARATIVO -->
+      <div class="chart-section" id="chartBox">
+        <div class="chart-title">Comparativa Cápsula 1 vs Cápsula 2</div>
+        <div class="chart-wrap">
+          <!-- % Cenizas -->
+          <div style="text-align:center">
+            <div class="bar-row" id="barPct">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="bar-val" id="bv_p1">—</span>
+                <div class="bar bar-c1" id="bar_p1" style="height:2px"></div>
+                <span class="bar-lbl">Cáp. 1</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="bar-val" id="bv_p2">—</span>
+                <div class="bar bar-c2" id="bar_p2" style="height:2px"></div>
+                <span class="bar-lbl">Cáp. 2</span>
+              </div>
+            </div>
+            <div class="bar-lbl" style="margin-top:4px;font-weight:700">% Cenizas</div>
+            <div style="text-align:center;margin-top:6px">
+              <span class="diff-badge" id="diffBadge">—</span>
+            </div>
+          </div>
+          <!-- Residuo -->
+          <div style="text-align:center">
+            <div class="bar-row" id="barRes">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="bar-val" id="bv_r1">—</span>
+                <div class="bar bar-c1" id="bar_r1" style="height:2px"></div>
+                <span class="bar-lbl">Cáp. 1</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="bar-val" id="bv_r2">—</span>
+                <div class="bar bar-c2" id="bar_r2" style="height:2px"></div>
+                <span class="bar-lbl">Cáp. 2</span>
+              </div>
+            </div>
+            <div class="bar-lbl" style="margin-top:4px;font-weight:700">Residuo (g)</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /formWrap -->
+
+    <!-- GRÁFICO TENDENCIA CENIZAS -->
+    <div class="trend-card">
+      <div class="trend-title">
+        <span>Tendencia % Cenizas</span>
+        <span id="cen_chart_info" class="cf-count"></span>
+      </div>
+      <div class="chart-filter">
+        <button class="cf-btn" onclick="cfQuick('cen',7)">7D</button>
+        <button class="cf-btn active" onclick="cfQuick('cen',30)">30D</button>
+        <button class="cf-btn" onclick="cfQuick('cen',90)">3M</button>
+        <button class="cf-btn" onclick="cfQuick('cen',180)">6M</button>
+        <button class="cf-btn" onclick="cfQuick('cen',0)">Todo</button>
+        <span class="cf-sep">|</span>
+        <input type="date" id="cen_desde" class="cf-date" onchange="cfCustom('cen')">
+        <span class="cf-sep">→</span>
+        <input type="date" id="cen_hasta" class="cf-date" onchange="cfCustom('cen')">
+      </div>
+      <canvas id="chart_cen" class="trend-canvas"></canvas>
+    </div>
+
+  </div><!-- /pgE -->
+
+  <!-- ── PÁGINA: VISCOSIDAD ───────────────────────────────── -->
+  <div class="page" id="pgV">
+    <!-- 4 columnas: Datos Generales / Resina A / Catalizador B / Mezcla A+B -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;align-items:stretch;margin-bottom:8px">
+
+      <!-- Datos Generales -->
+      <div class="card">
+        <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;text-align:center;background:#1e293b;padding:4px;border-radius:6px">Datos Generales</div>
+        <div style="text-align:center;font-size:9px;color:var(--accent);font-family:monospace;font-weight:700;margin-bottom:5px;letter-spacing:.5px">Bonvoisin NDJ-8S · ASTM D2196-20</div>
+        <div class="card-fields" style="gap:3px">
+          <div class="fl" style="grid-column:span 2"><label>N° Prueba</label>
+            <input id="v_nprueba" type="text" readonly style="color:var(--accent);font-weight:800;font-family:monospace;opacity:1;background:var(--surface2)" placeholder="Auto…"></div>
+          <div class="fl"><label>Fecha</label><input id="v_fecha" type="date"></div>
+          <div class="fl"><label>OP</label><input id="v_op" type="text" placeholder="OP #" autocomplete="off"></div>
+          <div class="fl"><label>Lote de mandrell</label><input id="v_lote_m" type="text" placeholder="Lote" autocomplete="off"></div>
+          <div class="fl"><label>Heat</label><input id="v_heat" type="text" placeholder="Heat #" autocomplete="off"></div>
+          <div class="fl"><label>N° Parte</label><input id="v_nparte" type="text" placeholder="N° Parte" autocomplete="off"></div>
+          <div class="fl"><label>Lote de resina</label><input id="v_lote_r" type="text" placeholder="Lote resina" autocomplete="off"></div>
+          <div class="fl" style="grid-column:span 2"><label>Lote de catalizador</label><input id="v_lote_c" type="text" placeholder="Lote catalizador" autocomplete="off"></div>
+          <div class="fl" style="grid-column:span 2"><label>Temp. ambiente (°C) <span style="color:var(--yellow);font-size:9px">ASTM D2196</span></label>
+            <input id="v_temp_amb" type="number" step="0.1" placeholder="°C" inputmode="decimal"></div>
+        </div>
+        <div id="vis_resumen" style="display:none;margin-top:6px;padding:5px 7px;border-radius:6px;background:var(--surface2);font-size:11px;font-family:monospace;display:flex;gap:8px;justify-content:space-around">
+          <span id="vres_r" style="color:var(--muted)">Resina —</span>
+          <span id="vres_c" style="color:var(--muted)">Cat. —</span>
+          <span id="vres_m" style="color:var(--muted)">Mezcla —</span>
+        </div>
+        <button class="btn btn-rc" onclick="guardarVis()" id="btnVis" style="margin-top:5px;padding:7px;font-size:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Registro Completado
+        </button>
+      </div>
+
+      <!-- Resina A -->
+      <div class="card" style="border-color:#7c3aed44">
+        <div style="font-size:10px;font-weight:800;color:#c4b5fd;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;text-align:center;background:#3b076433;padding:4px;border-radius:6px">Resina (A)</div>
+        <div class="vis-spec">
+          <div class="vis-param"><span class="vis-lbl">Rotor</span>
+            <select id="v_rotor_r" class="fl" onchange="calcVisc('r')" style="background:transparent;border:none;color:#c4b5fd;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option>1</option><option>2</option><option selected>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="vis-param"><span class="vis-lbl">RPM</span>
+            <select id="v_rpm_r" onchange="calcVisc('r')" style="background:transparent;border:none;color:#c4b5fd;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option selected>6</option><option>12</option><option>30</option><option>60</option>
+            </select>
+          </div>
+          <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">11,000 – 14,000 mPas</span></div>
+          <div class="vis-param vis-full"><span id="v_rng_r" style="font-size:9px;color:var(--muted)"></span></div>
+        </div>
+        <div class="card-fields" style="margin-top:8px">
+          <div class="fl"><label>% Torque (Fs)</label>
+            <input id="v_fs_r" type="number" step="0.1" placeholder="10–100" inputmode="decimal" class="c1" oninput="calcVisc('r')"></div>
+          <div class="fl"><label>Angle</label>
+            <input id="v_ang_r" type="number" step="0.1" placeholder="0" inputmode="decimal" class="c1"></div>
+          <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
+            <input id="v_temp_r" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c1"></div>
+          <div class="fl" style="grid-column:span 2">
+            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <input id="v_visc_r" type="number" step="1" placeholder="auto" inputmode="decimal" class="c1" oninput="checkVis()">
+          </div>
+        </div>
+        <div id="v_fswarn_r" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
+        <div id="v_badge_r" class="vis-badge" style="display:none"></div>
+      </div>
+
+      <!-- Catalizador B -->
+      <div class="card" style="border-color:#0891b244">
+        <div style="font-size:10px;font-weight:800;color:#a5f3fc;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;text-align:center;background:#08334433;padding:4px;border-radius:6px">Catalizador (B)</div>
+        <div class="vis-spec">
+          <div class="vis-param"><span class="vis-lbl">Rotor</span>
+            <select id="v_rotor_c" onchange="calcVisc('c')" style="background:transparent;border:none;color:#a5f3fc;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option selected>1</option><option>2</option><option>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="vis-param"><span class="vis-lbl">RPM</span>
+            <select id="v_rpm_c" onchange="calcVisc('c')" style="background:transparent;border:none;color:#a5f3fc;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option>6</option><option>12</option><option selected>30</option><option>60</option>
+            </select>
+          </div>
+          <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">40 – 60 mPas</span></div>
+          <div class="vis-param vis-full"><span id="v_rng_c" style="font-size:9px;color:var(--muted)"></span></div>
+        </div>
+        <div class="card-fields" style="margin-top:8px">
+          <div class="fl"><label>% Torque (Fs)</label>
+            <input id="v_fs_c" type="number" step="0.1" placeholder="10–100" inputmode="decimal" class="c2" oninput="calcVisc('c')"></div>
+          <div class="fl"><label>Angle</label>
+            <input id="v_ang_c" type="number" step="0.1" placeholder="0" inputmode="decimal" class="c2"></div>
+          <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
+            <input id="v_temp_c" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c2"></div>
+          <div class="fl" style="grid-column:span 2">
+            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <input id="v_visc_c" type="number" step="1" placeholder="auto" inputmode="decimal" class="c2" oninput="checkVis()">
+          </div>
+        </div>
+        <div id="v_fswarn_c" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
+        <div id="v_badge_c" class="vis-badge" style="display:none"></div>
+      </div>
+
+      <!-- Mezcla A+B -->
+      <div class="card" style="border-color:#22c55e44">
+        <div style="font-size:10px;font-weight:800;color:#86efac;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;text-align:center;background:#14532d33;padding:4px;border-radius:6px">Mezcla (A + B)</div>
+        <div class="vis-spec">
+          <div class="vis-param"><span class="vis-lbl">Rotor</span>
+            <select id="v_rotor_m" onchange="calcVisc('m')" style="background:transparent;border:none;color:#86efac;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option>1</option><option>2</option><option selected>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="vis-param"><span class="vis-lbl">RPM</span>
+            <select id="v_rpm_m" onchange="calcVisc('m')" style="background:transparent;border:none;color:#86efac;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
+              <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option>6</option><option selected>12</option><option>30</option><option>60</option>
+            </select>
+          </div>
+          <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">3,440 – 4,120 mPas</span></div>
+          <div class="vis-param vis-full"><span id="v_rng_m" style="font-size:9px;color:var(--muted)"></span></div>
+        </div>
+        <div class="card-fields" style="margin-top:8px">
+          <div class="fl"><label>% Torque (Fs)</label>
+            <input id="v_fs_m" type="number" step="0.1" placeholder="10–100" inputmode="decimal" style="color:#86efac;font-weight:700" oninput="calcVisc('m')"></div>
+          <div class="fl"><label>Angle</label>
+            <input id="v_ang_m" type="number" step="0.1" placeholder="0" inputmode="decimal" style="color:#86efac;font-weight:700"></div>
+          <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
+            <input id="v_temp_m" type="number" step="0.1" placeholder="°C" inputmode="decimal" style="color:#86efac;font-weight:700"></div>
+          <div class="fl" style="grid-column:span 2">
+            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <input id="v_visc_m" type="number" step="1" placeholder="auto" inputmode="decimal" oninput="checkVis()" style="color:#86efac;font-weight:700">
+          </div>
+        </div>
+        <div id="v_fswarn_m" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
+        <div id="v_badge_m" class="vis-badge" style="display:none"></div>
+      </div>
+
+    </div>
+
+    <!-- GRÁFICOS TENDENCIA VISCOSIDAD -->
+    <div class="trend-card" style="margin-top:8px">
+      <div class="trend-title"><span>Tendencia Viscosidad</span><span id="vis_chart_info" class="cf-count"></span></div>
+      <div class="chart-filter">
+        <button class="cf-btn" onclick="cfQuick('vis',7)">7D</button>
+        <button class="cf-btn active" onclick="cfQuick('vis',30)">30D</button>
+        <button class="cf-btn" onclick="cfQuick('vis',90)">3M</button>
+        <button class="cf-btn" onclick="cfQuick('vis',180)">6M</button>
+        <button class="cf-btn" onclick="cfQuick('vis',0)">Todo</button>
+        <span class="cf-sep">|</span>
+        <input type="date" id="vis_desde" class="cf-date" onchange="cfCustom('vis')">
+        <span class="cf-sep">→</span>
+        <input type="date" id="vis_hasta" class="cf-date" onchange="cfCustom('vis')">
+      </div>
+      <div class="trend-row" style="margin-top:0">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#c4b5fd;margin-bottom:4px">Resina (A) · 11,000–14,000 mPa·s</div>
+          <canvas id="chart_vis_r" class="trend-canvas"></canvas>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#a5f3fc;margin-bottom:4px">Catalizador (B) · 40–60 mPa·s</div>
+          <canvas id="chart_vis_c" class="trend-canvas"></canvas>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#86efac;margin-bottom:4px">Mezcla (A+B) · 3.44–4.12 Pa·s</div>
+          <canvas id="chart_vis_m" class="trend-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── PÁGINA: DSC ───────────────────────────────────────── -->
+  <div class="page" id="pgD">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;align-items:start">
+
+      <!-- Datos Generales DSC -->
+      <div class="card">
+        <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;text-align:center;background:#1e293b;padding:4px;border-radius:6px">DSC — Datos Generales</div>
+        <div class="card-fields" style="gap:3px">
+          <div class="fl" style="grid-column:span 2"><label>N° Prueba</label>
+            <input id="d_nprueba" type="text" readonly style="color:var(--accent);font-weight:800;font-family:monospace;opacity:1;background:var(--surface2)" placeholder="Auto…"></div>
+          <div class="fl"><label>Fecha</label><input id="d_fecha" type="date"></div>
+          <div class="fl"><label>OP</label><input id="d_op" type="text" placeholder="OP #" autocomplete="off"></div>
+          <div class="fl" style="grid-column:span 2"><label>Heat</label><input id="d_heat" type="text" placeholder="Heat #" autocomplete="off"></div>
+          <div class="fl"><label>Masa muestra (mg)</label>
+            <input id="d_masa" type="number" step="0.001" placeholder="0.000" inputmode="decimal"></div>
+          <div class="fl"><label>Temp. de prueba (°C)</label>
+            <input id="d_temp" type="number" step="0.1" placeholder="°C" inputmode="decimal"></div>
+          <div class="fl"><label>Vel. calentamiento (°C/min)</label>
+            <input id="d_vel" type="number" step="0.1" placeholder="°C/min" inputmode="decimal"></div>
+          <div class="fl"><label>Tg (°C)</label>
+            <input id="d_tg" type="number" step="0.1" placeholder="°C" inputmode="decimal" oninput="updateDSCDisplay()"></div>
+          <div class="fl" style="grid-column:span 2"><label>Observaciones</label>
+            <input id="d_obs" type="text" placeholder="Observaciones..." autocomplete="off"></div>
+        </div>
+        <button class="btn btn-rc" id="btnDSC" onclick="guardarDSC()" style="margin-top:5px;padding:7px;font-size:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Registro Completado
+        </button>
+      </div>
+
+      <!-- Panel Tg -->
+      <div class="card" style="border-color:#f59e0b44">
+        <div style="font-size:10px;font-weight:800;color:#fcd34d;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;text-align:center;background:#78350f33;padding:4px;border-radius:6px">Temperatura de Transición Vítrea (Tg)</div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 0">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Tg medida</div>
+          <div id="d_tg_display" style="font-size:52px;font-weight:800;font-family:monospace;color:#fcd34d;letter-spacing:-2px">—</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px">°C</div>
+          <div id="d_tg_badge" style="display:none;margin-top:14px;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700"></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Últimos registros</div>
+          <div id="d_recent" style="font-size:12px;color:var(--muted);font-family:monospace">Sin datos aún</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GRÁFICO TENDENCIA DSC -->
+    <div class="trend-card">
+      <div class="trend-title">
+        <span>Tendencia Tg</span>
+        <span id="dsc_chart_info" class="cf-count"></span>
+      </div>
+      <div class="chart-filter">
+        <button class="cf-btn" onclick="cfQuick('dsc',7)">7D</button>
+        <button class="cf-btn active" onclick="cfQuick('dsc',30)">30D</button>
+        <button class="cf-btn" onclick="cfQuick('dsc',90)">3M</button>
+        <button class="cf-btn" onclick="cfQuick('dsc',180)">6M</button>
+        <button class="cf-btn" onclick="cfQuick('dsc',0)">Todo</button>
+        <span class="cf-sep">|</span>
+        <input type="date" id="dsc_desde" class="cf-date" onchange="cfCustom('dsc')">
+        <span class="cf-sep">→</span>
+        <input type="date" id="dsc_hasta" class="cf-date" onchange="cfCustom('dsc')">
+        <span style="color:#fcd34d;font-size:9px;margin-left:4px">Tg (°C)</span>
+      </div>
+      <canvas id="chart_dsc" class="trend-canvas"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ── PÁGINA: HISTORIAL ──────────────────────────────── -->
+  <div class="page" id="pgH">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:15px;font-weight:700">Historial</div>
+      <button class="btn btn-g bsm" onclick="exportarCSV()">⬇ Exportar CSV</button>
+    </div>
+    <div id="hlist"></div>
+  </div>
+
+  <!-- ── PÁGINA: CONFIG ─────────────────────────────────── -->
+  <div class="page" id="pgC">
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px">Carpeta destino</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.7">
+        Navega hasta esta carpeta al seleccionar:<br>
+        <span style="color:var(--accent);font-family:monospace;font-size:10px;word-break:break-all">C:\Users\VictorGuerrero\Techshop Internacional S.A\Calidad - Documents\Winding\Burning Test</span>
+      </div>
+      <div id="cfgInfo" style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.9">Sin carpeta seleccionada.</div>
+      <button class="btn btn-p" onclick="pickFolder()">📁 Seleccionar carpeta</button>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">Archivo CSV</div>
+      <div style="font-size:12px;color:var(--muted);line-height:2">
+        Nombre: <b style="color:var(--accent)">Cenizas_Fibras.csv</b><br>
+        Se crea automáticamente si no existe.<br>
+        Cada registro agrega una fila nueva.<br>
+        Se abre directo en <b style="color:var(--text)">Excel</b>.
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">Columnas del CSV</div>
+      <div style="font-size:11px;color:var(--accent);line-height:2;font-family:monospace;word-break:break-all">
+        Fecha · OP · Lote de mandrell · Heat · Numero de capsula<br>
+        Temperatura de prueba C° · Tiempo de prueba (min)<br>
+        <span style="color:#c4b5fd">[C1] Peso capsula vacía · Peso Muestra · Peso Capsula+muestra · Peso de residuo · Porcentaje</span><br>
+        <span style="color:#a5f3fc">[C2] Peso capsula vacía · Peso Muestra · Peso Capsula+muestra · Peso de residuo · Porcentaje</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── PÁGINA: CERTIFICADO ───────────────────────────────── -->
+  <div class="page" id="pgCert">
+
+    <div class="cert-controls">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Módulo / Module</div>
+      <div class="cert-mod-btns">
+        <button class="cert-mod-btn active" id="cmod-cen" onclick="setCertMod('cen')">Cenizas</button>
+        <button class="cert-mod-btn" id="cmod-vis" onclick="setCertMod('vis')">Viscosidad</button>
+        <button class="cert-mod-btn" id="cmod-dsc" onclick="setCertMod('dsc')">DSC</button>
+        <button class="cert-mod-btn" id="cmod-all" onclick="setCertMod('all')" style="border-color:var(--accent);color:var(--accent)">⊞ Todo (3 módulos)</button>
+      </div>
+      <div class="cert-row">
+        <div class="fl"><label>Desde / From</label><input type="date" id="cert_desde"></div>
+        <div class="fl"><label>Hasta / To</label><input type="date" id="cert_hasta"></div>
+        <div class="fl"><label>N° Prueba desde</label><input type="text" id="cert_n_desde" placeholder="ej. 202606C-0001"></div>
+        <div class="fl"><label>N° Prueba hasta</label><input type="text" id="cert_n_hasta" placeholder="ej. 202606C-0050"></div>
+      </div>
+      <div class="fl" style="max-width:320px"><label>Inspector / Inspector Name</label>
+        <input type="text" id="cert_inspector" placeholder="Nombre del inspector..." autocomplete="off"></div>
+      <div class="cert-action-row">
+        <button class="btn btn-p" onclick="generarCertificado()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h6M7 16h4"/></svg>
+          Generar
+        </button>
+      </div>
+    </div>
+
+    <div id="cert-preview"></div>
+
+    <div class="cert-btn-row" id="cert-actions" style="display:none">
+      <button class="btn btn-p" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimir / PDF
+      </button>
+      <button class="btn btn-s" onclick="guardarCertificadoHTML()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar HTML
+      </button>
+      <button class="btn" id="btnWord" onclick="descargarWord()" style="border-color:#2b579a;color:#2b579a;flex:1;padding:11px;font-size:13px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+        Descargar Word
+      </button>
+    </div>
+
+  </div><!-- /pgCert -->
+
+</div><!-- /main -->
+
+
+<div id="ov" class="h"><div class="spin"></div><p>Guardando...</p></div>
+<div id="toast"></div>
+
+<script>
+// ── CONSTANTES ────────────────────────────────────────────────────────────────
+// ── DATE FORMAT ──────────────────────────────────────────────────────────────
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function fmtDate(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr + 'T12:00:00');
+  if (isNaN(d)) return isoStr;
+  return `${String(d.getDate()).padStart(2,'0')}-${MONTHS_EN[d.getMonth()]}-${d.getFullYear()}`;
+}
+
+function parseDate(str) {
+  if (!str) return new Date(NaN);
+  // DD-MMM-YYYY
+  const m = str.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+  if (m) {
+    const mo = MONTHS_EN.indexOf(m[2]);
+    return new Date(+m[3], mo >= 0 ? mo : 0, +m[1]);
+  }
+  // YYYY-MM-DD or other
+  return new Date(str);
+}
+
+// reads a column by new name first, falls back to old C1/C2 name
+function rcol(r, newName, oldName) {
+  return r[newName] !== undefined ? r[newName] : (oldName ? r[oldName] : undefined);
+}
+
+const CSV_FILE = 'Cenizas_Fibras.csv';
+const HIST_KEY = 'fibCenHist';
+const CSV_COLS = ['N° Prueba','Fecha','OP','Lote de mandrell','Heat','Numero de capsula',
+  'Temperatura de prueba C°','Tiempo de prueba (min)',
+  'Capsula 1 - Vacia (g)','Capsula 1 - Muestra (g)','Capsula 1 - Bruta (g)',
+  'Capsula 1 - Peso 15min (g)','Capsula 1 - Reduccion 15min (g)',
+  'Capsula 1 - Peso Confirm. (g)','Capsula 1 - Confirmacion (g)',
+  'Capsula 1 - Residuo (g)','Capsula 1 - Porcentaje (%)',
+  'Capsula 2 - Vacia (g)','Capsula 2 - Muestra (g)','Capsula 2 - Bruta (g)',
+  'Capsula 2 - Peso 15min (g)','Capsula 2 - Reduccion 15min (g)',
+  'Capsula 2 - Peso Confirm. (g)','Capsula 2 - Confirmacion (g)',
+  'Capsula 2 - Residuo (g)','Capsula 2 - Porcentaje (%)'];
+
+let dirHandle = null;
+
+// ── CÁLCULOS ──────────────────────────────────────────────────────────────────
+function calcFromBruta(n) {
+  // Usuario ingresó bruta → calculamos muestra = bruta - vacía
+  const vacia  = parseFloat(document.getElementById('c'+n+'_vacia').value);
+  const bruta  = parseFloat(document.getElementById('c'+n+'_bruta').value);
+  const mEl    = document.getElementById('c'+n+'_muestra');
+  if (!isNaN(vacia) && !isNaN(bruta) && bruta > vacia) {
+    mEl.value = (bruta - vacia).toFixed(4);
+  }
+  calc(n);
+}
+
+function calcFromMuestra(n) {
+  // Usuario ingresó muestra → calculamos bruta = vacía + muestra
+  const vacia   = parseFloat(document.getElementById('c'+n+'_vacia').value);
+  const muestra = parseFloat(document.getElementById('c'+n+'_muestra').value);
+  const bEl     = document.getElementById('c'+n+'_bruta');
+  if (!isNaN(vacia) && !isNaN(muestra) && muestra > 0) {
+    bEl.value = (vacia + muestra).toFixed(4);
+  }
+  calc(n);
+}
+
+function calcStages(n) {
+  const bruta = parseFloat(document.getElementById('c'+n+'_bruta').value);
+  const p15   = parseFloat(document.getElementById('c'+n+'_p15').value);
+  const pconf = parseFloat(document.getElementById('c'+n+'_pconf').value);
+  const vacia = parseFloat(document.getElementById('c'+n+'_vacia').value);
+
+  // Reducción 15 min = cápsula vacía − peso 15 min
+  const redEl = document.getElementById('c'+n+'_red');
+  redEl.value = (!isNaN(vacia) && !isNaN(p15)) ? Math.abs(vacia - p15).toFixed(4) : '';
+
+  // Confirmación = cápsula vacía − peso confirmación (valor absoluto)
+  const confEl = document.getElementById('c'+n+'_conf');
+  confEl.value = (!isNaN(vacia) && !isNaN(pconf)) ? Math.abs(vacia - pconf).toFixed(4) : '';
+
+  // Residuo = pesoConf − cápsula vacía
+  const resEl = document.getElementById('c'+n+'_residuo');
+  resEl.value = (!isNaN(pconf) && !isNaN(vacia)) ? (pconf - vacia).toFixed(4) : '';
+
+  calc(n);
+}
+
+function calc(n) {
+  const muestra = parseFloat(document.getElementById('c'+n+'_muestra').value);
+  const residuo = parseFloat(document.getElementById('c'+n+'_residuo').value);
+  const pctEl   = document.getElementById('c'+n+'_pct');
+
+  if (!isNaN(muestra) && !isNaN(residuo) && muestra > 0) {
+    const pct = (residuo / muestra) * 100;
+    pctEl.textContent = pct.toFixed(2) + ' %';
+  } else {
+    pctEl.textContent = '—';
+  }
+  updateComparison();
+}
+
+function getPct(n) {
+  const m = parseFloat(document.getElementById('c'+n+'_muestra').value);
+  const r = parseFloat(document.getElementById('c'+n+'_residuo').value);
+  if (isNaN(m) || isNaN(r) || m <= 0) return NaN;
+  return (r / m) * 100;
+}
+
+function updateComparison() {
+  const p1 = getPct(1), p2 = getPct(2);
+  const m1 = parseFloat(document.getElementById('c1_muestra').value);
+  const m2 = parseFloat(document.getElementById('c2_muestra').value);
+  const r1 = parseFloat(document.getElementById('c1_residuo').value);
+  const r2 = parseFloat(document.getElementById('c2_residuo').value);
+
+  const hasSomething = (!isNaN(p1) || !isNaN(p2));
+  document.getElementById('cmpBox').style.display = hasSomething ? 'block' : 'none';
+  if (!hasSomething) return;
+
+  document.getElementById('cm_m1').textContent = !isNaN(m1) ? m1.toFixed(4) : '—';
+  document.getElementById('cm_m2').textContent = !isNaN(m2) ? m2.toFixed(4) : '—';
+  document.getElementById('cm_r1').textContent = !isNaN(r1) ? r1.toFixed(4) : '—';
+  document.getElementById('cm_r2').textContent = !isNaN(r2) ? r2.toFixed(4) : '—';
+  document.getElementById('cm_p1').textContent = !isNaN(p1) ? p1.toFixed(2)+'%' : '—';
+  document.getElementById('cm_p2').textContent = !isNaN(p2) ? p2.toFixed(2)+'%' : '—';
+
+  if (!isNaN(p1) && !isNaN(p2)) {
+    const diff = Math.abs(p1 - p2);
+    const el = document.getElementById('cm_diff');
+    el.textContent = diff.toFixed(3) + ' %';
+    el.style.color = diff <= 0.5 ? 'var(--green)' : diff <= 1 ? 'var(--yellow)' : 'var(--red)';
+  } else {
+    document.getElementById('cm_diff').textContent = '—';
+  }
+  updateChart(p1, p2, r1, r2);
+}
+
+function updateChart(p1, p2, r1, r2) {
+  const box = document.getElementById('chartBox');
+  const hasData = (!isNaN(p1) || !isNaN(p2));
+  box.classList.toggle('visible', hasData);
+  if (!hasData) return;
+
+  const MAX_H = 80;
+  // Barras % Cenizas
+  const maxP = Math.max(isNaN(p1)?0:p1, isNaN(p2)?0:p2, 0.01);
+  document.getElementById('bar_p1').style.height = (isNaN(p1) ? 0 : (p1/maxP)*MAX_H) + 'px';
+  document.getElementById('bar_p2').style.height = (isNaN(p2) ? 0 : (p2/maxP)*MAX_H) + 'px';
+  document.getElementById('bv_p1').textContent = isNaN(p1) ? '—' : p1.toFixed(2)+'%';
+  document.getElementById('bv_p2').textContent = isNaN(p2) ? '—' : p2.toFixed(2)+'%';
+
+  // Barras Residuo
+  const maxR = Math.max(isNaN(r1)?0:r1, isNaN(r2)?0:r2, 0.0001);
+  document.getElementById('bar_r1').style.height = (isNaN(r1) ? 0 : (r1/maxR)*MAX_H) + 'px';
+  document.getElementById('bar_r2').style.height = (isNaN(r2) ? 0 : (r2/maxR)*MAX_H) + 'px';
+  document.getElementById('bv_r1').textContent = isNaN(r1) ? '—' : r1.toFixed(4)+'g';
+  document.getElementById('bv_r2').textContent = isNaN(r2) ? '—' : r2.toFixed(4)+'g';
+
+  // Badge diferencia
+  if (!isNaN(p1) && !isNaN(p2)) {
+    const diff = Math.abs(p1 - p2);
+    const badge = document.getElementById('diffBadge');
+    badge.textContent = 'Δ ' + diff.toFixed(3) + '%';
+    badge.className = 'diff-badge ' + (diff <= 0.5 ? 'diff-ok' : 'diff-warn');
+  }
+}
+
+// ── VISCOSIDAD ────────────────────────────────────────────────────────────────
+const VIS_COLS = ['N° Prueba','Fecha','OP','Lote de mandrell','Heat','N° Parte','Lote de resina','Lote de catalizador','Temp. ambiente (°C)',
+  'Resina - Rotor','Resina - RPM','Resina - Fs (%)','Resina - Angle','Resina - Temp (°C)','Resina - Viscosidad (mPas)','Resina - Resultado',
+  'Catalizador - Rotor','Catalizador - RPM','Catalizador - Fs (%)','Catalizador - Angle','Catalizador - Temp (°C)','Catalizador - Viscosidad (mPas)','Catalizador - Resultado',
+  'Mezcla - Rotor','Mezcla - RPM','Mezcla - Fs (%)','Mezcla - Angle','Mezcla - Temp (°C)','Mezcla - Viscosidad (mPas)','Mezcla - Resultado'];
+const VIS_FILE = 'Viscosidad_Fibras.csv';
+
+// Bonvoisin NDJ Range Table — valores en mPas (K=1000)
+const NDJ_RANGE = {
+  0: {0.3:2000,0.6:1000,1.5:400,3:200,6:100,12:50,30:20,60:10},
+  1: {0.1:60000,0.2:30000,0.3:20000,0.6:10000,1.5:4000,3:2000,6:1000,12:500,30:200,60:100,120:50},
+  2: {0.1:300000,0.2:150000,0.3:100000,0.6:50000,1.5:20000,3:10000,6:5000,12:2500,30:1000,60:500,120:250},
+  3: {0.1:1200000,0.2:600000,0.3:400000,0.6:200000,1.5:80000,3:40000,6:20000,12:10000,30:4000,60:2000,120:1000},
+  4: {0.1:6000000,0.2:3000000,0.3:2000000,0.6:1000000,1.5:400000,3:200000,6:100000,12:50000,30:20000,60:10000,120:5000}
+};
+function ndjMax(rotor, rpm) {
+  const r = parseInt(rotor); const sp = parseFloat(rpm);
+  return (NDJ_RANGE[r] && NDJ_RANGE[r][sp]) ? NDJ_RANGE[r][sp] : null;
+}
+function calcVisc(comp) {
+  const fs   = parseFloat(document.getElementById('v_fs_'+comp).value);
+  const rpm  = document.getElementById('v_rpm_'+comp).value;
+  const rot  = document.getElementById('v_rotor_'+comp).value;
+  const rngEl= document.getElementById('v_rng_'+comp);
+  const warnEl=document.getElementById('v_fswarn_'+comp);
+  const viscEl=document.getElementById('v_visc_'+comp);
+  const maxV = ndjMax(rot, rpm);
+  if (rngEl) rngEl.textContent = maxV ? 'Rango: ' + maxV.toLocaleString('es') + ' mPas' : '';
+  if (!isNaN(fs) && fs > 0) {
+    if (warnEl) {
+      if (fs < 10)      { warnEl.textContent='⚠ Fs < 10% — lectura inválida (rotor mayor o RPM menor)'; warnEl.style.display='block'; }
+      else if (fs > 90) { warnEl.textContent='⚠ Fs > 90% — fuera del rango preciso (rotor menor o RPM mayor)'; warnEl.style.display='block'; }
+      else              { warnEl.style.display='none'; }
+    }
+    if (maxV) {
+      const calc = maxV * fs / 100;
+      viscEl.value = Math.round(calc);
+      checkVis();
+    }
+  }
+}
+
+// ── DSC ─────────────────────────────────────────────────────
+const DSC_COLS = ['N° Prueba','Fecha','OP','Heat','Masa muestra (mg)','Temp. de prueba (°C)','Vel. calentamiento (°C/min)','Tg (°C)','Observaciones'];
+const DSC_FILE = 'DSC_Fibras.csv';
+
+function updateDSCDisplay() {
+  const tg = parseFloat(document.getElementById('d_tg').value);
+  const disp = document.getElementById('d_tg_display');
+  const badge = document.getElementById('d_tg_badge');
+  if (isNaN(tg)) { disp.textContent = '—'; badge.style.display = 'none'; return; }
+  disp.textContent = tg.toFixed(1);
+  badge.style.display = 'block';
+}
+
+async function guardarDSC() {
+  if (!dirHandle) { toast('Selecciona la carpeta primero.', 'wa'); return; }
+  const fecha = document.getElementById('d_fecha').value;
+  const tg    = document.getElementById('d_tg').value;
+  if (!fecha || !tg) { toast('Completa al menos Fecha y Tg.', 'wa'); return; }
+  const nPruebaD = await getNextConsecutivo(DSC_FILE, 'D');
+  document.getElementById('d_nprueba').value = nPruebaD;
+  const row = [
+    nPruebaD,
+    fmtDate(fecha),
+    document.getElementById('d_op').value,
+    document.getElementById('d_heat').value,
+    document.getElementById('d_masa').value,
+    document.getElementById('d_temp').value,
+    document.getElementById('d_vel').value,
+    tg,
+    document.getElementById('d_obs').value
+  ];
+  try {
+    await appendCSVFile(DSC_FILE, DSC_COLS, row);
+    // actualizar últimos registros
+    const rec = document.getElementById('d_recent');
+    const prev = rec.dataset.log ? rec.dataset.log + '\n' : '';
+    const entry = `${fecha}  Tg: ${parseFloat(tg).toFixed(1)} °C`;
+    rec.dataset.log = prev + entry;
+    rec.innerHTML = (prev + entry).split('\n').slice(-3).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid var(--border)">${l}</div>`).join('');
+    toast('✓ DSC guardado en ' + DSC_FILE, 'ok');
+    setTimeout(loadChartDSC, 200);
+    setTimeout(_resetDSC, 1500);
+    const b = document.getElementById('btnDSC');
+    b.textContent = '✓ Guardado'; b.disabled = true; b.className = 'btn btn-g';
+    setTimeout(() => {
+      b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Registro Completado';
+      b.disabled = false; b.className = 'btn btn-rc'; b.style.cssText = 'margin-top:5px;padding:7px;font-size:12px';
+    }, 3000);
+  } catch(e) { toast('Error: ' + e.message, 'er'); }
+}
+
+function checkVis() {
+  function badge(id, val, min, max) {
+    const b = document.getElementById(id);
+    const v = parseFloat(val);
+    if (isNaN(v)) { b.style.display='none'; return null; }
+    const ok = v >= min && v <= max;
+    b.style.display = 'block';
+    b.className = 'vis-badge ' + (ok ? 'vis-ok' : 'vis-fail');
+    b.textContent = ok ? '✓ Dentro de especificación' : '✗ Fuera de especificación';
+    return ok;
+  }
+  const okR = badge('v_badge_r', document.getElementById('v_visc_r').value, 11000, 14000);
+  const okC = badge('v_badge_c', document.getElementById('v_visc_c').value, 40, 60);
+  const okM = badge('v_badge_m', document.getElementById('v_visc_m').value, 3440, 4120);
+  function resSpan(id, label, ok) {
+    const el = document.getElementById(id);
+    if (ok === null) { el.textContent = label + ' —'; el.style.color = 'var(--muted)'; }
+    else if (ok)     { el.textContent = label + ' ✓'; el.style.color = '#4ade80'; }
+    else             { el.textContent = label + ' ✗'; el.style.color = '#f87171'; }
+  }
+  resSpan('vres_r', 'Resina', okR);
+  resSpan('vres_c', 'Cat.', okC);
+  resSpan('vres_m', 'Mezcla', okM);
+}
+
+async function guardarVis() {
+  if (!dirHandle) { toast('Selecciona la carpeta primero.', 'wa'); return; }
+  const fecha = document.getElementById('v_fecha').value;
+  const op    = document.getElementById('v_op').value;
+  const lm    = document.getElementById('v_lote_m').value;
+  const heat  = document.getElementById('v_heat').value;
+  const nparte= document.getElementById('v_nparte').value;
+  const lr    = document.getElementById('v_lote_r').value;
+  const lc    = document.getElementById('v_lote_c').value;
+  const tamb  = document.getElementById('v_temp_amb').value;
+  const vr    = document.getElementById('v_visc_r').value;
+  const vc    = document.getElementById('v_visc_c').value;
+  const vm    = document.getElementById('v_visc_m').value;
+  if (!fecha || !vr) { toast('Completa al menos Fecha y Viscosidad de Resina.', 'wa'); return; }
+  const rotorR= document.getElementById('v_rotor_r').value;
+  const rpmR  = document.getElementById('v_rpm_r').value;
+  const fsr   = document.getElementById('v_fs_r').value;
+  const angr  = document.getElementById('v_ang_r').value;
+  const tempr = document.getElementById('v_temp_r').value;
+  const rotorC= document.getElementById('v_rotor_c').value;
+  const rpmC  = document.getElementById('v_rpm_c').value;
+  const fsc   = document.getElementById('v_fs_c').value;
+  const angc  = document.getElementById('v_ang_c').value;
+  const tempc = document.getElementById('v_temp_c').value;
+  const rotorM= document.getElementById('v_rotor_m').value;
+  const rpmM  = document.getElementById('v_rpm_m').value;
+  const fsm   = document.getElementById('v_fs_m').value;
+  const angm  = document.getElementById('v_ang_m').value;
+  const tempm = document.getElementById('v_temp_m').value;
+  const resR = vr ? (parseFloat(vr)>=11000&&parseFloat(vr)<=14000?'OK':'FUERA') : '';
+  const resC = vc ? (parseFloat(vc)>=40&&parseFloat(vc)<=60?'OK':'FUERA') : '';
+  const resM = vm ? (parseFloat(vm)>=3440&&parseFloat(vm)<=4120?'OK':'FUERA') : '';
+  try {
+    const nPruebaV = await getNextConsecutivo(VIS_FILE, 'V');
+    document.getElementById('v_nprueba').value = nPruebaV;
+    await appendCSVFile(VIS_FILE, VIS_COLS, [nPruebaV, fmtDate(fecha), op, lm, heat, nparte, lr, lc, tamb, rotorR, rpmR, fsr, angr, tempr, vr, resR, rotorC, rpmC, fsc, angc, tempc, vc, resC, rotorM, rpmM, fsm, angm, tempm, vm, resM]);
+    toast('✓ Viscosidad guardada en ' + VIS_FILE, 'ok');
+    setTimeout(loadChartVis, 200);
+    setTimeout(() => { resetVis(); loadNextN('v_nprueba', VIS_FILE, 'V'); }, 1500);
+    const b = document.getElementById('btnVis');
+    b.textContent = '✓ Guardado'; b.disabled = true; b.className = 'btn btn-g';
+    setTimeout(() => {
+      b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Registro Completado';
+      b.disabled = false; b.className = 'btn btn-rc';
+      b.style.cssText = 'padding:10px;font-size:13px';
+    }, 3000);
+  } catch(e) { toast('Error: ' + e.message, 'er'); }
+}
+
+function resetVis() {
+  ['v_op','v_lote_m','v_heat','v_nparte','v_lote_r','v_lote_c','v_temp_amb','v_fs_r','v_ang_r','v_temp_r','v_visc_r','v_fs_c','v_ang_c','v_temp_c','v_visc_c','v_fs_m','v_ang_m','v_temp_m','v_visc_m'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('v_fecha').valueAsDate = new Date();
+  document.getElementById('v_rotor_r').value = '3';
+  document.getElementById('v_rpm_r').value   = '6';
+  document.getElementById('v_rotor_c').value = '1';
+  document.getElementById('v_rpm_c').value   = '30';
+  document.getElementById('v_rotor_m').value = '3';
+  document.getElementById('v_rpm_m').value   = '12';
+  ['v_badge_r','v_badge_c','v_badge_m','v_fswarn_r','v_fswarn_c','v_fswarn_m'].forEach(id => { const b=document.getElementById(id); if(b) b.style.display='none'; });
+  ['v_rng_r','v_rng_c','v_rng_m'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=''; });
+  ['vres_r','vres_c','vres_m'].forEach((id,i)=>{ const el=document.getElementById(id); if(el){el.textContent=['Resina —','Cat. —','Mezcla —'][i];el.style.color='var(--muted)';} });
+}
+
+async function loadNextN(elId, filename, letter) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.value = 'Cargando…';
+  const n = await getNextConsecutivo(filename, letter);
+  el.value = n;
+}
+
+// letter: 'C' = Cenizas, 'V' = Viscosidad, 'D' = DSC
+function _tsiPrefix(letter) {
+  const now = new Date();
+  return `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${letter}-`;
+}
+
+function _tsiSeq(val) {
+  const s = String(val || '');
+  const m = s.match(/-(\d+)$/);
+  return m ? (parseInt(m[1]) || 0) : (parseInt(s) || 0);
+}
+
+async function getNextConsecutivo(filename, letter) {
+  const yearStr = String(new Date().getFullYear());
+  const prefix  = _tsiPrefix(letter);
+  if (!dirHandle) return prefix + '0001';
+  try {
+    const fh = await dirHandle.getFileHandle(filename);
+    const file = await fh.getFile();
+    const text = await file.text();
+    const lines = text.trim().split(/\r?\n/);
+    let maxN = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const vals = parseCSVLine(lines[i]);
+      const val  = String(vals[0] || '');
+      if (val.startsWith(yearStr) && val.includes(letter + '-')) {
+        const n = _tsiSeq(val);
+        if (n > maxN) maxN = n;
+      }
+    }
+    return prefix + String(maxN + 1).padStart(4, '0');
+  } catch(e) { return prefix + '0001'; }
+}
+
+async function appendCSVFile(filename, cols, row) {
+  if (!dirHandle) throw new Error('Sin carpeta seleccionada.');
+  const perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+  if (perm !== 'granted') throw new Error('Permiso denegado.');
+  const fh = await dirHandle.getFileHandle(filename, { create: true });
+  const file = await fh.getFile();
+  let existing = await file.text();
+  if (!existing.trim()) existing = cols.map(csvEsc).join(',') + '\r\n';
+  const line = row.map(csvEsc).join(',') + '\r\n';
+  const writable = await fh.createWritable();
+  await writable.write(existing + line);
+  await writable.close();
+}
+
+// ── FOLDER PICKER ─────────────────────────────────────────────────────────────
+async function pickFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    toast('Usa Chrome o Edge para esta función.', 'er'); return;
+  }
+  try {
+    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+    localStorage.setItem('fibDir', dirHandle.name);
+    updateFolderUI();
+    toast('Carpeta "' + dirHandle.name + '" lista ✓', 'ok');
+  } catch(e) {
+    if (e.name !== 'AbortError') toast('Error: ' + e.message, 'er');
+  }
+}
+
+function updateFolderUI() {
+  const badge   = document.getElementById('fbadge');
+  const cfgInfo = document.getElementById('cfgInfo');
+  const saved   = localStorage.getItem('fibDir');
+  const name    = dirHandle?.name || saved;
+
+  if (dirHandle) {
+    badge.className = 'ok';
+    badge.textContent = '📁 ' + name;
+    cfgInfo.innerHTML = `Carpeta: <b style="color:var(--text)">${name}</b><br>Archivo: <b style="color:var(--accent)">${CSV_FILE}</b><br>Permiso: <span style="color:var(--green)">✓ Escritura</span>`;
+  } else {
+    badge.className = 'none';
+    badge.textContent = name ? '📁 ' + name + ' (reiniciar)' : '📁 Carpeta';
+    cfgInfo.innerHTML = saved
+      ? `Carpeta recordada: <b style="color:var(--text)">${saved}</b><br><span style="color:var(--yellow)">⚠ Re-selecciona la carpeta para este sesión.</span>`
+      : 'Sin carpeta seleccionada.';
+  }
+}
+
+// ── CSV WRITE ─────────────────────────────────────────────────────────────────
+function csvEsc(v) {
+  const s = String(v ?? '');
+  return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+
+async function appendCSV(row) {
+  if (!dirHandle) throw new Error('Sin carpeta seleccionada.');
+  const perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+  if (perm !== 'granted') throw new Error('Permiso denegado.');
+
+  const fh   = await dirHandle.getFileHandle(CSV_FILE, { create: true });
+  const file = await fh.getFile();
+  let existing = await file.text();
+
+  if (!existing.trim()) existing = CSV_COLS.map(csvEsc).join(',') + '\r\n';
+
+  const line = row.map(csvEsc).join(',') + '\r\n';
+  const writable = await fh.createWritable();
+  await writable.write(existing + line);
+  await writable.close();
+}
+
+// ── GUARDAR ───────────────────────────────────────────────────────────────────
+async function guardar() {
+  if (!dirHandle) { toast('Selecciona la carpeta primero.', 'wa'); return; }
+
+  const p1 = getPct(1), p2 = getPct(2);
+  const c1ok = !isNaN(parseFloat(document.getElementById('c1_vacia').value)) &&
+               !isNaN(parseFloat(document.getElementById('c1_muestra').value)) &&
+               !isNaN(parseFloat(document.getElementById('c1_residuo').value));
+  if (!c1ok) { toast('Completa al menos los campos de Cápsula 1.', 'wa'); return; }
+
+  const nPrueba = await getNextConsecutivo(CSV_FILE, 'C');
+  document.getElementById('g_nprueba').value = nPrueba;
+
+  const row = [
+    nPrueba,
+    fmtDate(document.getElementById('g_fecha').value),
+    document.getElementById('g_op').value,
+    document.getElementById('g_lote').value,
+    document.getElementById('g_heat').value,
+    document.getElementById('g_ncap').value,
+    document.getElementById('g_temp').value,
+    document.getElementById('g_tiempo').value,
+    // C1
+    document.getElementById('c1_vacia').value,
+    document.getElementById('c1_muestra').value,
+    document.getElementById('c1_bruta').value,
+    document.getElementById('c1_p15').value,
+    document.getElementById('c1_red').value,
+    document.getElementById('c1_pconf').value,
+    document.getElementById('c1_conf').value,
+    document.getElementById('c1_residuo').value,
+    isNaN(p1) ? '' : p1.toFixed(4),
+    // C2
+    document.getElementById('c2_vacia').value,
+    document.getElementById('c2_muestra').value,
+    document.getElementById('c2_bruta').value,
+    document.getElementById('c2_p15').value,
+    document.getElementById('c2_red').value,
+    document.getElementById('c2_pconf').value,
+    document.getElementById('c2_conf').value,
+    document.getElementById('c2_residuo').value,
+    isNaN(p2) ? '' : p2.toFixed(4),
+  ];
+
+  document.getElementById('ov').classList.remove('h');
+  try {
+    await appendCSV(row);
+
+    // historial local
+    const rec = {
+      ts: new Date().toISOString(),
+      fecha: row[0], op: row[1], lote: row[2], heat: row[3],
+      p1: isNaN(p1) ? null : +p1.toFixed(2),
+      p2: isNaN(p2) ? null : +p2.toFixed(2)
+    };
+    const h = getHist(); h.unshift(rec);
+    if (h.length > 300) h.pop();
+    localStorage.setItem(HIST_KEY, JSON.stringify(h));
+
+    toast('✓ Fila guardada en ' + CSV_FILE, 'ok');
+    setTimeout(loadChartCenizas, 200);
+    setTimeout(_resetCen, 1500);
+
+    const b = document.getElementById('btnGuardar');
+    b.textContent = '✓ Guardado';
+    b.disabled = true;
+    b.className = 'btn btn-g';
+    setTimeout(() => { b.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar registro en CSV'; b.disabled=false; b.className='btn btn-s'; }, 3000);
+  } catch(e) {
+    toast('Error: ' + e.message, 'er');
+  }
+  document.getElementById('ov').classList.add('h');
+}
+
+function _resetCen() {
+  ['c1_vacia','c1_muestra','c1_bruta','c1_p15','c1_red','c1_pconf','c1_conf','c1_residuo',
+   'c2_vacia','c2_muestra','c2_bruta','c2_p15','c2_red','c2_pconf','c2_conf','c2_residuo',
+   'g_op','g_lote','g_heat','g_ncap','g_tiempo'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('g_fecha').valueAsDate = new Date();
+  document.getElementById('g_temp').value = '565';
+  ['c1_pct','c2_pct'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('cmpBox').style.display = 'none';
+  const b = document.getElementById('btnGuardar');
+  b.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar registro en CSV';
+  b.disabled=false; b.className='btn btn-s';
+  loadNextN('g_nprueba', CSV_FILE, 'C');
+}
+
+function resetForm() {
+  if (!confirm('¿Limpiar todos los campos?')) return;
+  _resetCen();
+}
+
+function _resetDSC() {
+  ['d_op','d_heat','d_masa','d_vel','d_tg','d_obs'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('d_fecha').valueAsDate = new Date();
+  document.getElementById('d_temp').value = '';
+  loadNextN('d_nprueba', DSC_FILE, 'D');
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────────────────────────
+function getHist() { try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch { return []; } }
+
+function renderHist() {
+  const h = getHist();
+  const el = document.getElementById('hlist');
+  if (!h.length) {
+    el.innerHTML='<div class="empty"><div class="ei">📋</div><p>Aún no hay registros guardados.</p></div>'; return;
+  }
+  el.innerHTML = h.map(r => `
+    <div class="hi">
+      <div class="hi-top">
+        <div class="hi-id">${r.lote||r.heat||'Sin ID'} <span style="font-size:11px;font-weight:400;color:var(--muted)">· OP ${r.op||'—'}</span></div>
+        <div class="hi-dt">${r.fecha||''}</div>
+      </div>
+      <div class="hi-caps">
+        ${r.p1 != null ? '<span class="tag t-c1">C1: '+r.p1.toFixed(2)+'%</span>' : ''}
+        ${r.p2 != null ? '<span class="tag t-c2">C2: '+r.p2.toFixed(2)+'%</span>' : ''}
+        ${r.p1!=null && r.p2!=null ? '<span class="tag t-ok">Δ '+Math.abs(r.p1-r.p2).toFixed(3)+'%</span>' : ''}
+      </div>
+      <div class="hi-sub">Heat: ${r.heat||'—'}</div>
+    </div>`
+  ).join('');
+}
+
+function exportarCSV() {
+  const h = getHist();
+  if (!h.length) { toast('Sin registros en historial.', 'wa'); return; }
+  let csv = 'Fecha,OP,Lote,Heat,C1_%,C2_%\r\n';
+  h.forEach(r => { csv += [r.fecha,r.op,r.lote,r.heat,r.p1??'',r.p2??''].join(',')+'\r\n'; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = 'historial_cenizas.csv'; a.click();
+}
+
+// ── CSV READER ────────────────────────────────────────────────────────────────
+function parseCSVLine(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
+    else if (c===',' && !inQ) { result.push(cur); cur=''; }
+    else cur += c;
+  }
+  result.push(cur); return result;
+}
+
+async function readCSVAsObjects(filename) {
+  if (!dirHandle) return [];
+  try {
+    const perm = await dirHandle.requestPermission({ mode: 'read' });
+    if (perm !== 'granted') return [];
+    const fh = await dirHandle.getFileHandle(filename);
+    const file = await fh.getFile();
+    const text = await file.text();
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = parseCSVLine(lines[0]);
+    return lines.slice(1).map(line => {
+      const vals = parseCSVLine(line);
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = vals[i] ?? '');
+      return obj;
+    }).filter(r => r['Fecha']);
+  } catch(e) { return []; }
+}
+
+function filterByRange(rows, desde, hasta, dateField='Fecha') {
+  return rows.filter(r => {
+    const d = parseDate(r[dateField]);
+    if (isNaN(d)) return false;
+    if (desde && d < parseDate(desde)) return false;
+    if (hasta && d > new Date(hasta + 'T23:59:59')) return false;
+    return true;
+  });
+}
+
+function getRange(prefix) {
+  return {
+    desde: document.getElementById(prefix+'_desde')?.value || '',
+    hasta: document.getElementById(prefix+'_hasta')?.value || ''
+  };
+}
+
+function cfQuick(prefix, days) {
+  // highlight active button
+  document.querySelectorAll(`.chart-filter .cf-btn`).forEach(b => {
+    if (b.closest('.trend-card')?.querySelector(`[id^="${prefix}_desde"]`)) b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  const hasta = new Date();
+  const desdeEl = document.getElementById(prefix+'_desde');
+  const hastaEl = document.getElementById(prefix+'_hasta');
+  hastaEl.value = hasta.toISOString().slice(0,10);
+  if (days === 0) {
+    desdeEl.value = '';
+    hastaEl.value = '';
+  } else {
+    const d = new Date(); d.setDate(d.getDate() - days);
+    desdeEl.value = d.toISOString().slice(0,10);
+  }
+  if (prefix==='cen') loadChartCenizas();
+  else if (prefix==='vis') loadChartVis();
+  else if (prefix==='dsc') loadChartDSC();
+}
+
+function cfCustom(prefix) {
+  // quitar active de quick buttons
+  document.querySelectorAll(`.chart-filter .cf-btn`).forEach(b => {
+    if (b.closest('.trend-card')?.querySelector(`[id^="${prefix}_desde"]`)) b.classList.remove('active');
+  });
+  if (prefix==='cen') loadChartCenizas();
+  else if (prefix==='vis') loadChartVis();
+  else if (prefix==='dsc') loadChartDSC();
+}
+
+// ── CHART RENDERER ────────────────────────────────────────────────────────────
+function drawTrendChart(canvas, datasets, opts={}) {
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = canvas.offsetWidth  * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const PAD = { top:22, right:12, bottom:32, left:50 };
+  const CW = W - PAD.left - PAD.right;
+  const CH = H - PAD.top  - PAD.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const allXset = new Set(datasets.flatMap(d => d.data.map(p => p.x)));
+  const allX = [...allXset].sort();
+  const allYraw = datasets.flatMap(d => d.data.map(p => p.y)).filter(y => !isNaN(y));
+  const specY = (opts.specLines||[]).map(s=>s.y);
+
+  if (!allX.length || !allYraw.length) {
+    ctx.fillStyle = '#6b7280'; ctx.font='11px Segoe UI';
+    ctx.textAlign='center';
+    ctx.fillText('Sin datos en el último mes', W/2, H/2);
+    return;
+  }
+
+  const yPad = 0.08;
+  const rawMin = Math.min(...allYraw, ...specY);
+  const rawMax = Math.max(...allYraw, ...specY);
+  const span = rawMax - rawMin || rawMax * 0.1 || 1;
+  const yMin = opts.yMin ?? rawMin - span * yPad;
+  const yMax = opts.yMax ?? rawMax + span * yPad;
+
+  const xS = i => PAD.left + (allX.length < 2 ? CW/2 : i / (allX.length-1) * CW);
+  const yS = v => PAD.top + CH - Math.max(0, Math.min(1, (v-yMin)/(yMax-yMin))) * CH;
+
+  // Grid
+  const yTicks = 4;
+  for (let i = 0; i <= yTicks; i++) {
+    const y = PAD.top + (i/yTicks)*CH;
+    const val = yMax - (i/yTicks)*(yMax-yMin);
+    ctx.strokeStyle='#2e324766'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+CW, y); ctx.stroke();
+    ctx.fillStyle='#6b7280'; ctx.font='9px monospace'; ctx.textAlign='right';
+    ctx.fillText(val >= 1000 ? (val/1000).toFixed(1)+'k' : val.toFixed(val<10?2:1), PAD.left-4, y+3);
+  }
+
+  // X labels (up to 7)
+  const step = Math.max(1, Math.ceil(allX.length/7));
+  allX.forEach((x,i) => {
+    if (i%step!==0 && i!==allX.length-1) return;
+    const px = xS(i);
+    ctx.strokeStyle='#2e324766'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.moveTo(px, PAD.top); ctx.lineTo(px, PAD.top+CH); ctx.stroke();
+    ctx.fillStyle='#6b7280'; ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillText(x.slice(5), px, H-PAD.bottom+11);
+  });
+
+  // Spec lines
+  (opts.specLines||[]).forEach(spec => {
+    if (spec.y < yMin || spec.y > yMax) return;
+    const py = yS(spec.y);
+    ctx.strokeStyle = spec.color||'#eab30888'; ctx.lineWidth=1;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(PAD.left, py); ctx.lineTo(PAD.left+CW, py); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = spec.color||'#eab308'; ctx.font='8px monospace'; ctx.textAlign='left';
+    ctx.fillText(spec.label, PAD.left+2, py-3);
+  });
+
+  // Spec band fill
+  if (opts.specBand) {
+    const y1 = Math.min(yS(opts.specBand[0]), yS(opts.specBand[1]));
+    const y2 = Math.max(yS(opts.specBand[0]), yS(opts.specBand[1]));
+    ctx.fillStyle = opts.specBandColor||'#eab30814';
+    ctx.fillRect(PAD.left, y1, CW, y2-y1);
+  }
+
+  // Lines + dots
+  datasets.forEach(ds => {
+    const pts = ds.data
+      .map(p => ({ xi: allX.indexOf(p.x), y: parseFloat(p.y) }))
+      .filter(p => p.xi>=0 && !isNaN(p.y))
+      .sort((a,b) => a.xi-b.xi);
+    if (!pts.length) return;
+    ctx.strokeStyle=ds.color; ctx.lineWidth=2; ctx.lineJoin='round';
+    ctx.beginPath();
+    pts.forEach((p,i) => { const px=xS(p.xi),py=yS(p.y); i?ctx.lineTo(px,py):ctx.moveTo(px,py); });
+    ctx.stroke();
+    pts.forEach(p => {
+      const px=xS(p.xi), py=yS(p.y);
+      ctx.fillStyle=ds.color;
+      ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.fill();
+    });
+  });
+
+  // Legend top-left
+  let lx = PAD.left;
+  datasets.forEach(ds => {
+    ctx.fillStyle=ds.color; ctx.fillRect(lx, 6, 14, 5);
+    ctx.fillStyle='#94a3b8'; ctx.font='9px Segoe UI'; ctx.textAlign='left';
+    ctx.fillText(ds.label, lx+17, 13);
+    lx += 17 + ctx.measureText(ds.label).width + 14;
+  });
+}
+
+// ── CHART LOADERS ─────────────────────────────────────────────────────────────
+async function loadChartCenizas() {
+  const {desde, hasta} = getRange('cen');
+  const all = await readCSVAsObjects(CSV_FILE);
+  const rows = filterByRange(all, desde, hasta);
+  const infoEl = document.getElementById('cen_chart_info');
+  if (infoEl) infoEl.textContent = rows.length ? rows.length+' registros' : (all.length ? '0 en rango' : '');
+  const d1 = rows.map(r=>({x:r['Fecha'],y:parseFloat(rcol(r,'Capsula 1 - Porcentaje (%)','C1 Porcentaje'))})).filter(p=>!isNaN(p.y));
+  const d2 = rows.map(r=>({x:r['Fecha'],y:parseFloat(rcol(r,'Capsula 2 - Porcentaje (%)','C2 Porcentaje'))})).filter(p=>!isNaN(p.y));
+  drawTrendChart(document.getElementById('chart_cen'),
+    [{label:'Cáp. 1',color:'#c4b5fd',data:d1},{label:'Cáp. 2',color:'#a5f3fc',data:d2}]);
+}
+
+async function loadChartVis() {
+  const {desde, hasta} = getRange('vis');
+  const all = await readCSVAsObjects(VIS_FILE);
+  const rows = filterByRange(all, desde, hasta);
+  const infoEl = document.getElementById('vis_chart_info');
+  if (infoEl) infoEl.textContent = rows.length ? rows.length+' registros' : (all.length ? '0 en rango' : '');
+  const dR = rows.map(r=>({x:r['Fecha'],y:parseFloat(rcol(r,'Resina - Viscosidad (mPas)','Viscosidad Resina (mPas)'))})).filter(p=>!isNaN(p.y));
+  const dC = rows.map(r=>({x:r['Fecha'],y:parseFloat(rcol(r,'Catalizador - Viscosidad (mPas)','Viscosidad Catalizador (mPas)'))})).filter(p=>!isNaN(p.y));
+  const dM = rows.map(r=>({x:r['Fecha'],y:parseFloat(rcol(r,'Mezcla - Viscosidad (mPas)','Viscosidad Mezcla (mPas)'))})).filter(p=>!isNaN(p.y));
+  drawTrendChart(document.getElementById('chart_vis_r'),
+    [{label:'Resina A',color:'#c4b5fd',data:dR}],
+    {specLines:[{y:11000,color:'#eab30888',label:'Mín 11k'},{y:14000,color:'#eab30888',label:'Máx 14k'}],
+     specBand:[11000,14000],specBandColor:'#eab30812'});
+  drawTrendChart(document.getElementById('chart_vis_c'),
+    [{label:'Catalizador B',color:'#a5f3fc',data:dC}],
+    {specLines:[{y:40,color:'#eab30888',label:'Mín 40'},{y:60,color:'#eab30888',label:'Máx 60'}],
+     specBand:[40,60],specBandColor:'#eab30812'});
+  drawTrendChart(document.getElementById('chart_vis_m'),
+    [{label:'Mezcla A+B',color:'#86efac',data:dM}],
+    {specLines:[{y:3440,color:'#eab30888',label:'3.44 Pa·s'},{y:4120,color:'#eab30888',label:'4.12 Pa·s'}],
+     specBand:[3440,4120],specBandColor:'#eab30812'});
+}
+
+async function loadChartDSC() {
+  const {desde, hasta} = getRange('dsc');
+  const all = await readCSVAsObjects(DSC_FILE);
+  const rows = filterByRange(all, desde, hasta);
+  const infoEl = document.getElementById('dsc_chart_info');
+  if (infoEl) infoEl.textContent = rows.length ? rows.length+' registros' : (all.length ? '0 en rango' : '');
+  const data = rows.map(r=>({x:r['Fecha'],y:parseFloat(r['Tg (°C)'])})).filter(p=>!isNaN(p.y));
+  drawTrendChart(document.getElementById('chart_dsc'),
+    [{label:'Tg (°C)',color:'#fcd34d',data}]);
+}
+
+// ── NAVEGACIÓN ────────────────────────────────────────────────────────────────
+function showPage(n) {
+  const pages = ['pgE','pgV','pgD','pgH','pgC','pgCert'];
+  const tabs  = ['nt0','nt3','nt4','nt1','nt2','nt5'];
+  // map n→index: 0=Cenizas,1=Historial,2=Config,3=Viscosidad,4=DSC,5=Certificado
+  const order = [0,3,4,1,2,5];
+  pages.forEach((id,i) => document.getElementById(id).classList.toggle('active', order[i]===n));
+  tabs.forEach((id,i)  => document.getElementById(id).classList.toggle('active',  order[i]===n));
+  if (n===1) renderHist();
+  if (n===2) updateFolderUI();
+  if (n===0) { setTimeout(loadChartCenizas, 50); loadNextN('g_nprueba', CSV_FILE, 'C'); }
+  if (n===3) { setTimeout(loadChartVis, 50);     loadNextN('v_nprueba', VIS_FILE, 'V'); }
+  if (n===4) { setTimeout(loadChartDSC, 50);     loadNextN('d_nprueba', DSC_FILE, 'D'); }
+}
+
+// ── CERTIFICADO ───────────────────────────────────────────────────────────────
+let certMod = 'cen';
+let certData = null;
+
+function setCertMod(mod) {
+  certMod = mod;
+  ['cen','vis','dsc','all'].forEach(m => {
+    document.getElementById('cmod-'+m).classList.toggle('active', m===mod);
+  });
+}
+
+// ── helpers de tabla por módulo ───────────────────────────────────────────────
+function _applyNFilter(rows, nd, nh) {
+  if (nd === null && nh === null) return rows;
+  return rows.filter(r => {
+    const n = _tsiSeq(r['N° Prueba']);
+    if (!n) return false;
+    if (nd !== null && n < nd) return false;
+    if (nh !== null && n > nh) return false;
+    return true;
+  });
+}
+
+function _tableCen(rows) {
+  return `<table class="cert-table">
+    <thead><tr>
+      <th>N°</th><th>Fecha / Date</th><th>OP</th><th>Heat</th>
+      <th>Cápsula 1 %</th><th>Cápsula 2 %</th><th>Promedio %</th>
+    </tr></thead><tbody>` +
+    rows.map(r => {
+      const p1 = parseFloat(rcol(r,'Capsula 1 - Porcentaje (%)','C1 Porcentaje'));
+      const p2 = parseFloat(rcol(r,'Capsula 2 - Porcentaje (%)','C2 Porcentaje'));
+      const avg = (!isNaN(p1)&&!isNaN(p2)) ? ((p1+p2)/2).toFixed(4) : (!isNaN(p1)?p1.toFixed(4):'—');
+      return `<tr>
+        <td>${r['N° Prueba']||'—'}</td><td>${r['Fecha']||'—'}</td>
+        <td>${r['OP']||'—'}</td><td>${r['Heat']||'—'}</td>
+        <td>${isNaN(p1)?'—':p1.toFixed(4)}</td>
+        <td>${isNaN(p2)?'—':p2.toFixed(4)}</td>
+        <td><b>${avg}</b></td>
+      </tr>`;
+    }).join('') + '</tbody></table>';
+}
+
+function _tableVis(rows) {
+  return `<table class="cert-table">
+    <thead><tr>
+      <th>N°</th><th>Fecha / Date</th><th>OP</th><th>Heat</th>
+      <th>Resina (mPa·s)</th><th>Catalizador (mPa·s)</th><th>Mezcla (mPa·s)</th><th>Temp (°C)</th><th>Resultado</th>
+    </tr></thead><tbody>` +
+    rows.map(r => {
+      const res = rcol(r,'Resina - Resultado','Resultado Resina')||'—';
+      const cls = res==='OK'?'cert-ok':(res==='FUERA'?'cert-fail':'');
+      return `<tr>
+        <td>${r['N° Prueba']||'—'}</td><td>${r['Fecha']||'—'}</td>
+        <td>${r['OP']||'—'}</td><td>${r['Heat']||'—'}</td>
+        <td>${rcol(r,'Resina - Viscosidad (mPas)','Viscosidad Resina (mPas)')||'—'}</td>
+        <td>${rcol(r,'Catalizador - Viscosidad (mPas)','Viscosidad Catalizador (mPas)')||'—'}</td>
+        <td>${rcol(r,'Mezcla - Viscosidad (mPas)','Viscosidad Mezcla (mPas)')||'—'}</td>
+        <td>${rcol(r,'Resina - Temp (°C)','Resina Temp (°C)')||'—'}</td>
+        <td class="${cls}">${res}</td>
+      </tr>`;
+    }).join('') + '</tbody></table>';
+}
+
+function _tableDSC(rows) {
+  return `<table class="cert-table">
+    <thead><tr>
+      <th>N°</th><th>Fecha / Date</th><th>OP</th><th>Heat</th>
+      <th>Masa (mg)</th><th>Tg (°C)</th>
+    </tr></thead><tbody>` +
+    rows.map(r => `<tr>
+      <td>${r['N° Prueba']||'—'}</td><td>${r['Fecha']||'—'}</td>
+      <td>${r['OP']||'—'}</td><td>${r['Heat']||'—'}</td>
+      <td>${r['Masa muestra (mg)']||'—'}</td>
+      <td>${r['Tg (°C)']||'—'}</td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+function _certSection(label, labelEn, tableHTML, rows) {
+  const nMin = rows.reduce((m,r)=>Math.min(m,parseInt(r['N° Prueba'])||9999),9999);
+  const nMax = rows.reduce((m,r)=>Math.max(m,parseInt(r['N° Prueba'])||0),0);
+  return `
+    <hr class="cert-divider-thin">
+    <div class="cert-section-title">${label} — ${labelEn} &nbsp;|&nbsp; N° ${nMin} al ${nMax} (${rows.length} reg.)</div>
+    ${tableHTML}`;
+}
+
+async function _logoDataURL() {
+  if (!dirHandle) return './coc_logo.png';
+  try {
+    const fh = await dirHandle.getFileHandle('coc_logo.png');
+    const file = await fh.getFile();
+    const ab = await file.arrayBuffer();
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(ab)));
+    return 'data:image/png;base64,' + b64;
+  } catch(e) { return './coc_logo.png'; }
+}
+
+async function generarCertificado() {
+  if (!dirHandle) { toast('Selecciona la carpeta primero.', 'wa'); return; }
+
+  const desde     = document.getElementById('cert_desde').value;
+  const hasta     = document.getElementById('cert_hasta').value;
+  const nDesde    = document.getElementById('cert_n_desde').value;
+  const nHasta    = document.getElementById('cert_n_hasta').value;
+  const inspector = document.getElementById('cert_inspector').value || 'Anthony Montero';
+  const nd = nDesde ? _tsiSeq(nDesde) : null;
+  const nh = nHasta ? _tsiSeq(nHasta) : null;
+
+  const modInfo = {
+    cen: { file: CSV_FILE, label: 'Ash Content (Cenizas)',           check: ['cen','all'] },
+    vis: { file: VIS_FILE, label: 'Viscosity (Viscosidad)',          check: ['vis','all'] },
+    dsc: { file: DSC_FILE, label: 'DSC – Glass Transition Temp.',    check: ['dsc','all'] },
+  };
+
+  let bodyHTML = '';
+  let totalReg = 0;
+  let allOPs = new Set(), allHeats = new Set(), allLotes = new Set(), allNPartes = new Set();
+  const _certModules = [];
+
+  const modsToRun = certMod === 'all' ? ['cen','vis','dsc'] : [certMod];
+
+  for (const mod of modsToRun) {
+    const mi = modInfo[mod];
+    let rows = await readCSVAsObjects(mi.file);
+    if (!rows.length) { if (certMod==='all') continue; toast('Sin datos en ' + mi.file, 'wa'); return; }
+    rows = filterByRange(rows, desde, hasta);
+    rows = _applyNFilter(rows, nd, nh);
+    if (!rows.length) { if (certMod==='all') continue; toast('No hay registros con esos filtros.', 'wa'); return; }
+    rows.forEach(r => {
+      if(r['OP']) allOPs.add(r['OP']);
+      if(r['Heat']) allHeats.add(r['Heat']);
+      if(r['Lote de mandrell']) allLotes.add(r['Lote de mandrell']);
+      if(r['N° Parte']) allNPartes.add(r['N° Parte']);
+    });
+    totalReg += rows.length;
+    _certModules.push({ mod, label: mi.label, rows });
+    const tbl = mod==='cen' ? _tableCen(rows) : mod==='vis' ? _tableVis(rows) : _tableDSC(rows);
+    bodyHTML += `<div class="cert-section-title">${mi.label}</div>${tbl}`;
+  }
+
+  if (!totalReg) { toast('No hay registros con esos filtros.', 'wa'); return; }
+
+  const logoSrc = await _logoDataURL();
+  const today   = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const chk = (mod) => modInfo[mod].check.includes(certMod) ? '&#9746;' : '&#9744;';
+
+  const html = `<div class="cert-paper" id="cert-inner">
+
+    <table class="cert-hdr-tbl">
+      <tr>
+        <td class="cert-hdr-left">
+          <img src="${logoSrc}" alt="TechShop Internacional">
+          Specialized Manufacturer of Precision Machined Parts<br>
+          Tel: (506) 2299-6900 &nbsp;|&nbsp; Fax: (506) 2296-4443<br>
+          564-1007 San José, Costa Rica<br>
+          www.tsicr.com &nbsp;|&nbsp; Q.A.: ddukette@tsicr.com
+        </td>
+        <td class="cert-hdr-title">CERTIFICATE OF CONFORMANCE<br>
+          <span style="font-size:10px;font-weight:400;letter-spacing:.2px">
+            Fiber / Fiberglass Laboratory
+          </span>
+        </td>
+      </tr>
+    </table>
+    <hr class="cert-divider">
+
+    <p class="cert-body-text">
+      This is to certify that the components and accessories listed below, manufactured by
+      <b>TechShop Internacional, S.A.</b>, San José, Costa Rica, comply with the customer
+      requirements expressed in the Work Order, specifications and all agreed upon requirements.
+    </p>
+
+    <table class="cert-fields">
+      <tr>
+        <td class="lbl">Work Order / OP:</td><td>${[...allOPs].join(', ')||'—'}</td>
+        <td class="lbl">Part Number:</td><td>${[...allNPartes].join(', ')||'—'}</td>
+      </tr>
+      <tr>
+        <td class="lbl">Heat Number(s):</td><td>${[...allHeats].join(', ')||'—'}</td>
+        <td class="lbl">Mandrel Lot:</td><td>${[...allLotes].join(', ')||'—'}</td>
+      </tr>
+      <tr>
+        <td class="lbl">Date:</td><td>${today}</td>
+        <td class="lbl">Total Records:</td><td>${totalReg}</td>
+      </tr>
+    </table>
+
+    <div class="cert-section-title">TYPE OF INSPECTION PERFORMED</div>
+    <div class="cert-checks">
+      <span><span class="cert-chk">${chk('cen')}</span> Ash Content (Cenizas — ASTM D2584)</span>
+      <span><span class="cert-chk">${chk('vis')}</span> Viscosity (Viscosidad)</span>
+      <span><span class="cert-chk">${chk('dsc')}</span> DSC – Glass Transition Temperature (Tg)</span>
+    </div>
+
+    <div class="cert-section-title">TEST RESULTS</div>
+    ${bodyHTML}
+
+    <table class="cert-sig">
+      <tr>
+        <td>
+          <div style="margin-bottom:18px">Q.A. Inspector:</div>
+          <div class="sig-line">${inspector}</div>
+        </td>
+        <td>
+          <div style="margin-bottom:18px">Approved by:</div>
+          <div class="sig-line">David Dukette</div>
+        </td>
+        <td>
+          <div style="margin-bottom:18px">Date:</div>
+          <div class="sig-line">${today}</div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="cert-doc-footer">FO-P-8.6-1 Rev. 2 &nbsp;|&nbsp; TechShop Internacional, S.A.</div>
+  </div>`;
+
+  const preview = document.getElementById('cert-preview');
+  preview.innerHTML = html;
+  preview.classList.add('visible');
+  document.getElementById('cert-actions').style.display = 'flex';
+  certData = { inspector, today, allOPs:[...allOPs], allHeats:[...allHeats],
+               allLotes:[...allLotes], allNPartes:[...allNPartes],
+               totalReg, certMod, modules: _certModules };
+  toast('Certificate of Conformance generado (' + totalReg + ' registros)', 'ok');
+}
+
+async function guardarCertificadoHTML() {
+  if (!dirHandle) { toast('Selecciona la carpeta primero.', 'wa'); return; }
+  const inner = document.getElementById('cert-inner');
+  if (!inner) { toast('Genera el certificado primero.', 'wa'); return; }
+
+  const modLabels = { cen:'Cenizas', vis:'Viscosidad', dsc:'DSC', all:'Consolidado' };
+  const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const filename = `Certificado_${modLabels[certMod]||certMod}_${d}.html`;
+
+  // extract cert-paper styles inline for standalone file
+  const styles = `
+    body{margin:0;padding:16px;background:#f0f0f0;font-family:Arial,sans-serif}
+    .cert-paper{background:#fff;color:#111;border-radius:4px;box-shadow:0 4px 32px rgba(0,0,0,.2);padding:24px 28px;max-width:900px;margin:0 auto;border:1px solid #ccc;font-size:10.5px;line-height:1.4}
+    .cert-hdr-tbl{width:100%;border-collapse:collapse;border:1.5px solid #111;margin-bottom:0}
+    .cert-hdr-tbl td{padding:8px 10px;vertical-align:middle}
+    .cert-hdr-left{width:220px;border-right:1.5px solid #111;font-size:9px;line-height:1.4;color:#222}
+    .cert-hdr-left img{max-width:180px;max-height:55px;display:block;margin-bottom:4px}
+    .cert-hdr-title{text-align:center;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:10px}
+    .cert-divider{border:none;border-top:1.5px solid #111;margin:0}
+    .cert-body-text{font-size:10px;text-align:justify;padding:7px 0;border-bottom:1px solid #bbb;margin-bottom:6px;line-height:1.5}
+    .cert-fields{width:100%;border-collapse:collapse;margin:6px 0}
+    .cert-fields td{border:1px solid #bbb;padding:4px 8px;font-size:10.5px}
+    .cert-fields .lbl{font-weight:700;background:#f5f5f5;width:160px;white-space:nowrap}
+    .cert-section-title{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:4px;background:#e8e8e8;border:1px solid #bbb;margin:8px 0 5px;color:#111}
+    .cert-checks{display:flex;gap:24px;padding:6px 4px;font-size:10.5px;flex-wrap:wrap}
+    .cert-checks span{display:flex;align-items:center;gap:5px}
+    .cert-chk{font-size:13px;line-height:1}
+    .cert-table{width:100%;border-collapse:collapse;font-size:9.5px;margin-top:4px}
+    .cert-table th{background:#333;color:#fff;font-weight:700;padding:4px 6px;text-align:center;border:1px solid #555}
+    .cert-table td{border:1px solid #bbb;padding:3px 6px;text-align:center;vertical-align:middle}
+    .cert-table tr:nth-child(even) td{background:#f8f8f8}
+    .cert-ok{color:#166534;font-weight:700}.cert-fail{color:#991b1b;font-weight:700}
+    .cert-sig{width:100%;border-collapse:collapse;margin-top:14px}
+    .cert-sig td{padding:8px 10px;vertical-align:bottom;font-size:10.5px;width:33%}
+    .cert-sig .sig-line{border-top:1px solid #111;padding-top:4px;margin-top:20px;font-weight:700}
+    .cert-doc-footer{font-size:9px;color:#777;text-align:right;margin-top:8px;border-top:1px solid #ddd;padding-top:4px}
+    @media print{body{background:#fff;padding:0}.cert-paper{box-shadow:none;border:none;margin:0;max-width:100%}}
+  `;
+
+  const fullHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Certificado ${modLabels[certMod]||certMod} — ${d}</title>
+<style>${styles}</style>
+</head>
+<body>
+${inner.outerHTML}
+</body>
+</html>`;
+
+  try {
+    const perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') { toast('Permiso denegado.', 'er'); return; }
+    const fh = await dirHandle.getFileHandle(filename, { create: true });
+    const writable = await fh.createWritable();
+    await writable.write(fullHTML);
+    await writable.close();
+    toast('Guardado: ' + filename, 'ok');
+  } catch(e) { toast('Error: ' + e.message, 'er'); }
+}
+
+async function descargarWord() {
+  if (!certData) { toast('Genera el certificado primero.', 'wa'); return; }
+  if (!window.docx) { toast('Librería Word no cargada. Verifica conexión.', 'er'); return; }
+
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+          ImageRun, WidthType, BorderStyle, AlignmentType, VerticalAlign,
+          ShadingType, Header, Footer, PageNumber } = window.docx;
+
+  const btn = document.getElementById('btnWord');
+  btn.textContent = 'Generando…'; btn.disabled = true;
+
+  const W = 10800; // content width DXA (Letter - 0.75" margins each side)
+  const bdr = (c='BBBBBB', sz=4) => ({ style: BorderStyle.SINGLE, size: sz, color: c });
+  const bdrAll = (c,sz) => ({ top:bdr(c,sz), bottom:bdr(c,sz), left:bdr(c,sz), right:bdr(c,sz) });
+  const bdrNone = { style: BorderStyle.NIL };
+  const cell = (children, opts={}) => new TableCell({
+    borders: opts.borders ?? bdrAll('BBBBBB',4),
+    width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
+    shading: opts.shade ? { fill: opts.shade, type: ShadingType.CLEAR } : undefined,
+    verticalAlign: opts.va ?? VerticalAlign.TOP,
+    margins: { top:60, bottom:60, left:100, right:100 },
+    columnSpan: opts.span,
+    children
+  });
+  const para = (text, opts={}) => new Paragraph({
+    alignment: opts.align ?? AlignmentType.LEFT,
+    spacing: { before: opts.spaceBefore??0, after: opts.spaceAfter??0 },
+    children: [new TextRun({ text: String(text??''), bold: opts.bold, size: opts.size??20,
+      font: 'Arial', color: opts.color??'111111', italics: opts.italics })]
+  });
+  const bold = (text, size=20) => new TextRun({ text: String(text??''), bold: true, size, font: 'Arial', color: '111111' });
+  const run  = (text, size=20) => new TextRun({ text: String(text??''), size, font: 'Arial', color: '111111' });
+
+  // ── LOGO ──────────────────────────────────────────────────────────────────
+  let logoRun = null;
+  try {
+    const fh = await dirHandle.getFileHandle('coc_logo.png');
+    const file = await fh.getFile();
+    const ab = await file.arrayBuffer();
+    logoRun = new ImageRun({ type:'png', data: ab,
+      transformation: { width: 130, height: 40 },
+      altText: { title:'Logo', description:'TechShop', name:'logo' } });
+  } catch(e) {}
+
+  const { inspector, today, allOPs, allHeats, allLotes, allNPartes, totalReg, modules } = certData;
+  const modLabels = { cen:'Cenizas', vis:'Viscosidad', dsc:'DSC', all:'Consolidado' };
+  const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const filename = `Certificado_${modLabels[certMod]||certMod}_${d}.docx`;
+
+  // ── HEADER TABLE (logo | title) ────────────────────────────────────────────
+  const hdrTable = new Table({
+    width: { size: W, type: WidthType.DXA },
+    columnWidths: [2600, W-2600],
+    borders: { top:bdr('111111',8), bottom:bdr('111111',8), left:bdr('111111',8), right:bdr('111111',8),
+               insideH:bdr('111111',8), insideV:bdr('111111',8) },
+    rows: [new TableRow({ children: [
+      cell([
+        ...(logoRun ? [new Paragraph({ children:[logoRun], spacing:{after:40} })] : [
+          para('TECHSHOP', { bold:true, size:22 })
+        ]),
+        para('Specialized Manufacturer', { size:16 }),
+        para('of Precision Machined Parts', { size:16 }),
+        para('Tel: (506) 2299-6900', { size:16 }),
+        para('564-1007 San José, Costa Rica', { size:16 }),
+        para('www.tsicr.com', { size:16 }),
+      ], { width:2600, va: VerticalAlign.CENTER }),
+      cell([
+        para('CERTIFICATE OF CONFORMANCE', { bold:true, size:28, align: AlignmentType.CENTER }),
+        para('Fiber / Fiberglass Laboratory', { size:18, align: AlignmentType.CENTER, color:'555555' }),
+      ], { width: W-2600, va: VerticalAlign.CENTER }),
+    ]})]
+  });
+
+  // ── BODY TEXT ──────────────────────────────────────────────────────────────
+  const bodyPara = new Paragraph({
+    spacing: { before:120, after:120 },
+    alignment: AlignmentType.JUSTIFIED,
+    children: [
+      run('This is to certify that the components and accessories listed below, manufactured by '),
+      bold('TechShop Internacional, S.A.'),
+      run(', San José, Costa Rica, comply with the customer requirements expressed in the Work Order, specifications and all agreed upon requirements.'),
+    ]
+  });
+
+  // ── FIELDS TABLE ──────────────────────────────────────────────────────────
+  const fRow = (l1,v1,l2,v2) => new TableRow({ children:[
+    cell([para(l1,{bold:true,size:19})], { width:1600, shade:'F4F4F4', borders:bdrAll('BBBBBB',4) }),
+    cell([para(v1,{size:19})],           { width:3800, borders:bdrAll('BBBBBB',4) }),
+    cell([para(l2,{bold:true,size:19})], { width:1600, shade:'F4F4F4', borders:bdrAll('BBBBBB',4) }),
+    cell([para(v2,{size:19})],           { width:3800, borders:bdrAll('BBBBBB',4) }),
+  ]});
+  const fieldsTable = new Table({
+    width: { size: W, type: WidthType.DXA }, columnWidths:[1600,3800,1600,3800],
+    rows:[
+      fRow('Work Order / OP:', allOPs.join(', ')||'—', 'Part Number:', allNPartes.join(', ')||'—'),
+      fRow('Heat Number(s):',  allHeats.join(', ')||'—','Mandrel Lot:', allLotes.join(', ')||'—'),
+      fRow('Date:', today, 'Total Records:', String(totalReg)),
+    ]
+  });
+
+  // ── SECTION TITLE helper ──────────────────────────────────────────────────
+  const secTitle = (text) => new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before:160, after:60 },
+    shading: { fill:'E4E4E4', type: ShadingType.CLEAR },
+    children: [new TextRun({ text, bold:true, size:19, font:'Arial', color:'111111',
+      allCaps:true })]
+  });
+
+  // ── INSPECTION CHECKBOXES ─────────────────────────────────────────────────
+  const chk = (mod) => certData.certMod === 'all' || certData.certMod === mod ? '☑' : '☐';
+  const checksPara = new Paragraph({
+    spacing: { before:80, after:80 },
+    children: [
+      run(`${chk('cen')}  Ash Content (Cenizas — ASTM D2584)     `),
+      run(`${chk('vis')}  Viscosity (Viscosidad)     `),
+      run(`${chk('dsc')}  DSC – Glass Transition Temperature (Tg)`),
+    ]
+  });
+
+  // ── RESULTS TABLES ────────────────────────────────────────────────────────
+  function makeResultsTable(mod, rows) {
+    const thCell = (text, w) => cell(
+      [new Paragraph({ alignment: AlignmentType.CENTER,
+        children:[new TextRun({text, bold:true, size:17, font:'Arial', color:'FFFFFF'})] })],
+      { width:w, shade:'333333', va: VerticalAlign.CENTER,
+        borders: bdrAll('555555',4) });
+    const tdCell = (text, w, shade) => cell(
+      [new Paragraph({ alignment: AlignmentType.CENTER,
+        children:[run(String(text??'—'),17)] })],
+      { width:w, shade: shade||undefined, borders: bdrAll('BBBBBB',4) });
+
+    if (mod === 'cen') {
+      const cols = [500,1400,1500,1200,1700,1700,1800];
+      const heads = ['N°','Fecha','OP','Heat','C1 %','C2 %','Promedio %'];
+      return new Table({
+        width:{size:W,type:WidthType.DXA}, columnWidths:cols,
+        rows:[
+          new TableRow({ children: heads.map((h,i)=>thCell(h,cols[i])) }),
+          ...rows.map((r,ri) => {
+            const p1=parseFloat(rcol(r,'Capsula 1 - Porcentaje (%)','C1 Porcentaje')), p2=parseFloat(rcol(r,'Capsula 2 - Porcentaje (%)','C2 Porcentaje'));
+            const avg=(!isNaN(p1)&&!isNaN(p2))?((p1+p2)/2).toFixed(4):(!isNaN(p1)?p1.toFixed(4):'—');
+            const sh = ri%2===1 ? 'F8F8F8' : undefined;
+            return new TableRow({ children:[
+              tdCell(r['N° Prueba'],cols[0],sh), tdCell(r['Fecha'],cols[1],sh),
+              tdCell(r['OP'],cols[2],sh),        tdCell(r['Heat'],cols[3],sh),
+              tdCell(isNaN(p1)?'—':p1.toFixed(4),cols[4],sh),
+              tdCell(isNaN(p2)?'—':p2.toFixed(4),cols[5],sh),
+              cell([new Paragraph({alignment:AlignmentType.CENTER,
+                children:[new TextRun({text:avg,bold:true,size:17,font:'Arial',color:'111111'})]})],
+                {width:cols[6],shade:sh,borders:bdrAll('BBBBBB',4)}),
+            ]});
+          })
+        ]
+      });
+    }
+    if (mod === 'vis') {
+      const cols = [500,1300,1300,1000,1600,1700,1500,900,1000];
+      const heads = ['N°','Fecha','OP','Heat','Resina (mPa·s)','Catalizador (mPa·s)','Mezcla (mPa·s)','Temp °C','Resultado'];
+      return new Table({
+        width:{size:W,type:WidthType.DXA}, columnWidths:cols,
+        rows:[
+          new TableRow({ children: heads.map((h,i)=>thCell(h,cols[i])) }),
+          ...rows.map((r,ri) => {
+            const res = rcol(r,'Resina - Resultado','Resultado Resina')||'—';
+            const resColor = res==='OK'?'166534':res==='FUERA'?'991B1B':'111111';
+            const sh = ri%2===1 ? 'F8F8F8' : undefined;
+            return new TableRow({ children:[
+              tdCell(r['N° Prueba'],cols[0],sh), tdCell(r['Fecha'],cols[1],sh),
+              tdCell(r['OP'],cols[2],sh), tdCell(r['Heat'],cols[3],sh),
+              tdCell(rcol(r,'Resina - Viscosidad (mPas)','Viscosidad Resina (mPas)'),cols[4],sh),
+              tdCell(rcol(r,'Catalizador - Viscosidad (mPas)','Viscosidad Catalizador (mPas)'),cols[5],sh),
+              tdCell(rcol(r,'Mezcla - Viscosidad (mPas)','Viscosidad Mezcla (mPas)'),cols[6],sh),
+              tdCell(rcol(r,'Resina - Temp (°C)','Resina Temp (°C)'),cols[7],sh),
+              cell([new Paragraph({alignment:AlignmentType.CENTER,
+                children:[new TextRun({text:res,bold:true,size:17,font:'Arial',color:resColor})]})],
+                {width:cols[8],shade:sh,borders:bdrAll('BBBBBB',4)}),
+            ]});
+          })
+        ]
+      });
+    }
+    // DSC
+    const cols = [600,1600,1600,1300,1900,1900,1800];
+    const heads = ['N°','Fecha','OP','Heat','Masa (mg)','Tg (°C)','Observaciones'];
+    return new Table({
+      width:{size:W,type:WidthType.DXA}, columnWidths:cols,
+      rows:[
+        new TableRow({ children: heads.map((h,i)=>thCell(h,cols[i])) }),
+        ...rows.map((r,ri) => {
+          const sh = ri%2===1 ? 'F8F8F8' : undefined;
+          return new TableRow({ children:[
+            tdCell(r['N° Prueba'],cols[0],sh), tdCell(r['Fecha'],cols[1],sh),
+            tdCell(r['OP'],cols[2],sh),        tdCell(r['Heat'],cols[3],sh),
+            tdCell(r['Masa muestra (mg)'],cols[4],sh),
+            tdCell(r['Tg (°C)'],cols[5],sh),
+            tdCell(r['Observaciones']||'—',cols[6],sh),
+          ]});
+        })
+      ]
+    });
+  }
+
+  // ── SIGNATURES TABLE ──────────────────────────────────────────────────────
+  const sigCell = (label, name) => cell([
+    para(label, { size:19 }),
+    new Paragraph({ spacing:{before:280,after:40},
+      border:{ top:{ style:BorderStyle.SINGLE, size:6, color:'111111' } },
+      children:[bold(name, 19)] }),
+  ], { width: Math.floor(W/3), borders:{ top:bdrNone, bottom:bdrNone, left:bdrNone, right:bdrNone } });
+
+  const sigTable = new Table({
+    width:{size:W,type:WidthType.DXA}, columnWidths:[Math.floor(W/3),Math.floor(W/3),W-2*Math.floor(W/3)],
+    borders:{ top:bdrNone,bottom:bdrNone,left:bdrNone,right:bdrNone,insideH:bdrNone,insideV:bdrNone },
+    rows:[new TableRow({ children:[
+      sigCell('Q.A. Inspector:', inspector),
+      sigCell('Approved by:', 'David Dukette'),
+      sigCell('Date:', today),
+    ]})]
+  });
+
+  // ── ASSEMBLE DOCUMENT ─────────────────────────────────────────────────────
+  const children = [
+    hdrTable,
+    new Paragraph({ spacing:{before:100,after:0}, children:[run('')] }),
+    bodyPara,
+    fieldsTable,
+    secTitle('TYPE OF INSPECTION PERFORMED'),
+    checksPara,
+    secTitle('TEST RESULTS'),
+    ...modules.flatMap(({ mod, label, rows }) => [
+      secTitle(label),
+      makeResultsTable(mod, rows),
+    ]),
+    new Paragraph({ spacing:{before:40,after:0}, children:[run('')] }),
+    sigTable,
+    new Paragraph({
+      alignment: AlignmentType.RIGHT,
+      spacing:{ before:120, after:0 },
+      border:{ top:{ style:BorderStyle.SINGLE, size:4, color:'DDDDDD' } },
+      children:[run('FO-P-8.6-1 Rev. 2  |  TechShop Internacional, S.A.', 16)]
+    }),
+  ];
+
+  const doc = new Document({
+    sections:[{
+      properties:{ page:{
+        size:{ width:12240, height:15840 },
+        margin:{ top:720, right:720, bottom:720, left:720 }
+      }},
+      children
+    }]
+  });
+
+  try {
+    const buffer = await Packer.toBuffer(doc);
+    const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+    if (dirHandle) {
+      const perm = await dirHandle.requestPermission({ mode:'readwrite' });
+      if (perm === 'granted') {
+        const fh = await dirHandle.getFileHandle(filename, { create:true });
+        const wr = await fh.createWritable();
+        await wr.write(blob); await wr.close();
+        toast('✓ Word guardado: ' + filename, 'ok');
+        btn.textContent = '✓ Word'; btn.disabled = false;
+        return;
+      }
+    }
+    // fallback: browser download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    toast('✓ Descargado: ' + filename, 'ok');
+  } catch(e) {
+    toast('Error Word: ' + e.message, 'er');
+    console.error(e);
+  }
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg> Descargar Word';
+  btn.disabled = false;
+}
+
+function toast(msg, type='ok') {
+  const el = document.createElement('div');
+  el.className = 'ti ' + type;
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('g_fecha').valueAsDate = new Date();
+  document.getElementById('v_fecha').valueAsDate = new Date();
+  document.getElementById('d_fecha').valueAsDate = new Date();
+  // Inicializar filtros en 30 días
+  const hoy = new Date().toISOString().slice(0,10);
+  const d30 = new Date(); d30.setDate(d30.getDate()-30);
+  const d30s = d30.toISOString().slice(0,10);
+  ['cen','vis','dsc'].forEach(p => {
+    const desdeEl = document.getElementById(p+'_desde');
+    const hastaEl = document.getElementById(p+'_hasta');
+    if (desdeEl) desdeEl.value = d30s;
+    if (hastaEl) hastaEl.value = hoy;
+  });
+  updateFolderUI();
+  setTimeout(loadChartCenizas, 300);
+  setTimeout(() => loadNextN('g_nprueba', CSV_FILE, 'C'), 400);
+});
+</script>
+</body>
+</html>
