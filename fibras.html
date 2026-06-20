@@ -988,11 +988,12 @@ function ndjMax(rotor, rpm) {
   const r = parseInt(rotor); const sp = parseFloat(rpm);
   return (NDJ_RANGE[r] && NDJ_RANGE[r][sp]) ? NDJ_RANGE[r][sp] : null;
 }
-// Ea/R por material — Procedimiento TSICR-LAB-VIS-001 Rev.04 §5 (literatura publicada)
-// Resina NPEL-128: Ea=70 kJ/mol → 70000/8.314=8420
-// Catalizador MTHPA-C8K: Ea=28 kJ/mol → 28000/8.314=3366
-// Mezcla A+B: promedio ponderado w1×8420 + w2×3366 (100:83 en peso)
-const VIS_EAR = { r: 8420, c: 3366, m: 6128 };
+// Ea/R por material — Procedimiento TSICR-LAB-VIS-001 Rev.06 §5
+// Resina NPEL-128:    Ea=70 kJ/mol   → 70000/8.314=8420  (TDS 694781)
+// Catalizador C8K:    Ea=28 kJ/mol   → 28000/8.314=3366  (TDS 579134)
+// Mezcla A+B:         Ea=50.951 kJ/mol → 50951/8.314=6128 (w1×70+w2×28, 100:83)
+const VIS_EAR  = { r: 8420, c: 3366, m: 6128 };
+const VIS_SPEC25 = { r:{min:9000,max:14000}, c:{min:40,max:60}, m:{min:772,max:1181} };
 function corrVisc25(measured, tempC, earCoeff) {
   if (isNaN(measured) || isNaN(tempC) || tempC <= 0) return null;
   const TK = tempC + 273.15;
@@ -1019,12 +1020,20 @@ function calcVisc(comp) {
       const measured = maxV * fs / 100;
       viscEl.value = Math.round(measured);
       if (corrEl) {
-        const corr = corrVisc25(measured, tempC, VIS_EAR[comp]);
-        if (corr !== null) {
-          corrEl.textContent = '→ @25°C: ' + corr.toLocaleString('es') + ' mPas';
+        if (!isNaN(tempC) && tempC >= 20 && tempC <= 35) {
+          const TK = tempC + 273.15;
+          const FC = Math.exp(VIS_EAR[comp] * (1/298.15 - 1/TK));
+          const sp  = VIS_SPEC25[comp];
+          const minT = Math.round(sp.min / FC);
+          const maxT = Math.round(sp.max / FC);
+          const corr  = Math.round(measured * FC);
           corrEl.dataset.val = corr;
+          corrEl.innerHTML = 'Tabla 5C @ ' + tempC + '°C: <b>' + minT.toLocaleString('es') + ' – ' + maxT.toLocaleString('es') + '</b> mPas &nbsp;·&nbsp; @25°C: ' + corr.toLocaleString('es') + ' mPas';
+        } else if (!isNaN(tempC)) {
+          corrEl.textContent = '⚠ ' + tempC + '°C fuera de 20–35°C — re-atemperar (Rev.06 §5)';
+          corrEl.dataset.val = '';
         } else {
-          corrEl.textContent = 'Ingrese temperatura para corregir a 25°C';
+          corrEl.textContent = 'Ingrese temperatura → Tabla 5C (Rev.06)';
           corrEl.dataset.val = '';
         }
       }
@@ -1085,14 +1094,14 @@ async function guardarDSC() {
 }
 
 function checkVis() {
-  function badge(id, val, min, max) {
+  function badge(id, val, min, max, failText) {
     const b = document.getElementById(id);
     const v = parseFloat(val);
     if (isNaN(v)) { b.style.display='none'; return null; }
     const ok = v >= min && v <= max;
     b.style.display = 'block';
     b.className = 'vis-badge ' + (ok ? 'vis-ok' : 'vis-fail');
-    b.textContent = ok ? '✓ Dentro de especificación' : '✗ Fuera de especificación';
+    b.textContent = ok ? '✓ Dentro de especificación' : (failText || '✗ Fuera de especificación');
     return ok;
   }
   function getViscVal(comp) {
@@ -1100,9 +1109,9 @@ function checkVis() {
     if (ce && ce.dataset.val) return ce.dataset.val;
     return document.getElementById('v_visc_'+comp).value;
   }
-  const okR = badge('v_badge_r', getViscVal('r'), 11000, 14000);
-  const okC = badge('v_badge_c', getViscVal('c'), 40, 60);
-  const okM = badge('v_badge_m', getViscVal('m'), 770, 1180);
+  const okR = badge('v_badge_r', getViscVal('r'), 9000, 14000);
+  const okC = badge('v_badge_c', getViscVal('c'), 40, 60, '✗ NO CONFORME — registrar NCR-2026-001');
+  const okM = badge('v_badge_m', getViscVal('m'), 772, 1181);
   function resSpan(id, label, ok) {
     const el = document.getElementById(id);
     if (ok === null) { el.textContent = label + ' —'; el.style.color = 'var(--muted)'; }
@@ -1144,13 +1153,13 @@ async function guardarVis() {
   const fsm   = document.getElementById('v_fs_m').value;
   const angm  = document.getElementById('v_ang_m').value;
   const tempm = document.getElementById('v_temp_m').value;
-  // Temperatura obligatoria — rango válido 15–45°C (corrección Arrhenius aplica)
+  // Temperatura obligatoria — rango válido 20–35°C (Tabla 5C Rev.06 §5)
   const _tempCheck = [{label:'Resina', temp:tempr, visc:vr}, {label:'Catalizador', temp:tempc, visc:vc}, {label:'Mezcla', temp:tempm, visc:vm}];
   for (const c of _tempCheck) {
     if (!c.visc) continue;
-    if (!c.temp) { toast(`Temperatura de ${c.label} es obligatoria (ASTM D2196).`, 'wa'); return; }
+    if (!c.temp) { toast(`Temperatura de ${c.label} es obligatoria (ASTM D2196 / Rev.06).`, 'wa'); return; }
     const t = parseFloat(c.temp);
-    if (t < 15 || t > 45) { toast(`${c.label}: ${c.temp}°C fuera del rango 15–45°C — verificar equipo.`, 'er'); return; }
+    if (t < 20 || t > 35) { toast(`${c.label}: ${c.temp}°C fuera de 20–35°C — re-atemperar antes de medir (Rev.06 §5).`, 'er'); return; }
   }
   // Fs% 10–90% (ASTM D2196-20: fuera de rango = lectura inválida)
   const _fsCheck = [{label:'Resina', fs:fsr}, {label:'Catalizador', fs:fsc}, {label:'Mezcla', fs:fsm}];
@@ -1176,9 +1185,9 @@ async function guardarVis() {
   const vr25 = _getCorr('r', vr, tempr);
   const vc25 = _getCorr('c', vc, tempc);
   const vm25 = _getCorr('m', vm, tempm);
-  const resR = vr25 ? (parseFloat(vr25)>=11000&&parseFloat(vr25)<=14000?'OK':'FUERA') : '';
-  const resC = vc25 ? (parseFloat(vc25)>=40&&parseFloat(vc25)<=60?'OK':'FUERA') : '';
-  const resM = vm25 ? (parseFloat(vm25)>=770&&parseFloat(vm25)<=1180?'OK':'FUERA') : '';
+  const resR = vr25 ? (parseFloat(vr25)>=9000&&parseFloat(vr25)<=14000?'OK':'FUERA') : '';
+  const resC = vc25 ? (parseFloat(vc25)>=40&&parseFloat(vc25)<=60?'OK':'NO CONFORME') : '';
+  const resM = vm25 ? (parseFloat(vm25)>=772&&parseFloat(vm25)<=1181?'OK':'FUERA') : '';
   try {
     const nPruebaV = await getNextConsecutivo(VIS_FILE, 'V');
     document.getElementById('v_nprueba').value = nPruebaV;
