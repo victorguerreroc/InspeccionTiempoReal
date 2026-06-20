@@ -508,12 +508,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
         <div class="vis-spec">
           <div class="vis-param"><span class="vis-lbl">Rotor</span>
             <select id="v_rotor_r" class="fl" onchange="calcVisc('r')" style="background:transparent;border:none;color:#c4b5fd;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
-              <option>1</option><option>2</option><option selected>3</option><option>4</option>
+              <option>1</option><option>2</option><option>3</option><option selected>4</option>
             </select>
           </div>
           <div class="vis-param"><span class="vis-lbl">RPM</span>
             <select id="v_rpm_r" onchange="calcVisc('r')" style="background:transparent;border:none;color:#c4b5fd;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
-              <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option selected>6</option><option>12</option><option>30</option><option>60</option>
+              <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option>6</option><option>12</option><option selected>30</option><option>60</option>
             </select>
           </div>
           <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">11,000 – 14,000 mPas</span></div>
@@ -576,7 +576,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
         <div class="vis-spec">
           <div class="vis-param"><span class="vis-lbl">Rotor</span>
             <select id="v_rotor_m" onchange="calcVisc('m')" style="background:transparent;border:none;color:#86efac;font-weight:700;font-size:13px;font-family:monospace;padding:0;width:100%">
-              <option>1</option><option>2</option><option selected>3</option><option>4</option>
+              <option>1</option><option selected>2</option><option>3</option><option>4</option>
             </select>
           </div>
           <div class="vis-param"><span class="vis-lbl">RPM</span>
@@ -988,11 +988,11 @@ function ndjMax(rotor, rpm) {
   const r = parseInt(rotor); const sp = parseFloat(rpm);
   return (NDJ_RANGE[r] && NDJ_RANGE[r][sp]) ? NDJ_RANGE[r][sp] : null;
 }
-// Ea/R por material — Procedimiento TSICR-LAB-VIS-001 Rev.06 §5
-// Resina NPEL-128:    Ea=70 kJ/mol   → 70000/8.314=8420  (TDS 694781)
-// Catalizador C8K:    Ea=28 kJ/mol   → 28000/8.314=3366  (TDS 579134)
-// Mezcla A+B:         Ea=50.951 kJ/mol → 50951/8.314=6128 (w1×70+w2×28, 100:83)
-const VIS_EAR  = { r: 8420, c: 3366, m: 6128 };
+// Ea/R por material — Procedimiento TSICR-LAB-VIS-001 Rev.01 §4.7
+// Resina NPEL-128:    Ea=52,500 J/mol → 52500/8.314=6314
+// Catalizador C8K:    Ea=31,500 J/mol → 31500/8.314=3789
+// Mezcla A+B:         Ea=43,000 J/mol → 43000/8.314=5172
+const VIS_EAR  = { r: 6314, c: 3789, m: 5172 };
 const VIS_SPEC25 = { r:{min:9000,max:14000}, c:{min:40,max:60}, m:{min:772,max:1181} };
 function corrVisc25(measured, tempC, earCoeff) {
   if (isNaN(measured) || isNaN(tempC) || tempC <= 0) return null;
