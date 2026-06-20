@@ -582,7 +582,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
               <option>0.3</option><option>0.6</option><option>1.5</option><option>3</option><option>6</option><option selected>12</option><option>30</option><option>60</option>
             </select>
           </div>
-          <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">3,440 – 4,120 mPas</span></div>
+          <div class="vis-param vis-full"><span class="vis-lbl">Especificación</span><span class="vis-val" style="color:var(--yellow)">770 – 1,180 mPas</span></div>
           <div class="vis-param vis-full"><span id="v_rng_m" style="font-size:9px;color:var(--muted)"></span></div>
         </div>
         <div class="card-fields" style="margin-top:8px">
@@ -627,7 +627,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
           <canvas id="chart_vis_c" class="trend-canvas"></canvas>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;color:#86efac;margin-bottom:4px">Mezcla (A+B) · 3.44–4.12 Pa·s</div>
+          <div style="font-size:10px;font-weight:700;color:#86efac;margin-bottom:4px">Mezcla (A+B) · 770–1,180 mPa·s</div>
           <canvas id="chart_vis_m" class="trend-canvas"></canvas>
         </div>
       </div>
@@ -1072,7 +1072,7 @@ function checkVis() {
   }
   const okR = badge('v_badge_r', document.getElementById('v_visc_r').value, 11000, 14000);
   const okC = badge('v_badge_c', document.getElementById('v_visc_c').value, 40, 60);
-  const okM = badge('v_badge_m', document.getElementById('v_visc_m').value, 3440, 4120);
+  const okM = badge('v_badge_m', document.getElementById('v_visc_m').value, 770, 1180);
   function resSpan(id, label, ok) {
     const el = document.getElementById(id);
     if (ok === null) { el.textContent = label + ' —'; el.style.color = 'var(--muted)'; }
@@ -1115,7 +1115,7 @@ async function guardarVis() {
   const tempm = document.getElementById('v_temp_m').value;
   const resR = vr ? (parseFloat(vr)>=11000&&parseFloat(vr)<=14000?'OK':'FUERA') : '';
   const resC = vc ? (parseFloat(vc)>=40&&parseFloat(vc)<=60?'OK':'FUERA') : '';
-  const resM = vm ? (parseFloat(vm)>=3440&&parseFloat(vm)<=4120?'OK':'FUERA') : '';
+  const resM = vm ? (parseFloat(vm)>=770&&parseFloat(vm)<=1180?'OK':'FUERA') : '';
   try {
     const nPruebaV = await getNextConsecutivo(VIS_FILE, 'V');
     document.getElementById('v_nprueba').value = nPruebaV;
@@ -1138,11 +1138,11 @@ function resetVis() {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   document.getElementById('v_fecha').valueAsDate = new Date();
-  document.getElementById('v_rotor_r').value = '3';
-  document.getElementById('v_rpm_r').value   = '6';
+  document.getElementById('v_rotor_r').value = '4';
+  document.getElementById('v_rpm_r').value   = '30';
   document.getElementById('v_rotor_c').value = '1';
   document.getElementById('v_rpm_c').value   = '30';
-  document.getElementById('v_rotor_m').value = '3';
+  document.getElementById('v_rotor_m').value = '2';
   document.getElementById('v_rpm_m').value   = '12';
   ['v_badge_r','v_badge_c','v_badge_m','v_fswarn_r','v_fswarn_c','v_fswarn_m'].forEach(id => { const b=document.getElementById(id); if(b) b.style.display='none'; });
   ['v_rng_r','v_rng_c','v_rng_m'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=''; });
@@ -1622,8 +1622,8 @@ async function loadChartVis() {
      specBand:[40,60],specBandColor:'#eab30812'});
   drawTrendChart(document.getElementById('chart_vis_m'),
     [{label:'Mezcla A+B',color:'#86efac',data:dM}],
-    {specLines:[{y:3440,color:'#eab30888',label:'3.44 Pa·s'},{y:4120,color:'#eab30888',label:'4.12 Pa·s'}],
-     specBand:[3440,4120],specBandColor:'#eab30812'});
+    {specLines:[{y:770,color:'#eab30888',label:'Mín 770'},{y:1180,color:'#eab30888',label:'Máx 1180'}],
+     specBand:[770,1180],specBandColor:'#eab30812'});
 }
 
 async function loadChartDSC() {
