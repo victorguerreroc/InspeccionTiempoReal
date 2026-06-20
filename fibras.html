@@ -525,12 +525,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
           <div class="fl"><label>Angle</label>
             <input id="v_ang_r" type="number" step="0.1" placeholder="0" inputmode="decimal" class="c1"></div>
           <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
-            <input id="v_temp_r" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c1"></div>
+            <input id="v_temp_r" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c1" oninput="calcVisc('r')"></div>
           <div class="fl" style="grid-column:span 2">
-            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <label>Viscosidad medida (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
             <input id="v_visc_r" type="number" step="1" placeholder="auto" inputmode="decimal" class="c1" oninput="checkVis()">
           </div>
         </div>
+        <div id="v_visc25_r" style="font-size:11px;font-weight:700;color:#c4b5fd;padding:3px 6px;min-height:18px" data-val=""></div>
         <div id="v_fswarn_r" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
         <div id="v_badge_r" class="vis-badge" style="display:none"></div>
       </div>
@@ -558,12 +559,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
           <div class="fl"><label>Angle</label>
             <input id="v_ang_c" type="number" step="0.1" placeholder="0" inputmode="decimal" class="c2"></div>
           <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
-            <input id="v_temp_c" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c2"></div>
+            <input id="v_temp_c" type="number" step="0.1" placeholder="°C" inputmode="decimal" class="c2" oninput="calcVisc('c')"></div>
           <div class="fl" style="grid-column:span 2">
-            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <label>Viscosidad medida (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
             <input id="v_visc_c" type="number" step="1" placeholder="auto" inputmode="decimal" class="c2" oninput="checkVis()">
           </div>
         </div>
+        <div id="v_visc25_c" style="font-size:11px;font-weight:700;color:#a5f3fc;padding:3px 6px;min-height:18px" data-val=""></div>
         <div id="v_fswarn_c" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
         <div id="v_badge_c" class="vis-badge" style="display:none"></div>
       </div>
@@ -591,12 +593,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
           <div class="fl"><label>Angle</label>
             <input id="v_ang_m" type="number" step="0.1" placeholder="0" inputmode="decimal" style="color:#86efac;font-weight:700"></div>
           <div class="fl" style="grid-column:span 2"><label>Temperatura de prueba (°C)</label>
-            <input id="v_temp_m" type="number" step="0.1" placeholder="°C" inputmode="decimal" style="color:#86efac;font-weight:700"></div>
+            <input id="v_temp_m" type="number" step="0.1" placeholder="°C" inputmode="decimal" style="color:#86efac;font-weight:700" oninput="calcVisc('m')"></div>
           <div class="fl" style="grid-column:span 2">
-            <label>Viscosidad calc. (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
+            <label>Viscosidad medida (mPas) <span style="font-size:9px;color:var(--muted)">auto</span></label>
             <input id="v_visc_m" type="number" step="1" placeholder="auto" inputmode="decimal" oninput="checkVis()" style="color:#86efac;font-weight:700">
           </div>
         </div>
+        <div id="v_visc25_m" style="font-size:11px;font-weight:700;color:#86efac;padding:3px 6px;min-height:18px" data-val=""></div>
         <div id="v_fswarn_m" style="display:none;font-size:10px;color:#fbbf24;padding:3px 0"></div>
         <div id="v_badge_m" class="vis-badge" style="display:none"></div>
       </div>
@@ -968,9 +971,9 @@ function updateChart(p1, p2, r1, r2) {
 
 // ── VISCOSIDAD ────────────────────────────────────────────────────────────────
 const VIS_COLS = ['N° Prueba','Fecha','OP','Lote de mandrell','Heat','N° Parte','Lote de resina','Lote de catalizador','Temp. ambiente (°C)',
-  'Resina - Rotor','Resina - RPM','Resina - Fs (%)','Resina - Angle','Resina - Temp (°C)','Resina - Viscosidad (mPas)','Resina - Resultado',
-  'Catalizador - Rotor','Catalizador - RPM','Catalizador - Fs (%)','Catalizador - Angle','Catalizador - Temp (°C)','Catalizador - Viscosidad (mPas)','Catalizador - Resultado',
-  'Mezcla - Rotor','Mezcla - RPM','Mezcla - Fs (%)','Mezcla - Angle','Mezcla - Temp (°C)','Mezcla - Viscosidad (mPas)','Mezcla - Resultado'];
+  'Resina - Rotor','Resina - RPM','Resina - Fs (%)','Resina - Angle','Resina - Temp (°C)','Resina - Visc. medida (mPas)','Resina - Visc. @25°C (mPas)','Resina - Resultado',
+  'Catalizador - Rotor','Catalizador - RPM','Catalizador - Fs (%)','Catalizador - Angle','Catalizador - Temp (°C)','Catalizador - Visc. medida (mPas)','Catalizador - Visc. @25°C (mPas)','Catalizador - Resultado',
+  'Mezcla - Rotor','Mezcla - RPM','Mezcla - Fs (%)','Mezcla - Angle','Mezcla - Temp (°C)','Mezcla - Visc. medida (mPas)','Mezcla - Visc. @25°C (mPas)','Mezcla - Resultado'];
 const VIS_FILE = 'Viscosidad_Fibras.csv';
 
 // Bonvoisin NDJ Range Table — valores en mPas (K=1000)
@@ -985,14 +988,26 @@ function ndjMax(rotor, rpm) {
   const r = parseInt(rotor); const sp = parseFloat(rpm);
   return (NDJ_RANGE[r] && NDJ_RANGE[r][sp]) ? NDJ_RANGE[r][sp] : null;
 }
+// Ea/R por material — Procedimiento TSICR-LAB-VIS-001 Rev.04 §5 (literatura publicada)
+// Resina NPEL-128: Ea=70 kJ/mol → 70000/8.314=8420
+// Catalizador MTHPA-C8K: Ea=28 kJ/mol → 28000/8.314=3366
+// Mezcla A+B: promedio ponderado w1×8420 + w2×3366 (100:83 en peso)
+const VIS_EAR = { r: 8420, c: 3366, m: 6128 };
+function corrVisc25(measured, tempC, earCoeff) {
+  if (isNaN(measured) || isNaN(tempC) || tempC <= 0) return null;
+  const TK = tempC + 273.15;
+  return Math.round(measured * Math.exp(earCoeff * (1/298.15 - 1/TK)));
+}
 function calcVisc(comp) {
-  const fs   = parseFloat(document.getElementById('v_fs_'+comp).value);
-  const rpm  = document.getElementById('v_rpm_'+comp).value;
-  const rot  = document.getElementById('v_rotor_'+comp).value;
-  const rngEl= document.getElementById('v_rng_'+comp);
-  const warnEl=document.getElementById('v_fswarn_'+comp);
-  const viscEl=document.getElementById('v_visc_'+comp);
-  const maxV = ndjMax(rot, rpm);
+  const fs    = parseFloat(document.getElementById('v_fs_'+comp).value);
+  const rpm   = document.getElementById('v_rpm_'+comp).value;
+  const rot   = document.getElementById('v_rotor_'+comp).value;
+  const tempC = parseFloat(document.getElementById('v_temp_'+comp).value);
+  const rngEl  = document.getElementById('v_rng_'+comp);
+  const warnEl = document.getElementById('v_fswarn_'+comp);
+  const viscEl = document.getElementById('v_visc_'+comp);
+  const corrEl = document.getElementById('v_visc25_'+comp);
+  const maxV   = ndjMax(rot, rpm);
   if (rngEl) rngEl.textContent = maxV ? 'Rango: ' + maxV.toLocaleString('es') + ' mPas' : '';
   if (!isNaN(fs) && fs > 0) {
     if (warnEl) {
@@ -1001,8 +1016,18 @@ function calcVisc(comp) {
       else              { warnEl.style.display='none'; }
     }
     if (maxV) {
-      const calc = maxV * fs / 100;
-      viscEl.value = Math.round(calc);
+      const measured = maxV * fs / 100;
+      viscEl.value = Math.round(measured);
+      if (corrEl) {
+        const corr = corrVisc25(measured, tempC, VIS_EAR[comp]);
+        if (corr !== null) {
+          corrEl.textContent = '→ @25°C: ' + corr.toLocaleString('es') + ' mPas';
+          corrEl.dataset.val = corr;
+        } else {
+          corrEl.textContent = 'Ingrese temperatura para corregir a 25°C';
+          corrEl.dataset.val = '';
+        }
+      }
       checkVis();
     }
   }
@@ -1070,9 +1095,14 @@ function checkVis() {
     b.textContent = ok ? '✓ Dentro de especificación' : '✗ Fuera de especificación';
     return ok;
   }
-  const okR = badge('v_badge_r', document.getElementById('v_visc_r').value, 11000, 14000);
-  const okC = badge('v_badge_c', document.getElementById('v_visc_c').value, 40, 60);
-  const okM = badge('v_badge_m', document.getElementById('v_visc_m').value, 770, 1180);
+  function getViscVal(comp) {
+    const ce = document.getElementById('v_visc25_'+comp);
+    if (ce && ce.dataset.val) return ce.dataset.val;
+    return document.getElementById('v_visc_'+comp).value;
+  }
+  const okR = badge('v_badge_r', getViscVal('r'), 11000, 14000);
+  const okC = badge('v_badge_c', getViscVal('c'), 40, 60);
+  const okM = badge('v_badge_m', getViscVal('m'), 770, 1180);
   function resSpan(id, label, ok) {
     const el = document.getElementById(id);
     if (ok === null) { el.textContent = label + ' —'; el.style.color = 'var(--muted)'; }
@@ -1114,13 +1144,13 @@ async function guardarVis() {
   const fsm   = document.getElementById('v_fs_m').value;
   const angm  = document.getElementById('v_ang_m').value;
   const tempm = document.getElementById('v_temp_m').value;
-  // Temperatura 25°C ± 0.5°C (ASTM D2196-20 obligatorio)
+  // Temperatura obligatoria — rango válido 15–45°C (corrección Arrhenius aplica)
   const _tempCheck = [{label:'Resina', temp:tempr, visc:vr}, {label:'Catalizador', temp:tempc, visc:vc}, {label:'Mezcla', temp:tempm, visc:vm}];
   for (const c of _tempCheck) {
     if (!c.visc) continue;
     if (!c.temp) { toast(`Temperatura de ${c.label} es obligatoria (ASTM D2196).`, 'wa'); return; }
     const t = parseFloat(c.temp);
-    if (t < 24.5 || t > 25.5) { toast(`${c.label}: ${c.temp}°C fuera de 25 ± 0.5°C — medición inválida (ASTM D2196).`, 'er'); return; }
+    if (t < 15 || t > 45) { toast(`${c.label}: ${c.temp}°C fuera del rango 15–45°C — verificar equipo.`, 'er'); return; }
   }
   // Fs% 10–90% (ASTM D2196-20: fuera de rango = lectura inválida)
   const _fsCheck = [{label:'Resina', fs:fsr}, {label:'Catalizador', fs:fsc}, {label:'Mezcla', fs:fsm}];
@@ -1137,13 +1167,22 @@ async function guardarVis() {
   if (_wrongCombos.length) {
     if (!confirm('⚠ Configuración difiere del Procedimiento Rev.04:\n\n' + _wrongCombos.join('\n') + '\n\n¿Guardar de todas formas?')) return;
   }
-  const resR = vr ? (parseFloat(vr)>=11000&&parseFloat(vr)<=14000?'OK':'FUERA') : '';
-  const resC = vc ? (parseFloat(vc)>=40&&parseFloat(vc)<=60?'OK':'FUERA') : '';
-  const resM = vm ? (parseFloat(vm)>=770&&parseFloat(vm)<=1180?'OK':'FUERA') : '';
+  const _getCorr = (comp, measured, tempC) => {
+    const ce = document.getElementById('v_visc25_'+comp);
+    if (ce && ce.dataset.val) return ce.dataset.val;
+    const c = corrVisc25(parseFloat(measured), parseFloat(tempC), VIS_EAR[comp]);
+    return c !== null ? String(c) : measured;
+  };
+  const vr25 = _getCorr('r', vr, tempr);
+  const vc25 = _getCorr('c', vc, tempc);
+  const vm25 = _getCorr('m', vm, tempm);
+  const resR = vr25 ? (parseFloat(vr25)>=11000&&parseFloat(vr25)<=14000?'OK':'FUERA') : '';
+  const resC = vc25 ? (parseFloat(vc25)>=40&&parseFloat(vc25)<=60?'OK':'FUERA') : '';
+  const resM = vm25 ? (parseFloat(vm25)>=770&&parseFloat(vm25)<=1180?'OK':'FUERA') : '';
   try {
     const nPruebaV = await getNextConsecutivo(VIS_FILE, 'V');
     document.getElementById('v_nprueba').value = nPruebaV;
-    await appendCSVFile(VIS_FILE, VIS_COLS, [nPruebaV, fmtDate(fecha), op, lm, heat, nparte, lr, lc, tamb, rotorR, rpmR, fsr, angr, tempr, vr, resR, rotorC, rpmC, fsc, angc, tempc, vc, resC, rotorM, rpmM, fsm, angm, tempm, vm, resM]);
+    await appendCSVFile(VIS_FILE, VIS_COLS, [nPruebaV, fmtDate(fecha), op, lm, heat, nparte, lr, lc, tamb, rotorR, rpmR, fsr, angr, tempr, vr, vr25, resR, rotorC, rpmC, fsc, angc, tempc, vc, vc25, resC, rotorM, rpmM, fsm, angm, tempm, vm, vm25, resM]);
     toast('✓ Viscosidad guardada en ' + VIS_FILE, 'ok');
     setTimeout(loadChartVis, 200);
     setTimeout(() => { resetVis(); loadNextN('v_nprueba', VIS_FILE, 'V'); }, 1500);
@@ -1170,6 +1209,7 @@ function resetVis() {
   document.getElementById('v_rpm_m').value   = '12';
   ['v_badge_r','v_badge_c','v_badge_m','v_fswarn_r','v_fswarn_c','v_fswarn_m'].forEach(id => { const b=document.getElementById(id); if(b) b.style.display='none'; });
   ['v_rng_r','v_rng_c','v_rng_m'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=''; });
+  ['v_visc25_r','v_visc25_c','v_visc25_m'].forEach(id => { const el=document.getElementById(id); if(el){el.textContent='';el.dataset.val='';} });
   ['vres_r','vres_c','vres_m'].forEach((id,i)=>{ const el=document.getElementById(id); if(el){el.textContent=['Resina —','Cat. —','Mezcla —'][i];el.style.color='var(--muted)';} });
 }
 
