@@ -1097,7 +1097,8 @@ async function guardarVis() {
   const vr    = document.getElementById('v_visc_r').value;
   const vc    = document.getElementById('v_visc_c').value;
   const vm    = document.getElementById('v_visc_m').value;
-  if (!fecha || !vr) { toast('Completa al menos Fecha y Viscosidad de Resina.', 'wa'); return; }
+  if (!fecha || !op) { toast('Fecha y Operario son obligatorios.', 'wa'); return; }
+  if (!vr) { toast('Viscosidad de Resina es obligatoria.', 'wa'); return; }
   const rotorR= document.getElementById('v_rotor_r').value;
   const rpmR  = document.getElementById('v_rpm_r').value;
   const fsr   = document.getElementById('v_fs_r').value;
@@ -1113,6 +1114,29 @@ async function guardarVis() {
   const fsm   = document.getElementById('v_fs_m').value;
   const angm  = document.getElementById('v_ang_m').value;
   const tempm = document.getElementById('v_temp_m').value;
+  // Temperatura 25°C ± 0.5°C (ASTM D2196-20 obligatorio)
+  const _tempCheck = [{label:'Resina', temp:tempr, visc:vr}, {label:'Catalizador', temp:tempc, visc:vc}, {label:'Mezcla', temp:tempm, visc:vm}];
+  for (const c of _tempCheck) {
+    if (!c.visc) continue;
+    if (!c.temp) { toast(`Temperatura de ${c.label} es obligatoria (ASTM D2196).`, 'wa'); return; }
+    const t = parseFloat(c.temp);
+    if (t < 24.5 || t > 25.5) { toast(`${c.label}: ${c.temp}°C fuera de 25 ± 0.5°C — medición inválida (ASTM D2196).`, 'er'); return; }
+  }
+  // Fs% 10–90% (ASTM D2196-20: fuera de rango = lectura inválida)
+  const _fsCheck = [{label:'Resina', fs:fsr}, {label:'Catalizador', fs:fsc}, {label:'Mezcla', fs:fsm}];
+  for (const c of _fsCheck) {
+    if (!c.fs) continue;
+    const f = parseFloat(c.fs);
+    if (f < 10 || f > 90) { toast(`${c.label}: Fs ${c.fs}% fuera de 10–90% — cambiar rotor/RPM antes de guardar (ASTM D2196).`, 'er'); return; }
+  }
+  // Rotor/RPM: advertencia si difiere del Procedimiento Rev.04 §9
+  const _wrongCombos = [];
+  if (rotorR !== '4' || rpmR !== '30') _wrongCombos.push(`Resina: procedimiento R4@30RPM — usado R${rotorR}@${rpmR}RPM`);
+  if (rotorC !== '1' || rpmC !== '30') _wrongCombos.push(`Catalizador: procedimiento R1@30RPM — usado R${rotorC}@${rpmC}RPM`);
+  if (vm && (rotorM !== '2' || rpmM !== '12')) _wrongCombos.push(`Mezcla: procedimiento R2@12RPM — usado R${rotorM}@${rpmM}RPM`);
+  if (_wrongCombos.length) {
+    if (!confirm('⚠ Configuración difiere del Procedimiento Rev.04:\n\n' + _wrongCombos.join('\n') + '\n\n¿Guardar de todas formas?')) return;
+  }
   const resR = vr ? (parseFloat(vr)>=11000&&parseFloat(vr)<=14000?'OK':'FUERA') : '';
   const resC = vc ? (parseFloat(vc)>=40&&parseFloat(vc)<=60?'OK':'FUERA') : '';
   const resM = vm ? (parseFloat(vm)>=770&&parseFloat(vm)<=1180?'OK':'FUERA') : '';
@@ -2236,6 +2260,12 @@ function toast(msg, type='ok') {
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  if (!('showDirectoryPicker' in window)) {
+    const w = document.createElement('div');
+    w.innerHTML = '⚠ Navegador no compatible — use <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong> para guardar datos.';
+    w.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#7f1d1d;color:#fca5a5;padding:10px 16px;font-size:13px;text-align:center;';
+    document.body.prepend(w);
+  }
   document.getElementById('g_fecha').valueAsDate = new Date();
   document.getElementById('v_fecha').valueAsDate = new Date();
   document.getElementById('d_fecha').valueAsDate = new Date();
