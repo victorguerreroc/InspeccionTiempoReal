@@ -8,19 +8,19 @@ h1{font-size:16px;color:#fff;margin-bottom:1px}
 .setup{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.5fr 2fr;gap:5px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:6px 10px;margin-bottom:6px}
 .setup label{font-size:12px;color:#8aa0b8;display:block;margin-bottom:2px}
 .setup input,.setup select{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:13px}
-.mold-bar{display:flex;gap:16px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:7px 14px;margin-bottom:7px;flex-wrap:wrap;align-items:center}
-.mold-tag{font-size:11px;color:#8aa0b8}.mold-val{font-size:12px;color:#e6edf5;font-weight:bold;margin-left:4px}
+.mold-bar{display:flex;gap:14px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:7px 14px;margin-bottom:7px;flex-wrap:wrap;align-items:center}
+.mold-tag{font-size:11px;color:#8aa0b8}.mold-val{font-size:12px;color:#e6edf5;font-weight:bold;margin-left:3px}
 .mold-tag.crit{color:#ff7a7a}.mold-val.crit{color:#ffce6b}
 .sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
 .sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:6px 16px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap}
 .sidebtns button.act{background:#2E75B6;color:#fff}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
-.card h2{font-size:14px;margin-bottom:10px}
-.charform{overflow-y:auto;max-height:560px;margin-bottom:6px}
+.card h2{font-size:14px;margin-bottom:8px}
+.charform{overflow-y:auto;max-height:320px;margin-bottom:6px}
 .charrow{display:grid;grid-template-columns:1fr 150px 70px;gap:6px;align-items:center;padding:5px 4px;border-bottom:1px solid #1e2d3d;cursor:pointer;border-left:3px solid transparent}
 .charrow:hover{background:#1a2a3a}.charrow.focused{background:#1a2a3a;border-left-color:#2E75B6}
-.charrow.proceso-only{opacity:0.45}.charrow.proceso-only.proceso-show{opacity:1}
+.charrow.proceso-only{opacity:0.45}
 .charname{color:#e6edf5;font-size:11px;font-weight:bold;margin-bottom:1px}
 .charlimits{color:#8aa0b8;font-size:9px}
 .crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff7a7a;margin-left:4px;vertical-align:middle}
@@ -33,43 +33,54 @@ h1{font-size:16px;color:#fff;margin-bottom:1px}
 .chst{padding:3px 5px;border-radius:8px;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap}
 .chst-idle{background:#1a2330;color:#8aa0b8}.chst-ok{background:#10331f;color:#5fdc8f}
 .chst-warn{background:#3a2e10;color:#ffce6b}.chst-bad{background:#3a1414;color:#ff7a7a}
-.verdict{padding:12px;border-radius:8px;text-align:center;font-weight:bold;font-size:16px;margin-bottom:10px;min-height:46px;display:flex;align-items:center;justify-content:center}
+.verdict{padding:12px;border-radius:8px;text-align:center;font-weight:bold;font-size:15px;margin-bottom:8px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .v-ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
 .v-warn{background:#3a2e10;color:#ffce6b;border:1px solid #b8860b}
 .v-bad{background:#3a1414;color:#ff7a7a;border:1px solid #C00000}
 .v-idle{background:#1a2330;color:#8aa0b8}
-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-th,td{padding:5px 6px;border-bottom:1px solid #243447;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+th,td{padding:4px 6px;border-bottom:1px solid #243447;text-align:center}
 th{color:#8aa0b8;font-size:10px;text-transform:uppercase}
 td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.stat{background:#0f1722;border:1px solid #243447;border-radius:7px;padding:8px;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.stat{background:#0f1722;border:1px solid #243447;border-radius:7px;padding:7px;text-align:center}
 .stat .l{font-size:10px;color:#8aa0b8;text-transform:uppercase}
-.stat .v{font-size:18px;font-weight:bold;margin-top:2px}
-.tblwrap{max-height:240px;overflow-y:auto}
+.stat .v{font-size:16px;font-weight:bold;margin-top:2px}
+.tblwrap{max-height:200px;overflow-y:auto}
 .reg-btn{width:100%;padding:10px;font-size:14px;background:#2e7d4f;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;margin-top:6px}
 .reg-btn:hover{filter:brightness(1.1)}
 button.export-btn{background:#1e3a5f;padding:6px 16px;font-size:13px;font-weight:bold;border:none;border-radius:6px;color:#fff;cursor:pointer}
 .form-header{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
 .form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}
 .form-header input{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}
-.peso-bar-wrap{height:8px;background:#1a2330;border-radius:4px;margin-top:4px;position:relative;overflow:hidden}
-.peso-bar{height:100%;border-radius:4px;transition:width 0.3s,background 0.3s}
 #syncBadge{position:fixed;top:8px;right:10px;z-index:600;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:bold;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:default}
 #syncBadge.ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
 #syncBadge.off{background:#1a2330;color:#8aa0b8;border:1px solid #3d5170}
-textarea{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px;resize:vertical;min-height:36px}
-.note{font-size:12px;color:#8aa0b8;margin-top:8px;line-height:1.55}
+.note{font-size:11px;color:#8aa0b8;margin-top:6px;line-height:1.5}
 .pareto-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px}
 .pareto-bar{height:10px;background:#C00000;border-radius:3px}
-.pareto-label{color:#8aa0b8;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pareto-label{color:#8aa0b8;min-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* chart inline */
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px;font-size:11px}
+.chart-title{color:#5bb8ff;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}
+.chart-cavsel{display:flex;align-items:center;gap:4px}
+.chart-cavsel label{color:#8aa0b8;font-size:10px}
+.chart-cavsel select{padding:2px 5px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:11px}
+canvas#ctrlChart{width:100%;height:200px;display:block;border-radius:6px;background:#0a1018}
+.cav-legend{display:flex;gap:10px;font-size:10px;margin-top:3px;flex-wrap:wrap}
+.cav-legend span{display:flex;align-items:center;gap:3px}
+.cav-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chart-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
+.chart-stat{background:#0a1018;border:1px solid #1e2d3d;border-radius:6px;padding:5px;text-align:center}
+.chart-stat .l{font-size:9px;color:#8aa0b8;text-transform:uppercase}
+.chart-stat .v{font-size:14px;font-weight:bold;margin-top:1px}
 </style></head><body>
 
 <div id="syncBadge" class="off">● Sin sync</div>
 
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
 <div><h1>Inspección en Tiempo Real — Inyectora de Moldeo</h1>
-<div class="sub">Registre cada pieza · Material PA66 33%GF Negro · TechShop International S.A.</div></div>
+<div class="sub">Teclee la medición y el gráfico de control se actualiza al instante · TechShop International S.A.</div></div>
 </div>
 <div class="sub" id="clock" style="font-size:13px;color:#5bb8ff;margin-bottom:8px"></div>
 
@@ -94,36 +105,48 @@ textarea{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;
   <span style="color:#2d3f54">|</span>
   <span class="mold-tag">Cavidades:</span><span class="mold-val" id="mbCav">—</span>
   <span style="color:#2d3f54">|</span>
-  <span class="mold-tag">Ciclo estándar:</span><span class="mold-val" id="mbCiclo">—</span>
+  <span class="mold-tag">Ciclo:</span><span class="mold-val" id="mbCiclo">—</span>
   <span style="color:#2d3f54">|</span>
-  <span class="mold-tag crit">Peso pieza (nom):</span><span class="mold-val crit" id="mbPeso">—</span>
+  <span class="mold-tag crit">Peso nom:</span><span class="mold-val crit" id="mbPeso">—</span>
   <span style="color:#2d3f54">|</span>
   <span class="mold-tag">JT range:</span><span class="mold-val" id="mbJT">—</span>
-  <span style="margin-left:auto;display:flex;gap:6px">
-    <button onclick="exportCSV()" class="export-btn">⬇ Exportar CSV</button>
-  </span>
+  <span style="margin-left:auto"><button onclick="exportCSV()" class="export-btn">⬇ Exportar CSV</button></span>
 </div>
 
 <div class="grid">
+<!-- ── IZQUIERDA: Medición + Gráfico ── -->
 <div class="card">
   <h2>Características de Inspección</h2>
   <div class="form-header">
-    <div><label>N° Pieza (secuencial)</label><input id="npieza" placeholder="1, 2, 3…" type="number"></div>
+    <div><label>N° Pieza</label><input id="npieza" placeholder="1, 2, 3…" type="number"></div>
     <div><label>Notas</label><input id="notas" placeholder="Opcional"></div>
   </div>
   <div class="charform" id="charform"></div>
+
+  <!-- Gráfico de control inline -->
+  <div class="chart-header">
+    <div class="chart-title" id="chartTitle">— Seleccione una característica —</div>
+    <div class="chart-cavsel">
+      <label>Cavidad</label>
+      <select id="chartCav" onchange="drawFocusChart()"><option value="all">Todas</option></select>
+    </div>
+  </div>
+  <canvas id="ctrlChart"></canvas>
+  <div class="cav-legend" id="cavLegend"></div>
+  <div class="chart-stats">
+    <div class="chart-stat"><div class="l">Muestras</div><div class="v" id="csN">—</div></div>
+    <div class="chart-stat"><div class="l">Promedio</div><div class="v" id="csAvg" style="font-size:12px">—</div></div>
+    <div class="chart-stat"><div class="l">Cpk</div><div class="v" id="csCpk">—</div></div>
+    <div class="chart-stat"><div class="l">Fuera spec</div><div class="v" id="csOut" style="color:#ff7a7a">0</div></div>
+  </div>
+
   <button class="reg-btn" onclick="registerEntry()">✓ Registrar Inspección</button>
   <div id="regMsg" style="font-size:11px;color:#5fdc8f;text-align:center;margin-top:4px;min-height:14px"></div>
-  <p class="note" id="setupNote" style="display:none">
-    <strong>Modo Set-Up / Liberación:</strong> Inspección completa de todas las características.<br>
-    Verifique mínimo 1 pieza de cada cavidad antes de liberar producción.
-  </p>
-  <p class="note" id="procesoNote" style="display:none">
-    <strong>Modo Inspección Proceso:</strong> Se muestran solo características críticas.<br>
-    Frecuencia recomendada: cada 30 min o 50 ciclos.
-  </p>
+  <p class="note" id="setupNote" style="display:none"><strong>Modo Set-Up / Liberación:</strong> Inspección completa · mínimo 1 pieza por cavidad antes de liberar.</p>
+  <p class="note" id="procesoNote" style="display:none"><strong>Modo Inspección Proceso:</strong> Solo lo medible con calibrador y pin · frecuencia: cada 30 min o 50 ciclos.</p>
 </div>
 
+<!-- ── DERECHA: Resultado + Stats ── -->
 <div class="card">
   <h2>Resultado</h2>
   <div class="verdict v-idle" id="verdict">Sin mediciones</div>
@@ -133,14 +156,17 @@ textarea{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;
     <div class="stat"><div class="l">Rechazadas</div><div class="v" id="stRej" style="color:#ff7a7a">0</div></div>
     <div class="stat"><div class="l">% Rechazo</div><div class="v" id="stPct" style="color:#ffce6b">—</div></div>
   </div>
-  <div style="margin-top:12px;margin-bottom:4px;font-size:11px;color:#8aa0b8;text-transform:uppercase">Defectos frecuentes</div>
-  <div id="pareto" style="min-height:40px"></div>
-  <div style="margin-top:12px;font-size:11px;color:#8aa0b8;text-transform:uppercase;margin-bottom:4px">Historial</div>
+
+  <div style="margin-top:10px;font-size:11px;color:#8aa0b8;text-transform:uppercase;margin-bottom:2px">Por cavidad</div>
+  <div id="cavStats"></div>
+
+  <div style="margin-top:10px;margin-bottom:4px;font-size:11px;color:#8aa0b8;text-transform:uppercase">Defectos frecuentes</div>
+  <div id="pareto" style="min-height:36px"></div>
+
+  <div style="margin-top:10px;font-size:11px;color:#8aa0b8;text-transform:uppercase;margin-bottom:4px">Historial</div>
   <div class="tblwrap">
-  <table id="histTable">
-    <thead><tr><th>Hora</th><th>Cav</th><th>Pieza</th><th>Resultado</th><th>Rechazos</th></tr></thead>
-    <tbody id="histBody"></tbody>
-  </table>
+  <table><thead><tr><th>Hora</th><th>Cav</th><th>Pieza</th><th>Resultado</th><th>Rechazos</th></tr></thead>
+  <tbody id="histBody"></tbody></table>
   </div>
 </div>
 </div>
@@ -154,23 +180,23 @@ const APP={
       ciclo:35.12,pcsHr:205,
       chars:[
         {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
-        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0697,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
-        {k:"d_2550",label:"OD 2.550 ±.005",t:"num",nom:2.550,lo:2.545,hi:2.555,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_2400",label:"Dim 2.400 ±.005",t:"num",nom:2.400,lo:2.395,hi:2.405,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_228",label:"Dim .228 ±.005",t:"num",nom:0.228,lo:0.223,hi:0.233,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_483",label:"Dim .483 ±.005",t:"num",nom:0.483,lo:0.478,hi:0.488,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_477",label:"Dim .477 ±.005",t:"num",nom:0.477,lo:0.472,hi:0.482,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0697,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
+        {k:"d_2550",label:"OD 2.550 ±.005",t:"num",nom:2.550,lo:2.545,hi:2.555,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_2400",label:"Dim 2.400 ±.005",t:"num",nom:2.400,lo:2.395,hi:2.405,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_228",label:"Dim .228 ±.005",t:"num",nom:0.228,lo:0.223,hi:0.233,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_483",label:"Dim .483 ±.005",t:"num",nom:0.483,lo:0.478,hi:0.488,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_477",label:"Dim .477 ±.005",t:"num",nom:0.477,lo:0.472,hi:0.482,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"pin_172",label:"Ø.172 THRU (3x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
-        {k:"d_224_218",label:"Dim .218–.224 (2x)",t:"num",nom:0.221,lo:0.218,hi:0.224,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1795",label:"Ranura 1.762–1.795",t:"num",nom:1.779,lo:1.762,hi:1.795,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_887",label:"Dim .887 ±.005",t:"num",nom:0.887,lo:0.882,hi:0.892,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_930_1030",label:"Dim .930–1.030",t:"num",nom:0.980,lo:0.930,hi:1.030,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_342",label:"Dim .342 ±.005",t:"num",nom:0.342,lo:0.337,hi:0.347,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_317",label:"Dim .317 ±.005",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_573",label:"Dim .573 ±.005",t:"num",nom:0.573,lo:0.568,hi:0.578,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_224_218",label:"Dim .218–.224 (2x)",t:"num",nom:0.221,lo:0.218,hi:0.224,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1795",label:"Ranura 1.762–1.795",t:"num",nom:1.779,lo:1.762,hi:1.795,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_887",label:"Dim .887 ±.005",t:"num",nom:0.887,lo:0.882,hi:0.892,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_930_1030",label:"Dim .930–1.030",t:"num",nom:0.980,lo:0.930,hi:1.030,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_342",label:"Dim .342 ±.005",t:"num",nom:0.342,lo:0.337,hi:0.347,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_317",label:"Dim .317 ±.005",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_573",label:"Dim .573 ±.005",t:"num",nom:0.573,lo:0.568,hi:0.578,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     },
     "CG1.EP.31.B Rev C":{
@@ -179,26 +205,26 @@ const APP={
       ciclo:28.8,pcsHr:500,
       chars:[
         {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
-        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
         {k:"visual_clips",label:"Clips rediseñados sin deformación",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"peso",label:"Peso 0.0345 ±5%",t:"num",nom:0.0345,lo:0.0328,hi:0.0362,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
-        {k:"d_2560",label:"OD 2.560 ±.005",t:"num",nom:2.560,lo:2.555,hi:2.565,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_2420",label:"Dim 2.420 ±.005",t:"num",nom:2.420,lo:2.415,hi:2.425,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_2200",label:"Dim 2.200 ±.005",t:"num",nom:2.200,lo:2.195,hi:2.205,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_500",label:"Dim .500 ±.005",t:"num",nom:0.500,lo:0.495,hi:0.505,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_230",label:"Dim .230 ±.005",t:"num",nom:0.230,lo:0.225,hi:0.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_100",label:"Dim .100 ±.005",t:"num",nom:0.100,lo:0.095,hi:0.105,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_220",label:"Dim .220 ±.005",t:"num",nom:0.220,lo:0.215,hi:0.225,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1795",label:"Dim 1.795 ±.005",t:"num",nom:1.795,lo:1.790,hi:1.800,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_240",label:"Dim .240 ±.005",t:"num",nom:0.240,lo:0.235,hi:0.245,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_345",label:"Dim .345 ±.005",t:"num",nom:0.345,lo:0.340,hi:0.350,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_280",label:"Dim .280 ±.005",t:"num",nom:0.280,lo:0.275,hi:0.285,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_2660_2740",label:"Dim 2.660–2.740",t:"num",nom:2.700,lo:2.660,hi:2.740,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_750",label:"Dim .750 ±.005",t:"num",nom:0.750,lo:0.745,hi:0.755,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_190",label:"Dim .190 ±.005",t:"num",nom:0.190,lo:0.185,hi:0.195,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_115",label:"Dim .115 ±.005",t:"num",nom:0.115,lo:0.110,hi:0.120,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"peso",label:"Peso 0.0345 ±5%",t:"num",nom:0.0345,lo:0.0328,hi:0.0362,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
+        {k:"d_2560",label:"OD 2.560 ±.005",t:"num",nom:2.560,lo:2.555,hi:2.565,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_2420",label:"Dim 2.420 ±.005",t:"num",nom:2.420,lo:2.415,hi:2.425,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_2200",label:"Dim 2.200 ±.005",t:"num",nom:2.200,lo:2.195,hi:2.205,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_500",label:"Dim .500 ±.005",t:"num",nom:0.500,lo:0.495,hi:0.505,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_230",label:"Dim .230 ±.005",t:"num",nom:0.230,lo:0.225,hi:0.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_100",label:"Dim .100 ±.005",t:"num",nom:0.100,lo:0.095,hi:0.105,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_220",label:"Dim .220 ±.005",t:"num",nom:0.220,lo:0.215,hi:0.225,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1795",label:"Dim 1.795 ±.005",t:"num",nom:1.795,lo:1.790,hi:1.800,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_240",label:"Dim .240 ±.005",t:"num",nom:0.240,lo:0.235,hi:0.245,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_345",label:"Dim .345 ±.005",t:"num",nom:0.345,lo:0.340,hi:0.350,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_280",label:"Dim .280 ±.005",t:"num",nom:0.280,lo:0.275,hi:0.285,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_2660_2740",label:"Dim 2.660–2.740",t:"num",nom:2.700,lo:2.660,hi:2.740,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_750",label:"Dim .750 ±.005",t:"num",nom:0.750,lo:0.745,hi:0.755,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_190",label:"Dim .190 ±.005",t:"num",nom:0.190,lo:0.185,hi:0.195,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_115",label:"Dim .115 ±.005",t:"num",nom:0.115,lo:0.110,hi:0.120,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     },
     "CG1.EP.31.C Rev A":{
@@ -211,7 +237,7 @@ const APP={
         {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
         {k:"visual_tabs",label:"QTY-4 tabs sin rotura ni deformación",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0696,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0696,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
         {k:"d_2518",label:"Dim 2.518 ±.008 (CRÍTICO)",t:"num",nom:2.518,lo:2.510,hi:2.526,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
         {k:"d_2450",label:"Dim 2.450 ±.005",t:"num",nom:2.450,lo:2.445,hi:2.455,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"d_2164",label:"Dim 2.164 ±.005",t:"num",nom:2.164,lo:2.159,hi:2.169,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
@@ -224,7 +250,7 @@ const APP={
         {k:"d_1065",label:"Dim 1.065 ±.005",t:"num",nom:1.065,lo:1.060,hi:1.070,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"d_715",label:"Dim .715 ±.005",t:"num",nom:0.715,lo:0.710,hi:0.720,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"d_465",label:"Dim .465 ±.005",t:"num",nom:0.465,lo:0.460,hi:0.470,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
-        {k:"d_514",label:"Dim .514 ±.005",t:"num",nom:0.514,lo:0.509,hi:0.519,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_514",label:"Dim .514 ±.005",t:"num",nom:0.514,lo:0.509,hi:0.519,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     },
     "CG1.EP.31.R.A Rev A":{
@@ -233,17 +259,17 @@ const APP={
       ciclo:25.04,pcsHr:575,
       chars:[
         {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
-        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
         {k:"visual_fit",label:"Ajuste flush en CG1.EP.31.A (ensamble)",t:"gng",crit:true,instr:"Ensamble",proceso:true},
-        {k:"peso",label:"Peso 0.01433 ±5%",t:"num",nom:0.01433,lo:0.01361,hi:0.01505,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
-        {k:"d_885",label:"Dim .885 ±.005",t:"num",nom:0.885,lo:0.880,hi:0.890,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_239_257",label:"Dim .239–.257 (2x)",t:"num",nom:0.248,lo:0.239,hi:0.257,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_187",label:"Dim .187 ±.005 (2x)",t:"num",nom:0.187,lo:0.182,hi:0.192,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"peso",label:"Peso 0.01433 ±5%",t:"num",nom:0.01433,lo:0.01361,hi:0.01505,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
+        {k:"d_885",label:"Dim .885 ±.005",t:"num",nom:0.885,lo:0.880,hi:0.890,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_239_257",label:"Dim .239–.257 (2x)",t:"num",nom:0.248,lo:0.239,hi:0.257,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_187",label:"Dim .187 ±.005 (2x)",t:"num",nom:0.187,lo:0.182,hi:0.192,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"pin_140",label:"Ø.140 THRU (2x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
-        {k:"d_317",label:"Dim .317 ±.005",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1339",label:"Dim 1.339 ±.005",t:"num",nom:1.339,lo:1.334,hi:1.344,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_317",label:"Dim .317 ±.005",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1339",label:"Dim 1.339 ±.005",t:"num",nom:1.339,lo:1.334,hi:1.344,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     },
     "CZ1.EP.31.A Rev 05":{
@@ -252,27 +278,27 @@ const APP={
       ciclo:36.92,pcsHr:390,
       chars:[
         {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
-        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"peso",label:"Peso 0.0689 ±5%",t:"num",nom:0.068894,lo:0.065449,hi:0.072339,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"peso",label:"Peso 0.0689 ±5%",t:"num",nom:0.068894,lo:0.065449,hi:0.072339,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
         {k:"d_1634",label:"Dim 1.634 ±.002 (CRÍTICO)",t:"num",nom:1.634,lo:1.632,hi:1.636,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
-        {k:"d_2564",label:"OD 2.564 ±.005",t:"num",nom:2.564,lo:2.559,hi:2.569,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1880",label:"Dim 1.880 ±.005 (3x)",t:"num",nom:1.880,lo:1.875,hi:1.885,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1891",label:"Dim 1.891 ±.005 (6x)",t:"num",nom:1.891,lo:1.886,hi:1.896,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1230",label:"Dim 1.230 ±.005",t:"num",nom:1.230,lo:1.225,hi:1.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1739",label:"Dim 1.739 ±.005",t:"num",nom:1.739,lo:1.734,hi:1.744,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_2564",label:"OD 2.564 ±.005",t:"num",nom:2.564,lo:2.559,hi:2.569,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1880",label:"Dim 1.880 ±.005 (3x)",t:"num",nom:1.880,lo:1.875,hi:1.885,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1891",label:"Dim 1.891 ±.005 (6x)",t:"num",nom:1.891,lo:1.886,hi:1.896,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1230",label:"Dim 1.230 ±.005",t:"num",nom:1.230,lo:1.225,hi:1.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1739",label:"Dim 1.739 ±.005",t:"num",nom:1.739,lo:1.734,hi:1.744,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"pin_172",label:"Ø.172 THRU (3x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
-        {k:"d_910",label:"Dim .910 ±.005 (3x)",t:"num",nom:0.910,lo:0.905,hi:0.915,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_676",label:"Dim .676 ±.005 (3x)",t:"num",nom:0.676,lo:0.671,hi:0.681,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_462",label:"Dim .462 ±.005 (3x)",t:"num",nom:0.462,lo:0.457,hi:0.467,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_417",label:"Dim .417 ±.005",t:"num",nom:0.417,lo:0.412,hi:0.422,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_317",label:"Dim .317 ±.005 (3x)",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_835",label:"Dim .835 ±.005",t:"num",nom:0.835,lo:0.830,hi:0.840,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_693",label:"Dim .693 ±.005",t:"num",nom:0.693,lo:0.688,hi:0.698,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_614",label:"Dim .614 ±.005",t:"num",nom:0.614,lo:0.609,hi:0.619,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_457",label:"Dim .457 ±.005",t:"num",nom:0.457,lo:0.452,hi:0.462,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_357",label:"Dim .357 ±.005",t:"num",nom:0.357,lo:0.352,hi:0.362,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_910",label:"Dim .910 ±.005 (3x)",t:"num",nom:0.910,lo:0.905,hi:0.915,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_676",label:"Dim .676 ±.005 (3x)",t:"num",nom:0.676,lo:0.671,hi:0.681,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_462",label:"Dim .462 ±.005 (3x)",t:"num",nom:0.462,lo:0.457,hi:0.467,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_417",label:"Dim .417 ±.005",t:"num",nom:0.417,lo:0.412,hi:0.422,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_317",label:"Dim .317 ±.005 (3x)",t:"num",nom:0.317,lo:0.312,hi:0.322,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_835",label:"Dim .835 ±.005",t:"num",nom:0.835,lo:0.830,hi:0.840,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_693",label:"Dim .693 ±.005",t:"num",nom:0.693,lo:0.688,hi:0.698,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_614",label:"Dim .614 ±.005",t:"num",nom:0.614,lo:0.609,hi:0.619,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_457",label:"Dim .457 ±.005",t:"num",nom:0.457,lo:0.452,hi:0.462,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_357",label:"Dim .357 ±.005",t:"num",nom:0.357,lo:0.352,hi:0.362,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     },
     "CZ1.EP.31.R.A Rev 02":{
@@ -281,22 +307,22 @@ const APP={
       ciclo:25.48,pcsHr:565,
       chars:[
         {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
-        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
-        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:true},
         {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
         {k:"visual_fit",label:"Ajuste flush en CZ1.EP.31.A (ensamble)",t:"gng",crit:true,instr:"Ensamble",proceso:true},
-        {k:"peso",label:"Peso 0.01405 ±5%",t:"num",nom:0.014054,lo:0.013351,hi:0.014757,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"peso",label:"Peso 0.01405 ±5%",t:"num",nom:0.014054,lo:0.013351,hi:0.014757,unit:"lbs",crit:true,instr:"Balanza",proceso:false},
         {k:"d_812",label:"Dim .812 ±.002 (CRÍTICO)",t:"num",nom:0.812,lo:0.810,hi:0.814,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
-        {k:"d_1230",label:"Dim 1.230 ±.005",t:"num",nom:1.230,lo:1.225,hi:1.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1492",label:"Dim 1.492 ±.005",t:"num",nom:1.492,lo:1.487,hi:1.497,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_1055",label:"Dim 1.055 ±.005",t:"num",nom:1.055,lo:1.050,hi:1.060,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_672",label:"Dim .672 ±.005",t:"num",nom:0.672,lo:0.667,hi:0.677,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_607",label:"Dim .607 ±.005",t:"num",nom:0.607,lo:0.602,hi:0.612,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1230",label:"Dim 1.230 ±.005",t:"num",nom:1.230,lo:1.225,hi:1.235,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1492",label:"Dim 1.492 ±.005",t:"num",nom:1.492,lo:1.487,hi:1.497,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_1055",label:"Dim 1.055 ±.005",t:"num",nom:1.055,lo:1.050,hi:1.060,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_672",label:"Dim .672 ±.005",t:"num",nom:0.672,lo:0.667,hi:0.677,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_607",label:"Dim .607 ±.005",t:"num",nom:0.607,lo:0.602,hi:0.612,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
         {k:"pin_128",label:"Ø.128 THRU (2x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
-        {k:"d_257",label:"Dim .257 ±.005",t:"num",nom:0.257,lo:0.252,hi:0.262,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_130",label:"Dim .130 ±.005",t:"num",nom:0.130,lo:0.125,hi:0.135,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_065",label:"Dim .065 ±.005",t:"num",nom:0.065,lo:0.060,hi:0.070,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
-        {k:"d_373",label:"Dim .373 MIN",t:"num",nom:0.385,lo:0.373,hi:0.420,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_257",label:"Dim .257 ±.005",t:"num",nom:0.257,lo:0.252,hi:0.262,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_130",label:"Dim .130 ±.005",t:"num",nom:0.130,lo:0.125,hi:0.135,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_065",label:"Dim .065 ±.005",t:"num",nom:0.065,lo:0.060,hi:0.070,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
+        {k:"d_373",label:"Dim .373 MIN",t:"num",nom:0.385,lo:0.373,hi:0.420,unit:"pulg",crit:false,instr:"Calibrador",proceso:true},
       ]
     }
   },
@@ -329,7 +355,8 @@ const APP={
   ]
 };
 
-let curMode='setup',vals={},history=[];
+const CAV_COLORS=['#2E75B6','#ff9f43','#5fdc8f','#da8cf8','#ff7a7a','#5bb8ff','#ffce6b','#a8e6cf'];
+let curMode='setup',vals={},history=[],focusedK=null,previewVal=null;
 const defectCount={};
 
 function fillSelect(id,opts){
@@ -340,7 +367,6 @@ function fillSelect(id,opts){
 function onPlano(){
   const pname=document.getElementById('plano').value;
   const P=APP.planos[pname];if(!P)return;
-  // cavidad
   const cavSel=document.getElementById('cavidad');cavSel.innerHTML='';
   for(let i=1;i<=P.cavidades;i++){const o=document.createElement('option');o.value=i;o.textContent='Cavidad '+i;cavSel.appendChild(o);}
   // mold bar
@@ -351,8 +377,13 @@ function onPlano(){
   document.getElementById('mbCiclo').textContent=P.ciclo+'s ('+P.pcsHr+' pcs/hr)';
   document.getElementById('mbPeso').textContent=P.pesoNom.toFixed(5)+' lbs';
   document.getElementById('mbJT').textContent=P.pesoJT1.toFixed(5)+'–'+P.pesoJT2.toFixed(5)+' lbs';
-  vals={};
+  // update chart cav selector
+  const ccav=document.getElementById('chartCav');ccav.innerHTML='<option value="all">Todas</option>';
+  for(let i=1;i<=P.cavidades;i++){const o=document.createElement('option');o.value=i;o.textContent='Cavidad '+i;ccav.appendChild(o);}
+  vals={};focusedK=null;previewVal=null;
   renderChars();updateVerdict();
+  document.getElementById('chartTitle').textContent='— Seleccione una característica —';
+  drawFocusChart();
 }
 
 function setMode(m){
@@ -376,12 +407,12 @@ function renderChars(){
     const v=vals[c.k];
     const st=charStatus(c,v);
     const stCls='chst chst-'+st;
-    const stLbl={idle:'—',ok:'OK',warn:'Fuera ±3%',bad:'RECHAZO'}[st];
-    const showRow=!isProceso||c.proceso;
-    html+=`<div class="charrow${isProceso&&!c.proceso?' proceso-only':''}${isProceso&&c.proceso?' proceso-show':''}" onclick="focusChar(event,'${c.k}')" id="row_${c.k}">`;
+    const stLbl={idle:'—',ok:'OK',warn:'±borde',bad:'RECHAZO'}[st];
+    const isFocused=focusedK===c.k;
+    html+=`<div class="charrow${isProceso&&!c.proceso?' proceso-only':''}${isFocused?' focused':''}" onclick="focusChar(event,'${c.k}')" id="row_${c.k}">`;
     html+=`<div><div class="charname">${c.label}${c.crit?'<span class="crit-dot"></span>':''}</div>`;
     html+=`<div class="charlimits">${c.instr}${c.t==='num'?' · '+fmtLim(c):''}`;
-    if(c.k==='peso'&&P){html+=` · <span style="color:#8aa0b8;font-size:9px">JT: ${P.pesoJT1.toFixed(4)}–${P.pesoJT2.toFixed(4)} lbs</span>`;}
+    if(c.k==='peso'&&P)html+=` · JT: ${P.pesoJT1.toFixed(4)}–${P.pesoJT2.toFixed(4)}`;
     html+=`</div></div>`;
     if(c.t==='gng'){
       const okSel=v==='ok'?' gng-sel':'',rejSel=v==='rej'?' gng-sel':'';
@@ -389,34 +420,23 @@ function renderChars(){
     } else {
       const numVal=v!==undefined&&v!==''?v:'';
       html+=`<div class="charinput"><input type="number" step="0.0001" value="${numVal}" id="inp_${c.k}" oninput="setNum('${c.k}',this.value)" onkeydown="navNext(event,'${c.k}')" placeholder="0.0000"></div>`;
-      if(c.k==='peso'&&numVal!==''){
-        const pct=Math.min(100,Math.max(0,((numVal-c.lo)/(c.hi-c.lo))*100));
-        const bg=st==='ok'?'#2e7d4f':st==='warn'?'#b8860b':'#C00000';
-        html+=`</div><div style="padding:0 4px 4px"><div class="peso-bar-wrap"><div class="peso-bar" style="width:${pct}%;background:${bg}"></div></div></div>`;
-        html+=`<div class="${stCls}">${stLbl}</div></div>`;
-        return;
-      }
     }
-    html+=`<div class="${stCls}">${stLbl}</div>`;
-    html+='</div>';
+    html+=`<div class="${stCls}">${stLbl}</div></div>`;
   });
   el.innerHTML=html;
 }
 
 function fmtLim(c){
-  if(c.lo!==undefined&&c.hi!==undefined) return `${c.lo.toFixed(4)}–${c.hi.toFixed(4)} ${c.unit}`;
+  if(c.lo!==undefined&&c.hi!==undefined)return `${c.lo.toFixed(4)}–${c.hi.toFixed(4)} ${c.unit}`;
   return '';
 }
 
 function charStatus(c,v){
   if(v===undefined||v==='')return 'idle';
   if(c.t==='gng')return v==='ok'?'ok':v==='rej'?'bad':'idle';
-  const n=parseFloat(v);
-  if(isNaN(n))return 'idle';
+  const n=parseFloat(v);if(isNaN(n))return 'idle';
   if(n<c.lo||n>c.hi)return 'bad';
-  // warn zone: within 10% of tolerance from limit
-  const tol=(c.hi-c.lo)/2;
-  const warnZ=tol*0.15;
+  const tol=(c.hi-c.lo)/2,warnZ=tol*0.15;
   if(n<c.lo+warnZ||n>c.hi-warnZ)return 'warn';
   return 'ok';
 }
@@ -430,7 +450,6 @@ function setGng(e,k,v){
 function setNum(k,v){
   vals[k]=v;
   updateVerdict();
-  // update just this row status badge
   const pname=document.getElementById('plano').value;
   const P=APP.planos[pname];if(!P)return;
   const c=P.chars.find(x=>x.k===k);if(!c)return;
@@ -438,13 +457,24 @@ function setNum(k,v){
   const row=document.getElementById('row_'+k);if(!row)return;
   const badge=row.querySelector('.chst');if(!badge)return;
   badge.className='chst chst-'+st;
-  badge.textContent={idle:'—',ok:'OK',warn:'Fuera ±3%',bad:'RECHAZO'}[st];
+  badge.textContent={idle:'—',ok:'OK',warn:'±borde',bad:'RECHAZO'}[st];
+  // Update preview in chart if this is focused char
+  if(k===focusedK){
+    previewVal=parseFloat(v)||null;
+    drawFocusChart();
+  }
 }
 
 function focusChar(e,k){
-  document.querySelectorAll('.charrow').forEach(r=>r.classList.remove('focused'));
-  document.getElementById('row_'+k)?.classList.add('focused');
+  focusedK=k;previewVal=null;
+  renderChars();
   const inp=document.getElementById('inp_'+k);if(inp){inp.focus();inp.select();}
+  // Update chart title and draw
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];
+  const charDef=P?.chars.find(c=>c.k===k);
+  document.getElementById('chartTitle').textContent=charDef?charDef.label:'—';
+  drawFocusChart();
 }
 
 function navNext(e,k){
@@ -455,6 +485,7 @@ function navNext(e,k){
     const idx=chars.findIndex(c=>c.k===k);
     if(idx>=0&&idx<chars.length-1){
       const nk=chars[idx+1].k;
+      focusChar(e,nk);
       const inp=document.getElementById('inp_'+nk);if(inp){inp.focus();inp.select();}
     }
   }
@@ -467,18 +498,11 @@ function updateVerdict(){
   const chars=curMode==='proceso'?P.chars.filter(c=>c.proceso):P.chars;
   const measured=chars.filter(c=>vals[c.k]!==undefined&&vals[c.k]!=='');
   if(!measured.length){el.className='verdict v-idle';el.textContent='Sin mediciones';return;}
-  const bad=chars.filter(c=>{const st=charStatus(c,vals[c.k]);return st==='bad';});
-  const warn=chars.filter(c=>{const st=charStatus(c,vals[c.k]);return st==='warn';});
-  if(bad.length){
-    el.className='verdict v-bad';
-    el.textContent=`✗ RECHAZADO — ${bad.length} característica(s) fuera de límite`;
-  } else if(warn.length){
-    el.className='verdict v-warn';
-    el.textContent=`⚠ ADVERTENCIA — ${warn.length} característica(s) cerca del límite`;
-  } else {
-    el.className='verdict v-ok';
-    el.textContent=`✓ OK — ${measured.length}/${chars.length} características conformes`;
-  }
+  const bad=chars.filter(c=>charStatus(c,vals[c.k])==='bad');
+  const warn=chars.filter(c=>charStatus(c,vals[c.k])==='warn');
+  if(bad.length){el.className='verdict v-bad';el.textContent=`✗ RECHAZADO — ${bad.length} característica(s) fuera de límite`;}
+  else if(warn.length){el.className='verdict v-warn';el.textContent=`⚠ ADVERTENCIA — ${warn.length} cerca del límite`;}
+  else{el.className='verdict v-ok';el.textContent=`✓ OK — ${measured.length}/${chars.length} características conformes`;}
 }
 
 function registerEntry(){
@@ -487,36 +511,30 @@ function registerEntry(){
   const chars=curMode==='proceso'?P.chars.filter(c=>c.proceso):P.chars;
   const measured=chars.filter(c=>vals[c.k]!==undefined&&vals[c.k]!=='');
   if(!measured.length){showMsg('Ingrese al menos una medición','#ffce6b');return;}
-
   const bad=chars.filter(c=>charStatus(c,vals[c.k])==='bad');
   const result=bad.length>0?'RECHAZADO':'OK';
   bad.forEach(c=>{defectCount[c.label]=(defectCount[c.label]||0)+1;});
-
   const now=new Date();
   const hora=now.toTimeString().slice(0,8);
-  const row={
-    ts:now.toISOString(),hora,
-    plano:pname,
+  const row={ts:now.toISOString(),hora,plano:pname,
     cav:document.getElementById('cavidad').value,
     pieza:document.getElementById('npieza').value||'—',
     op:document.getElementById('op').value||'—',
     maq:document.getElementById('maq').value,
     insp:document.getElementById('insp').value||'—',
-    modo:curMode,
-    result,
+    modo:curMode,result,
     badChars:bad.map(c=>c.label).join('; ')||'',
     notas:document.getElementById('notas').value||'',
     measurements:{...vals}
   };
   history.unshift(row);
-  renderHistory();renderStats();renderPareto();
-  // auto-increment piece number
+  previewVal=null;
+  renderHistory();renderStats();renderCavStats();renderPareto();drawFocusChart();
   const np=document.getElementById('npieza');
   if(np.value)np.value=parseInt(np.value)+1;
-  // clear inputs
   vals={};renderChars();updateVerdict();
   document.getElementById('notas').value='';
-  showMsg(result==='OK'?'✓ Registrado correctamente':'✗ Pieza RECHAZADA registrada',result==='OK'?'#5fdc8f':'#ff7a7a');
+  showMsg(result==='OK'?'✓ Registrado':'✗ Pieza RECHAZADA',result==='OK'?'#5fdc8f':'#ff7a7a');
 }
 
 function showMsg(m,c){
@@ -528,7 +546,7 @@ function renderHistory(){
   const tbody=document.getElementById('histBody');
   tbody.innerHTML=history.slice(0,50).map(r=>`<tr>
     <td>${r.hora}</td>
-    <td>${r.cav}</td>
+    <td><span style="color:${CAV_COLORS[(parseInt(r.cav)-1)%CAV_COLORS.length]};font-weight:bold">C${r.cav}</span></td>
     <td>${r.pieza}</td>
     <td class="${r.result==='OK'?'ok':'bad'}">${r.result}</td>
     <td style="text-align:left;font-size:10px;color:#ff7a7a">${r.badChars}</td>
@@ -536,13 +554,24 @@ function renderHistory(){
 }
 
 function renderStats(){
-  const total=history.length;
-  const ok=history.filter(r=>r.result==='OK').length;
-  const rej=total-ok;
+  const total=history.length,ok=history.filter(r=>r.result==='OK').length,rej=total-ok;
   document.getElementById('stTotal').textContent=total;
   document.getElementById('stOk').textContent=ok;
   document.getElementById('stRej').textContent=rej;
   document.getElementById('stPct').textContent=total?((rej/total)*100).toFixed(1)+'%':'—';
+}
+
+function renderCavStats(){
+  const el=document.getElementById('cavStats');
+  if(!history.length){el.innerHTML='';return;}
+  const byCav={};
+  history.forEach(r=>{if(!byCav[r.cav])byCav[r.cav]={total:0,ok:0};byCav[r.cav].total++;if(r.result==='OK')byCav[r.cav].ok++;});
+  const rows=Object.entries(byCav).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([cav,s])=>{
+    const rej=s.total-s.ok,pct=((rej/s.total)*100).toFixed(1);
+    const col=CAV_COLORS[(parseInt(cav)-1)%CAV_COLORS.length];
+    return `<tr><td style="color:${col};font-weight:bold">Cav ${cav}</td><td>${s.total}</td><td class="ok">${s.ok}</td><td class="${rej>0?'bad':'ok'}">${rej}</td><td class="${parseFloat(pct)>0?'warn':'ok'}">${pct}%</td></tr>`;
+  }).join('');
+  el.innerHTML=`<table><thead><tr><th>Cavidad</th><th>Total</th><th>OK</th><th>Rej</th><th>%Rej</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function renderPareto(){
@@ -550,12 +579,280 @@ function renderPareto(){
   const sorted=Object.entries(defectCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
   if(!sorted.length){el.innerHTML='<div style="color:#8aa0b8;font-size:11px">Sin rechazos registrados</div>';return;}
   const max=sorted[0][1];
-  el.innerHTML=sorted.map(([lbl,cnt])=>`
-    <div class="pareto-row">
-      <div class="pareto-label" title="${lbl}">${lbl}</div>
-      <div style="flex:1"><div class="pareto-bar" style="width:${(cnt/max*100)}%"></div></div>
-      <div style="color:#ff7a7a;font-weight:bold;min-width:24px;text-align:right">${cnt}</div>
-    </div>`).join('');
+  el.innerHTML=sorted.map(([lbl,cnt])=>`<div class="pareto-row">
+    <div class="pareto-label" title="${lbl}">${lbl}</div>
+    <div style="flex:1"><div class="pareto-bar" style="width:${(cnt/max*100)}%"></div></div>
+    <div style="color:#ff7a7a;font-weight:bold;min-width:24px;text-align:right">${cnt}</div>
+  </div>`).join('');
+}
+
+// ── Gráfico de Control Inline ──────────────────────────────────────────────
+
+function drawFocusChart(){
+  const canvas=document.getElementById('ctrlChart');
+  const legend=document.getElementById('cavLegend');
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];
+  const cavFilter=document.getElementById('chartCav').value;
+
+  // Reset chart stats
+  ['csN','csAvg','csCpk','csOut'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+  });
+  document.getElementById('csOut').textContent='0';
+
+  if(!P||!focusedK){
+    clearCanvas(canvas);legend.innerHTML='';return;
+  }
+  const charDef=P.chars.find(c=>c.k===focusedK);
+  if(!charDef){clearCanvas(canvas);return;}
+
+  // Get historical data for this char
+  let data=history.filter(r=>r.plano===pname&&r.measurements[focusedK]!==undefined&&r.measurements[focusedK]!=='');
+  if(cavFilter!=='all')data=data.filter(r=>r.cav==cavFilter);
+  data=[...data].reverse(); // chronological
+
+  // Canvas setup
+  const W=canvas.clientWidth||canvas.parentElement.clientWidth||600;
+  const H=200;
+  canvas.width=W*2;canvas.height=H*2;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(2,2);
+
+  // Draw based on char type
+  if(charDef.t==='gng'){
+    drawGNGChart(ctx,W,H,data,charDef,cavFilter);
+    legend.innerHTML='';
+    updateChartStatsGNG(data);
+    return;
+  }
+
+  drawNumChart(ctx,W,H,data,charDef,cavFilter,P);
+
+  // Legend
+  const cavs=[...new Set(data.map(r=>r.cav))].sort();
+  legend.innerHTML=cavs.map(cav=>{
+    const col=CAV_COLORS[(parseInt(cav)-1)%CAV_COLORS.length];
+    return `<span><span class="cav-dot" style="background:${col}"></span>Cavidad ${cav}</span>`;
+  }).join('');
+  updateChartStatsNum(data,charDef);
+}
+
+function clearCanvas(canvas){
+  const W=canvas.clientWidth||600,H=200;
+  canvas.width=W*2;canvas.height=H*2;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(2,2);
+  ctx.fillStyle='#0a1018';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#8aa0b8';ctx.font='12px Arial';ctx.textAlign='center';
+  ctx.fillText('Haga clic en una característica para ver su historial',W/2,H/2);
+  ctx.textAlign='left';
+}
+
+function drawGNGChart(ctx,W,H,data,charDef,cavFilter){
+  ctx.fillStyle='#0a1018';ctx.fillRect(0,0,W,H);
+  const pad={t:14,r:10,b:24,l:10};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const n=Math.max(data.length,20);
+  const xScale=i=>pad.l+(i/n)*cW;
+  ctx.fillStyle='#8aa0b8';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('OK',pad.l+cW*0.5,pad.t+cH*0.25+4);
+  ctx.fillText('RECHAZO',pad.l+cW*0.5,pad.t+cH*0.75+4);
+  ctx.strokeStyle='#243447';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH/2);ctx.lineTo(pad.l+cW,pad.t+cH/2);ctx.stroke();
+  data.forEach((r,i)=>{
+    const v=r.measurements[charDef.k];
+    const isOk=v==='ok';
+    const col=isOk?'#5fdc8f':'#ff7a7a';
+    const cavCol=cavFilter==='all'?CAV_COLORS[(parseInt(r.cav)-1)%CAV_COLORS.length]:col;
+    ctx.fillStyle=col;
+    const barH=cH*0.38;
+    ctx.fillRect(xScale(i)-4,isOk?pad.t+4:pad.t+cH/2+4,9,barH);
+    ctx.strokeStyle=cavFilter==='all'?cavCol:col;
+    ctx.lineWidth=1;ctx.strokeRect(xScale(i)-4,isOk?pad.t+4:pad.t+cH/2+4,9,barH);
+  });
+  // Preview
+  if(vals[charDef.k]){
+    const v=vals[charDef.k];const isOk=v==='ok';
+    ctx.save();ctx.globalAlpha=0.45;ctx.fillStyle=isOk?'#5fdc8f':'#ff7a7a';
+    const barH=cH*0.38;
+    ctx.fillRect(xScale(data.length)-4,isOk?pad.t+4:pad.t+cH/2+4,9,barH);
+    ctx.restore();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.setLineDash([3,2]);
+    ctx.strokeRect(xScale(data.length)-4,isOk?pad.t+4:pad.t+cH/2+4,9,cH*0.38);
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle='#8aa0b8';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('Muestra →',pad.l+cW/2,H-6);ctx.textAlign='left';
+}
+
+function drawNumChart(ctx,W,H,data,charDef,cavFilter,P){
+  ctx.fillStyle='#0a1018';ctx.fillRect(0,0,W,H);
+  const pad={t:18,r:14,b:26,l:60};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+
+  const lo=charDef.lo,hi=charDef.hi;
+  const allVals=data.map(r=>parseFloat(r.measurements[charDef.k])).filter(v=>!isNaN(v));
+  if(previewVal!==null)allVals.push(previewVal);
+  let yMin,yMax;
+  if(lo!=null&&hi!=null){
+    const margin=(hi-lo)*0.6;
+    yMin=lo-margin;yMax=hi+margin;
+    if(allVals.length){yMin=Math.min(yMin,Math.min(...allVals)-margin*0.2);yMax=Math.max(yMax,Math.max(...allVals)+margin*0.2);}
+  } else if(allVals.length){
+    const span=Math.max(...allVals)-Math.min(...allVals)||0.001;
+    yMin=Math.min(...allVals)-span*0.5;yMax=Math.max(...allVals)+span*0.5;
+  } else {yMin=0;yMax=1;}
+  const yRange=yMax-yMin||0.001;
+  const yScale=v=>pad.t+cH-((v-yMin)/yRange)*cH;
+  const n=Math.max(data.length+(previewVal!=null?1:0),10);
+  const xScale=i=>pad.l+(i/(n-1||1))*cW;
+
+  // Zone bands
+  if(lo!=null&&hi!=null){
+    const tol=(hi-lo)/2,warnZ=tol*0.15;
+    const bands=[
+      {y0:yMin,y1:lo,col:'rgba(192,0,0,0.15)'},
+      {y0:lo,y1:lo+warnZ,col:'rgba(184,134,11,0.13)'},
+      {y0:lo+warnZ,y1:hi-warnZ,col:'rgba(46,125,70,0.10)'},
+      {y0:hi-warnZ,y1:hi,col:'rgba(184,134,11,0.13)'},
+      {y0:hi,y1:yMax,col:'rgba(192,0,0,0.15)'},
+    ];
+    bands.forEach(b=>{
+      ctx.fillStyle=b.col;
+      const top=yScale(Math.min(b.y1,yMax)),bot=yScale(Math.max(b.y0,yMin));
+      ctx.fillRect(pad.l,top,cW,bot-top);
+    });
+  }
+
+  // Grid
+  ctx.strokeStyle='#1e2d3d';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const v=yMin+yRange*i/5;const y=yScale(v);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(4),pad.l-3,y+3);
+  }
+
+  // Statistical control limits (from data)
+  if(allVals.length>=3){
+    const avg=allVals.reduce((a,b)=>a+b,0)/allVals.length;
+    const sd=Math.sqrt(allVals.reduce((a,b)=>a+(b-avg)**2,0)/(allVals.length-1));
+    if(sd>0){
+      const ucl=avg+3*sd,lcl=avg-3*sd;
+      const drawZone=(a,b,col)=>{
+        const ya=yScale(Math.min(Math.max(a,yMin),yMax));
+        const yb=yScale(Math.min(Math.max(b,yMin),yMax));
+        ctx.fillStyle=col;ctx.fillRect(pad.l,Math.min(ya,yb),cW,Math.abs(yb-ya));
+      };
+      drawZone(avg-sd,avg+sd,'rgba(46,125,79,0.08)');
+      drawZone(avg+sd,avg+2*sd,'rgba(184,134,11,0.08)');
+      drawZone(avg-2*sd,avg-sd,'rgba(184,134,11,0.08)');
+      drawZone(avg+2*sd,ucl,'rgba(192,0,0,0.08)');
+      drawZone(lcl,avg-2*sd,'rgba(192,0,0,0.08)');
+      const cLine=(val,color,lbl,dash)=>{
+        if(val<yMin||val>yMax)return;
+        ctx.strokeStyle=color;ctx.setLineDash(dash||[]);ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.moveTo(pad.l,yScale(val));ctx.lineTo(pad.l+cW,yScale(val));ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle=color;ctx.font='8px Arial';ctx.textAlign='left';
+        ctx.fillText(lbl,pad.l+3,yScale(val)-2);
+      };
+      cLine(ucl,'#b388ff','UCL '+ucl.toFixed(4),[5,3]);
+      cLine(avg,'#b388ff','X̄ '+avg.toFixed(4),[2,2]);
+      cLine(lcl,'#b388ff','LCL '+lcl.toFixed(4),[5,3]);
+    }
+  }
+
+  // Spec lines
+  const hLine=(val,color,lbl,dash)=>{
+    if(val==null)return;
+    ctx.strokeStyle=color;ctx.setLineDash(dash||[]);ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(pad.l,yScale(val));ctx.lineTo(pad.l+cW,yScale(val));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=color;ctx.font='bold 9px Arial';ctx.textAlign='right';
+    ctx.fillText(lbl,pad.l+cW-2,yScale(val)-2);
+  };
+  hLine(hi,'#C00000','USL '+( hi?.toFixed(4)||''));
+  hLine(lo,'#C00000','LSL '+(lo?.toFixed(4)||''));
+  hLine((lo!=null&&hi!=null)?(lo+hi)/2:null,'#5bb8ff','Nom '+(((lo+hi)/2)?.toFixed(4)||''),[5,3]);
+
+  // Lines + points per cavity
+  const cavities=[...new Set(data.map(r=>r.cav))].sort();
+  cavities.forEach(cav=>{
+    const cavData=cavFilter==='all'?data.filter(r=>r.cav==cav):data;
+    if(!cavData.length)return;
+    const color=CAV_COLORS[(parseInt(cav)-1)%CAV_COLORS.length];
+    const pts=cavData.map(r=>({
+      x:xScale(data.indexOf(r)),
+      y:yScale(parseFloat(r.measurements[focusedK])),
+      v:parseFloat(r.measurements[focusedK]),
+      cav:r.cav
+    }));
+    ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.setLineDash([]);
+    ctx.beginPath();pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.stroke();
+    pts.forEach(p=>{
+      const st=charStatus(charDef,p.v);
+      const dotColor=st==='bad'?'#ff7a7a':st==='warn'?'#ffce6b':'#5fdc8f';
+      ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);
+      ctx.fillStyle=dotColor;ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
+    });
+  });
+
+  // Preview point
+  if(previewVal!==null){
+    const px=xScale(data.length);
+    const py=yScale(previewVal);
+    if(previewVal>=yMin&&previewVal<=yMax){
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.setLineDash([3,2]);
+      ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(255,255,255,0.2)';ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='bold 9px Arial';ctx.textAlign='center';
+      ctx.fillText(previewVal.toFixed(4),px,py-10);ctx.textAlign='left';
+    }
+  }
+
+  // X axis
+  ctx.fillStyle='#65788f';ctx.font='9px Arial';ctx.textAlign='center';
+  const step=Math.max(1,Math.floor(data.length/8));
+  data.forEach((r,i)=>{if(i%step===0||i===data.length-1)ctx.fillText(i+1,xScale(i),H-8);});
+  ctx.fillText('Muestra →',pad.l+cW/2,H-1);ctx.textAlign='left';
+
+  // Axes
+  ctx.strokeStyle='#2d3f54';ctx.lineWidth=1;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+}
+
+function updateChartStatsNum(data,charDef){
+  const vals=data.map(r=>parseFloat(r.measurements[charDef.k])).filter(v=>!isNaN(v));
+  document.getElementById('csN').textContent=vals.length||'—';
+  if(!vals.length)return;
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  document.getElementById('csAvg').textContent=avg.toFixed(4);
+  const out=vals.filter(v=>v<charDef.lo||v>charDef.hi).length;
+  document.getElementById('csOut').textContent=out;
+  document.getElementById('csOut').style.color=out>0?'#ff7a7a':'#5fdc8f';
+  if(vals.length>=2&&charDef.lo!=null){
+    const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/(vals.length-1));
+    if(sd>0){
+      const cpk=Math.min((charDef.hi-avg)/(3*sd),(avg-charDef.lo)/(3*sd));
+      const cpkEl=document.getElementById('csCpk');
+      cpkEl.textContent=cpk.toFixed(2);
+      cpkEl.style.color=cpk<1?'#ff7a7a':cpk>=1.33?'#5fdc8f':'#ffce6b';
+    }
+  }
+}
+
+function updateChartStatsGNG(data){
+  document.getElementById('csN').textContent=data.length||'—';
+  if(!data.length)return;
+  const ok=data.filter(r=>r.measurements[focusedK]==='ok').length;
+  const out=data.length-ok;
+  document.getElementById('csAvg').textContent=`${ok} OK`;
+  document.getElementById('csOut').textContent=out;
+  document.getElementById('csOut').style.color=out>0?'#ff7a7a':'#5fdc8f';
+  document.getElementById('csCpk').textContent='N/A';
 }
 
 function exportCSV(){
@@ -564,40 +861,29 @@ function exportCSV(){
   const P=APP.planos[pname];
   const allKeys=P?P.chars.map(c=>c.k):[];
   const header=['Timestamp','Hora','Plano','OP','Cavidad','Pieza','Maquina','Inspector','Modo','Resultado','Defectos',...allKeys,'Notas'];
-  const rows=history.map(r=>[
-    r.ts,r.hora,r.plano,r.op,r.cav,r.pieza,r.maq,r.insp,r.modo,r.result,r.badChars,
-    ...allKeys.map(k=>r.measurements[k]!==undefined?r.measurements[k]:''),
-    r.notas
-  ]);
+  const rows=history.map(r=>[r.ts,r.hora,r.plano,r.op,r.cav,r.pieza,r.maq,r.insp,r.modo,r.result,r.badChars,...allKeys.map(k=>r.measurements[k]!==undefined?r.measurements[k]:''),r.notas]);
   const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  const d=new Date();a.download=`inspeccion_inyectora_${d.toISOString().slice(0,10)}.csv`;
-  a.click();
+  const d=new Date();a.download=`inspeccion_inyectora_${d.toISOString().slice(0,10)}.csv`;a.click();
 }
 
 function init(){
-  // Planos
   fillSelect('plano',Object.keys(APP.planos));
-  // Maquinas
   fillSelect('maq',APP.maquinas);
-  // Operadores - add to a datalist for inspector autocomplete
   const dl=document.createElement('datalist');dl.id='opList';
   APP.operadores.forEach(o=>{const opt=document.createElement('option');opt.value=o.n;dl.appendChild(opt);});
   document.body.appendChild(dl);
   document.getElementById('insp').setAttribute('list','opList');
-  // Clock
   setInterval(()=>{
     const n=new Date();
     document.getElementById('clock').textContent=n.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · '+n.toTimeString().slice(0,8);
   },1000);
-  // Init mode notes
   document.getElementById('setupNote').style.display='block';
-  // Init first plano
-  onPlano();
-  renderChars();renderPareto();
+  onPlano();renderChars();renderPareto();
+  clearCanvas(document.getElementById('ctrlChart'));
+  window.addEventListener('resize',()=>drawFocusChart());
 }
-
 init();
 </script>
 </body></html>
