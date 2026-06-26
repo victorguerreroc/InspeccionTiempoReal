@@ -1,0 +1,581 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspección Inyectora — TechShop International S.A.</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#0f1722;color:#e6edf5;padding:14px;font-size:14px}
+h1{font-size:16px;color:#fff;margin-bottom:1px}
+.sub{color:#8aa0b8;font-size:11px;margin-bottom:4px}
+.setup{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.5fr 2fr;gap:5px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:6px 10px;margin-bottom:6px}
+.setup label{font-size:12px;color:#8aa0b8;display:block;margin-bottom:2px}
+.setup input,.setup select{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:13px}
+.mold-bar{display:flex;gap:16px;background:#16212f;border:1px solid #243447;border-radius:8px;padding:7px 14px;margin-bottom:7px;flex-wrap:wrap;align-items:center}
+.mold-tag{font-size:11px;color:#8aa0b8}.mold-val{font-size:12px;color:#e6edf5;font-weight:bold;margin-left:4px}
+.mold-tag.crit{color:#ff7a7a}.mold-val.crit{color:#ffce6b}
+.sidebtns{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1px solid #2d3f54}
+.sidebtns button{background:#0f1722;color:#8aa0b8;border:none;padding:6px 16px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap}
+.sidebtns button.act{background:#2E75B6;color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#16212f;border:1px solid #243447;border-radius:10px;padding:14px}
+.card h2{font-size:14px;margin-bottom:10px}
+.charform{overflow-y:auto;max-height:560px;margin-bottom:6px}
+.charrow{display:grid;grid-template-columns:1fr 150px 70px;gap:6px;align-items:center;padding:5px 4px;border-bottom:1px solid #1e2d3d;cursor:pointer;border-left:3px solid transparent}
+.charrow:hover{background:#1a2a3a}.charrow.focused{background:#1a2a3a;border-left-color:#2E75B6}
+.charrow.proceso-only{opacity:0.45}.charrow.proceso-only.proceso-show{opacity:1}
+.charname{color:#e6edf5;font-size:11px;font-weight:bold;margin-bottom:1px}
+.charlimits{color:#8aa0b8;font-size:9px}
+.crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff7a7a;margin-left:4px;vertical-align:middle}
+.charinput input[type=number]{width:100%;padding:4px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:14px;text-align:center}
+.charinput input[type=number]:focus{border-color:#2E75B6;outline:none}
+.gng-wrap{display:flex;gap:3px}
+.gng-wrap button{flex:1;padding:5px 2px;font-size:11px;border-radius:4px;transition:opacity 0.15s,box-shadow 0.15s;opacity:0.55;border:none;cursor:pointer;font-weight:bold}
+.gng-wrap button.ok{background:#2e7d4f;color:#fff}.gng-wrap button.rej{background:#C00000;color:#fff}
+.gng-wrap button.gng-sel{opacity:1}.gng-wrap button.ok.gng-sel{box-shadow:0 0 0 2px #5fdc8f}.gng-wrap button.rej.gng-sel{box-shadow:0 0 0 2px #ff7a7a}
+.chst{padding:3px 5px;border-radius:8px;font-size:11px;font-weight:bold;text-align:center;white-space:nowrap}
+.chst-idle{background:#1a2330;color:#8aa0b8}.chst-ok{background:#10331f;color:#5fdc8f}
+.chst-warn{background:#3a2e10;color:#ffce6b}.chst-bad{background:#3a1414;color:#ff7a7a}
+.verdict{padding:12px;border-radius:8px;text-align:center;font-weight:bold;font-size:16px;margin-bottom:10px;min-height:46px;display:flex;align-items:center;justify-content:center}
+.v-ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
+.v-warn{background:#3a2e10;color:#ffce6b;border:1px solid #b8860b}
+.v-bad{background:#3a1414;color:#ff7a7a;border:1px solid #C00000}
+.v-idle{background:#1a2330;color:#8aa0b8}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th,td{padding:5px 6px;border-bottom:1px solid #243447;text-align:center}
+th{color:#8aa0b8;font-size:10px;text-transform:uppercase}
+td.bad{color:#ff7a7a;font-weight:bold}td.ok{color:#5fdc8f}td.warn{color:#ffce6b}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.stat{background:#0f1722;border:1px solid #243447;border-radius:7px;padding:8px;text-align:center}
+.stat .l{font-size:10px;color:#8aa0b8;text-transform:uppercase}
+.stat .v{font-size:18px;font-weight:bold;margin-top:2px}
+.tblwrap{max-height:240px;overflow-y:auto}
+.reg-btn{width:100%;padding:10px;font-size:14px;background:#2e7d4f;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;margin-top:6px}
+.reg-btn:hover{filter:brightness(1.1)}
+button.export-btn{background:#1e3a5f;padding:6px 16px;font-size:13px;font-weight:bold;border:none;border-radius:6px;color:#fff;cursor:pointer}
+.form-header{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}
+.form-header input{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}
+.peso-bar-wrap{height:8px;background:#1a2330;border-radius:4px;margin-top:4px;position:relative;overflow:hidden}
+.peso-bar{height:100%;border-radius:4px;transition:width 0.3s,background 0.3s}
+#syncBadge{position:fixed;top:8px;right:10px;z-index:600;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:bold;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:default}
+#syncBadge.ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
+#syncBadge.off{background:#1a2330;color:#8aa0b8;border:1px solid #3d5170}
+textarea{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px;resize:vertical;min-height:36px}
+.note{font-size:12px;color:#8aa0b8;margin-top:8px;line-height:1.55}
+.pareto-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px}
+.pareto-bar{height:10px;background:#C00000;border-radius:3px}
+.pareto-label{color:#8aa0b8;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style></head><body>
+
+<div id="syncBadge" class="off">● Sin sync</div>
+
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+<div><h1>Inspección en Tiempo Real — Inyectora de Moldeo</h1>
+<div class="sub">Registre cada pieza · Material PA66 33%GF Negro · TechShop International S.A.</div></div>
+</div>
+<div class="sub" id="clock" style="font-size:13px;color:#5bb8ff;margin-bottom:8px"></div>
+
+<div class="setup">
+  <div><label>Plano / Part Number</label><select id="plano" onchange="onPlano()"></select></div>
+  <div><label>N° Cavidad</label><select id="cavidad"></select></div>
+  <div><label>OP (Orden Prod.)</label><input id="op" placeholder="ej: OP-2501"></div>
+  <div><label>Máquina</label><select id="maq"></select></div>
+  <div><label>Inspector</label><input id="insp" placeholder="Nombre inspector"></div>
+  <div><label>Modo de Inspección</label>
+    <div class="sidebtns">
+      <button id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button>
+      <button id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button>
+    </div>
+  </div>
+</div>
+
+<div class="mold-bar" id="moldBar" style="display:none">
+  <span class="mold-tag">Molde:</span><span class="mold-val" id="mbMolde">—</span>
+  <span style="color:#2d3f54">|</span>
+  <span class="mold-tag">Material:</span><span class="mold-val" id="mbMat">—</span>
+  <span style="color:#2d3f54">|</span>
+  <span class="mold-tag">Cavidades:</span><span class="mold-val" id="mbCav">—</span>
+  <span style="color:#2d3f54">|</span>
+  <span class="mold-tag">Ciclo estándar:</span><span class="mold-val" id="mbCiclo">—</span>
+  <span style="color:#2d3f54">|</span>
+  <span class="mold-tag crit">Peso pieza (nom):</span><span class="mold-val crit" id="mbPeso">—</span>
+  <span style="color:#2d3f54">|</span>
+  <span class="mold-tag">JT range:</span><span class="mold-val" id="mbJT">—</span>
+  <span style="margin-left:auto;display:flex;gap:6px">
+    <button onclick="exportCSV()" class="export-btn">⬇ Exportar CSV</button>
+  </span>
+</div>
+
+<div class="grid">
+<div class="card">
+  <h2>Características de Inspección</h2>
+  <div class="form-header">
+    <div><label>N° Pieza (secuencial)</label><input id="npieza" placeholder="1, 2, 3…" type="number"></div>
+    <div><label>Notas</label><input id="notas" placeholder="Opcional"></div>
+  </div>
+  <div class="charform" id="charform"></div>
+  <button class="reg-btn" onclick="registerEntry()">✓ Registrar Inspección</button>
+  <div id="regMsg" style="font-size:11px;color:#5fdc8f;text-align:center;margin-top:4px;min-height:14px"></div>
+  <p class="note" id="setupNote" style="display:none">
+    <strong>Modo Set-Up / Liberación:</strong> Inspección completa de todas las características.<br>
+    Verifique mínimo 1 pieza de cada cavidad antes de liberar producción.
+  </p>
+  <p class="note" id="procesoNote" style="display:none">
+    <strong>Modo Inspección Proceso:</strong> Se muestran solo características críticas.<br>
+    Frecuencia recomendada: cada 30 min o 50 ciclos.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Resultado</h2>
+  <div class="verdict v-idle" id="verdict">Sin mediciones</div>
+  <div class="stats">
+    <div class="stat"><div class="l">Inspeccionadas</div><div class="v" id="stTotal">0</div></div>
+    <div class="stat"><div class="l">OK</div><div class="v" id="stOk" style="color:#5fdc8f">0</div></div>
+    <div class="stat"><div class="l">Rechazadas</div><div class="v" id="stRej" style="color:#ff7a7a">0</div></div>
+    <div class="stat"><div class="l">% Rechazo</div><div class="v" id="stPct" style="color:#ffce6b">—</div></div>
+  </div>
+  <div style="margin-top:12px;margin-bottom:4px;font-size:11px;color:#8aa0b8;text-transform:uppercase">Defectos frecuentes</div>
+  <div id="pareto" style="min-height:40px"></div>
+  <div style="margin-top:12px;font-size:11px;color:#8aa0b8;text-transform:uppercase;margin-bottom:4px">Historial</div>
+  <div class="tblwrap">
+  <table id="histTable">
+    <thead><tr><th>Hora</th><th>Cav</th><th>Pieza</th><th>Resultado</th><th>Rechazos</th></tr></thead>
+    <tbody id="histBody"></tbody>
+  </table>
+  </div>
+</div>
+</div>
+
+<script>
+const APP={
+  planos:{
+    "CG1.EP.31.A Rev B":{
+      molde:"WM4133-10-145",cavidades:2,material:"PA66 33%GF Negro",
+      pesoNom:0.0733,pesoLo:0.0697,pesoHi:0.0769,pesoJT1:0.082122,pesoJT2:0.084586,
+      ciclo:35.12,pcsHr:205,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0697,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_2550",label:"OD 2.550 ±.015",t:"num",nom:2.550,lo:2.535,hi:2.565,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_2400",label:"Dim 2.400 ±.015",t:"num",nom:2.400,lo:2.385,hi:2.415,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_228",label:"Dim .228 ±.015",t:"num",nom:0.228,lo:0.213,hi:0.243,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"pin_172",label:"Ø.172 THRU (3x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
+        {k:"d_1795",label:"Ranura 1.762–1.795",t:"num",nom:1.7785,lo:1.762,hi:1.795,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_887",label:"Dim .887 ±.015",t:"num",nom:0.887,lo:0.872,hi:0.902,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_342",label:"Dim .342 ±.015",t:"num",nom:0.342,lo:0.327,hi:0.357,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_317",label:"Dim .317 ±.015",t:"num",nom:0.317,lo:0.302,hi:0.332,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_483",label:"Dim .483 ±.015",t:"num",nom:0.483,lo:0.468,hi:0.498,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    },
+    "CG1.EP.31.B Rev C":{
+      molde:"WM4133-10-187",cavidades:4,material:"PA66 33%GF Negro",
+      pesoNom:0.0345,pesoLo:0.0328,pesoHi:0.0362,pesoJT1:0.039686,pesoJT2:0.040877,
+      ciclo:28.8,pcsHr:500,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_clips",label:"Clips rediseñados sin deformación",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"peso",label:"Peso 0.0345 ±5%",t:"num",nom:0.0345,lo:0.0328,hi:0.0362,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_2560",label:"OD 2.560 ±.015",t:"num",nom:2.560,lo:2.545,hi:2.575,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_2420",label:"Dim 2.420 ±.015",t:"num",nom:2.420,lo:2.405,hi:2.435,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_2200",label:"Dim 2.200 ±.015",t:"num",nom:2.200,lo:2.185,hi:2.215,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_500",label:"Dim .500 ±.015",t:"num",nom:0.500,lo:0.485,hi:0.515,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_230",label:"Dim .230 ±.015",t:"num",nom:0.230,lo:0.215,hi:0.245,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1795",label:"Dim 1.795 ±.015",t:"num",nom:1.795,lo:1.780,hi:1.810,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_345",label:"Dim .345 ±.015",t:"num",nom:0.345,lo:0.330,hi:0.360,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_280",label:"Dim .280 ±.015",t:"num",nom:0.280,lo:0.265,hi:0.295,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_190",label:"Dim .190 ±.015",t:"num",nom:0.190,lo:0.175,hi:0.205,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    },
+    "CG1.EP.31.C Rev A":{
+      molde:"WM4133-10-146",cavidades:4,material:"PA66 33%GF Negro",
+      pesoNom:0.0733,pesoLo:0.0696,pesoHi:0.0769,pesoJT1:0.077713,pesoJT2:0.080045,
+      ciclo:40,pcsHr:360,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_tabs",label:"QTY-4 tabs sin rotura ni deformación",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"peso",label:"Peso 0.0733 ±5%",t:"num",nom:0.0733,lo:0.0696,hi:0.0769,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_2518",label:"Dim 2.518 ±.008 (CRÍTICO)",t:"num",nom:2.518,lo:2.510,hi:2.526,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
+        {k:"d_2450",label:"Dim 2.450 ±.015",t:"num",nom:2.450,lo:2.435,hi:2.465,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_2164",label:"Dim 2.164 ±.015",t:"num",nom:2.164,lo:2.149,hi:2.179,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_420",label:"Dim .420 ±.015",t:"num",nom:0.420,lo:0.405,hi:0.435,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_175",label:"Dim .175 ±.015",t:"num",nom:0.175,lo:0.160,hi:0.190,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_465",label:"Dim .465 ±.015",t:"num",nom:0.465,lo:0.450,hi:0.480,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_514",label:"Dim .514 ±.015",t:"num",nom:0.514,lo:0.499,hi:0.529,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_715",label:"Dim .715 ±.015",t:"num",nom:0.715,lo:0.700,hi:0.730,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    },
+    "CG1.EP.31.R.A Rev A":{
+      molde:"WM4133-10-186",cavidades:4,material:"PA66 33%GF Negro",
+      pesoNom:0.01433,pesoLo:0.01361,pesoHi:0.01505,pesoJT1:0.02122,pesoJT2:0.021857,
+      ciclo:25.04,pcsHr:575,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_fit",label:"Ajuste flush en CG1.EP.31.A (ensamble)",t:"gng",crit:true,instr:"Ensamble",proceso:true},
+        {k:"peso",label:"Peso 0.01433 ±5%",t:"num",nom:0.01433,lo:0.01361,hi:0.01505,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_885",label:"Dim .885 ±.015",t:"num",nom:0.885,lo:0.870,hi:0.900,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_239_257",label:"Dim .239–.257 (2x)",t:"num",nom:0.248,lo:0.239,hi:0.257,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"pin_140",label:"Ø.140 THRU (2x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
+        {k:"d_317",label:"Dim .317 ±.015",t:"num",nom:0.317,lo:0.302,hi:0.332,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1339",label:"Dim 1.339 ±.015",t:"num",nom:1.339,lo:1.324,hi:1.354,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_187",label:"Dim .187 ±.015 (2x)",t:"num",nom:0.187,lo:0.172,hi:0.202,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    },
+    "CZ1.EP.31.A Rev 05":{
+      molde:"WM4133-15-183",cavidades:4,material:"PA66 33%GF Negro",
+      pesoNom:0.068894,pesoLo:0.065449,pesoHi:0.072339,pesoJT1:0.079642,pesoJT2:0.082031,
+      ciclo:36.92,pcsHr:390,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"peso",label:"Peso 0.0689 ±5%",t:"num",nom:0.068894,lo:0.065449,hi:0.072339,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_1634",label:"Dim 1.634 ±.002 (CRÍTICO)",t:"num",nom:1.634,lo:1.632,hi:1.636,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
+        {k:"d_2564",label:"OD 2.564 ±.015",t:"num",nom:2.564,lo:2.549,hi:2.579,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1880",label:"Dim 1.880 ±.015 (3x)",t:"num",nom:1.880,lo:1.865,hi:1.895,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1891",label:"Dim 1.891 ±.015 (6x)",t:"num",nom:1.891,lo:1.876,hi:1.906,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1230",label:"Dim 1.230 ±.015",t:"num",nom:1.230,lo:1.215,hi:1.245,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1739",label:"Dim 1.739 ±.015",t:"num",nom:1.739,lo:1.724,hi:1.754,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"pin_172",label:"Ø.172 THRU (3x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
+        {k:"d_910",label:"Dim .910 ±.015 (3x)",t:"num",nom:0.910,lo:0.895,hi:0.925,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_676",label:"Dim .676 ±.015 (3x)",t:"num",nom:0.676,lo:0.661,hi:0.691,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_462",label:"Dim .462 ±.015 (3x)",t:"num",nom:0.462,lo:0.447,hi:0.477,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_317",label:"Dim .317 ±.015 (3x)",t:"num",nom:0.317,lo:0.302,hi:0.332,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_835",label:"Dim .835 ±.015",t:"num",nom:0.835,lo:0.820,hi:0.850,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    },
+    "CZ1.EP.31.R.A Rev 02":{
+      molde:"WM4133-15-184",cavidades:4,material:"PA66 33%GF Negro",
+      pesoNom:0.014054,pesoLo:0.013351,pesoHi:0.014757,pesoJT1:0.020668,pesoJT2:0.021288,
+      ciclo:25.48,pcsHr:565,
+      chars:[
+        {k:"visual_flash",label:"Sin flash visible",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_sup",label:"Acabado SPI B-1 uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_color",label:"Color negro uniforme",t:"gng",crit:false,instr:"Visual",proceso:false},
+        {k:"visual_marca",label:"Marcado correcto (pieza + rev + cavidad)",t:"gng",crit:true,instr:"Visual",proceso:true},
+        {k:"visual_fit",label:"Ajuste flush en CZ1.EP.31.A (ensamble)",t:"gng",crit:true,instr:"Ensamble",proceso:true},
+        {k:"peso",label:"Peso 0.01405 ±5%",t:"num",nom:0.014054,lo:0.013351,hi:0.014757,unit:"lbs",crit:true,instr:"Balanza",proceso:true},
+        {k:"d_812",label:"Dim .812 ±.002 (CRÍTICO)",t:"num",nom:0.812,lo:0.810,hi:0.814,unit:"pulg",crit:true,instr:"Calibrador",proceso:true},
+        {k:"d_1230",label:"Dim 1.230 ±.015",t:"num",nom:1.230,lo:1.215,hi:1.245,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1492",label:"Dim 1.492 ±.015",t:"num",nom:1.492,lo:1.477,hi:1.507,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_1055",label:"Dim 1.055 ±.015",t:"num",nom:1.055,lo:1.040,hi:1.070,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"pin_128",label:"Ø.128 THRU (2x) — Pin Go/No-Go",t:"gng",crit:true,instr:"Pin Gauge",proceso:true},
+        {k:"d_257",label:"Dim .257 ±.015",t:"num",nom:0.257,lo:0.242,hi:0.272,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_373",label:"Dim .373 MIN",t:"num",nom:0.385,lo:0.373,hi:0.420,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_607",label:"Dim .607 ±.015",t:"num",nom:0.607,lo:0.592,hi:0.622,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+        {k:"d_672",label:"Dim .672 ±.015",t:"num",nom:0.672,lo:0.657,hi:0.687,unit:"pulg",crit:false,instr:"Calibrador",proceso:false},
+      ]
+    }
+  },
+  maquinas:["Haitian MA4700V","Haitian MA3200V","Haitian MA2500V","Haitian MA1600V"],
+  operadores:[
+    {id:"2013",n:"Joselin Figueroa Liz"},{id:"2037",n:"Luis Rene Castillo J"},{id:"2156",n:"Alvaro Castro"},
+    {id:"2162",n:"Kenneth Andres Varga"},{id:"2206",n:"Andres Chavez Vindas"},{id:"2231",n:"Steven Chacon Porras"},
+    {id:"2325",n:"Calderon Segura Ruth"},{id:"2365",n:"Kevin Segura R"},{id:"2386",n:"Rafael Arroyo Ureña"},
+    {id:"2501",n:"Terry Duran Gonzalez"},{id:"2565",n:"Navarro Jimenez Dign"},{id:"2595",n:"Diego Velasquez Argu"},
+    {id:"2602",n:"Carlos Quiros Rivera"},{id:"2609",n:"Josue Zuniga Gomez"},{id:"2610",n:"Jesus Alfaro Alpizar"},
+    {id:"2611",n:"Luis Carlos Carvajal"},{id:"2645",n:"Maikel Contreras Fal"},{id:"2674",n:"Luis Mauricio Villal"},
+    {id:"2684",n:"Jason Jose Chavarria"},{id:"2704",n:"Aldair Steven Mendoz"},{id:"2705",n:"Donato Josimar Bland"},
+    {id:"2712",n:"Kevin Japheth Maillo"},{id:"2723",n:"Christian Jose Jimen"},{id:"2727",n:"Jhoeykel David Matey"},
+    {id:"2729",n:"Jhandrey Charles Spe"},{id:"2734",n:"David Otilio Leiva S"},{id:"2737",n:"Alejandro Corrales H"},
+    {id:"2742",n:"Deyrron Jamil Martin"},{id:"2743",n:"Josell Enrique Barra"},{id:"2745",n:"Brandon Josue Mora"},
+    {id:"2746",n:"Ivan Andres Rosales"},{id:"2747",n:"Joseft Javier Nieto"},{id:"2751",n:"Juan David Ferrerosa"},
+    {id:"2768",n:"Jeffrey Guzman Rojas"},{id:"2773",n:"Joseph Pablo Gonzale"},{id:"2777",n:"Gerardo Antonio Varg"},
+    {id:"2790",n:"Peter Anderson Gonza"},{id:"2803",n:"Keylor Fabricio Cerd"},{id:"2806",n:"Sammy Taheshi Tsvi A"},
+    {id:"2809",n:"Yaneisha Rosheyka Sc"},{id:"2810",n:"Johan Andrei Perez V"},{id:"2816",n:"Franco Herrera Garci"},
+    {id:"2830",n:"Sebastian Delgado Ra"},{id:"2832",n:"Elvis Josue Bojorge"},{id:"2836",n:"Justin Duvalier More"},
+    {id:"2838",n:"Oscar Aguilar Martin"},{id:"2842",n:"Geovany Alberto Mira"},{id:"2846",n:"Jonathan Chaverri Ri"},
+    {id:"2848",n:"Erick Morales Vargas"},{id:"2852",n:"Ayram Jorell Ferreto"},{id:"2858",n:"Imanol David Retana"},
+    {id:"2859",n:"Maria Jose Fernandez"},{id:"2860",n:"Marco Vinicio Corder"},{id:"2864",n:"Christopher Jimenez"},
+    {id:"2865",n:"Luciano Antonio Alfa"},{id:"2866",n:"Luis Antonio Lopez"},{id:"2870",n:"Alejandro Vinicio Lo"},
+    {id:"2873",n:"Juan Esteban Mendez"},{id:"2875",n:"Elias Cambronero Agu"},{id:"2876",n:"Ronald Francisco Cam"},
+    {id:"2878",n:"Obed Isaac Canda Jim"},{id:"2879",n:"Jonaykel Adrian Muno"},{id:"2880",n:"Marlon Antonio Garme"},
+    {id:"2881",n:"Robert Ulises Rivera"},{id:"2882",n:"Marco Gerardo Valenz"},{id:"2883",n:"Wendell Montenegro S"},
+    {id:"2885",n:"Jonathan Mauricio Ba"},{id:"2889",n:"Antony Esteven Quiro"},{id:"2891",n:"Brandon Eduardo Cald"},
+    {id:"2893",n:"Carlos Alberto Delga"},{id:"2894",n:"Oscar Manuel Solera"}
+  ]
+};
+
+let curMode='setup',vals={},history=[];
+const defectCount={};
+
+function fillSelect(id,opts){
+  const s=document.getElementById(id);s.innerHTML='';
+  opts.forEach(o=>{const el=document.createElement('option');el.value=o;el.textContent=o;s.appendChild(el);});
+}
+
+function onPlano(){
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];if(!P)return;
+  // cavidad
+  const cavSel=document.getElementById('cavidad');cavSel.innerHTML='';
+  for(let i=1;i<=P.cavidades;i++){const o=document.createElement('option');o.value=i;o.textContent='Cavidad '+i;cavSel.appendChild(o);}
+  // mold bar
+  document.getElementById('moldBar').style.display='flex';
+  document.getElementById('mbMolde').textContent=P.molde;
+  document.getElementById('mbMat').textContent=P.material;
+  document.getElementById('mbCav').textContent=P.cavidades;
+  document.getElementById('mbCiclo').textContent=P.ciclo+'s ('+P.pcsHr+' pcs/hr)';
+  document.getElementById('mbPeso').textContent=P.pesoNom.toFixed(5)+' lbs';
+  document.getElementById('mbJT').textContent=P.pesoJT1.toFixed(5)+'–'+P.pesoJT2.toFixed(5)+' lbs';
+  vals={};
+  renderChars();updateVerdict();
+}
+
+function setMode(m){
+  curMode=m;
+  ['setup','proceso'].forEach(x=>{
+    document.getElementById('btn'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('act',m===x);
+  });
+  document.getElementById('setupNote').style.display=m==='setup'?'block':'none';
+  document.getElementById('procesoNote').style.display=m==='proceso'?'block':'none';
+  renderChars();
+}
+
+function renderChars(){
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];
+  const el=document.getElementById('charform');
+  if(!P){el.innerHTML='<div style="color:#8aa0b8;padding:20px;text-align:center">Seleccione un plano</div>';return;}
+  const isProceso=curMode==='proceso';
+  let html='';
+  P.chars.forEach(c=>{
+    const v=vals[c.k];
+    const st=charStatus(c,v);
+    const stCls='chst chst-'+st;
+    const stLbl={idle:'—',ok:'OK',warn:'Fuera ±3%',bad:'RECHAZO'}[st];
+    const showRow=!isProceso||c.proceso;
+    html+=`<div class="charrow${isProceso&&!c.proceso?' proceso-only':''}${isProceso&&c.proceso?' proceso-show':''}" onclick="focusChar(event,'${c.k}')" id="row_${c.k}">`;
+    html+=`<div><div class="charname">${c.label}${c.crit?'<span class="crit-dot"></span>':''}</div>`;
+    html+=`<div class="charlimits">${c.instr}${c.t==='num'?' · '+fmtLim(c):''}`;
+    if(c.k==='peso'&&P){html+=` · <span style="color:#8aa0b8;font-size:9px">JT: ${P.pesoJT1.toFixed(4)}–${P.pesoJT2.toFixed(4)} lbs</span>`;}
+    html+=`</div></div>`;
+    if(c.t==='gng'){
+      const okSel=v==='ok'?' gng-sel':'',rejSel=v==='rej'?' gng-sel':'';
+      html+=`<div class="gng-wrap"><button class="ok${okSel}" onclick="setGng(event,'${c.k}','ok')">✓ OK</button><button class="rej${rejSel}" onclick="setGng(event,'${c.k}','rej')">✗ REJ</button></div>`;
+    } else {
+      const numVal=v!==undefined&&v!==''?v:'';
+      html+=`<div class="charinput"><input type="number" step="0.0001" value="${numVal}" id="inp_${c.k}" oninput="setNum('${c.k}',this.value)" onkeydown="navNext(event,'${c.k}')" placeholder="0.0000"></div>`;
+      if(c.k==='peso'&&numVal!==''){
+        const pct=Math.min(100,Math.max(0,((numVal-c.lo)/(c.hi-c.lo))*100));
+        const bg=st==='ok'?'#2e7d4f':st==='warn'?'#b8860b':'#C00000';
+        html+=`</div><div style="padding:0 4px 4px"><div class="peso-bar-wrap"><div class="peso-bar" style="width:${pct}%;background:${bg}"></div></div></div>`;
+        html+=`<div class="${stCls}">${stLbl}</div></div>`;
+        return;
+      }
+    }
+    html+=`<div class="${stCls}">${stLbl}</div>`;
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function fmtLim(c){
+  if(c.lo!==undefined&&c.hi!==undefined) return `${c.lo.toFixed(4)}–${c.hi.toFixed(4)} ${c.unit}`;
+  return '';
+}
+
+function charStatus(c,v){
+  if(v===undefined||v==='')return 'idle';
+  if(c.t==='gng')return v==='ok'?'ok':v==='rej'?'bad':'idle';
+  const n=parseFloat(v);
+  if(isNaN(n))return 'idle';
+  if(n<c.lo||n>c.hi)return 'bad';
+  // warn zone: within 10% of tolerance from limit
+  const tol=(c.hi-c.lo)/2;
+  const warnZ=tol*0.15;
+  if(n<c.lo+warnZ||n>c.hi-warnZ)return 'warn';
+  return 'ok';
+}
+
+function setGng(e,k,v){
+  e.stopPropagation();
+  vals[k]=vals[k]===v?undefined:v;
+  renderChars();updateVerdict();
+}
+
+function setNum(k,v){
+  vals[k]=v;
+  updateVerdict();
+  // update just this row status badge
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];if(!P)return;
+  const c=P.chars.find(x=>x.k===k);if(!c)return;
+  const st=charStatus(c,v);
+  const row=document.getElementById('row_'+k);if(!row)return;
+  const badge=row.querySelector('.chst');if(!badge)return;
+  badge.className='chst chst-'+st;
+  badge.textContent={idle:'—',ok:'OK',warn:'Fuera ±3%',bad:'RECHAZO'}[st];
+}
+
+function focusChar(e,k){
+  document.querySelectorAll('.charrow').forEach(r=>r.classList.remove('focused'));
+  document.getElementById('row_'+k)?.classList.add('focused');
+  const inp=document.getElementById('inp_'+k);if(inp){inp.focus();inp.select();}
+}
+
+function navNext(e,k){
+  if(e.key==='Enter'){
+    const pname=document.getElementById('plano').value;
+    const P=APP.planos[pname];if(!P)return;
+    const chars=P.chars.filter(c=>c.t==='num');
+    const idx=chars.findIndex(c=>c.k===k);
+    if(idx>=0&&idx<chars.length-1){
+      const nk=chars[idx+1].k;
+      const inp=document.getElementById('inp_'+nk);if(inp){inp.focus();inp.select();}
+    }
+  }
+}
+
+function updateVerdict(){
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];if(!P)return;
+  const el=document.getElementById('verdict');
+  const chars=curMode==='proceso'?P.chars.filter(c=>c.proceso):P.chars;
+  const measured=chars.filter(c=>vals[c.k]!==undefined&&vals[c.k]!=='');
+  if(!measured.length){el.className='verdict v-idle';el.textContent='Sin mediciones';return;}
+  const bad=chars.filter(c=>{const st=charStatus(c,vals[c.k]);return st==='bad';});
+  const warn=chars.filter(c=>{const st=charStatus(c,vals[c.k]);return st==='warn';});
+  if(bad.length){
+    el.className='verdict v-bad';
+    el.textContent=`✗ RECHAZADO — ${bad.length} característica(s) fuera de límite`;
+  } else if(warn.length){
+    el.className='verdict v-warn';
+    el.textContent=`⚠ ADVERTENCIA — ${warn.length} característica(s) cerca del límite`;
+  } else {
+    el.className='verdict v-ok';
+    el.textContent=`✓ OK — ${measured.length}/${chars.length} características conformes`;
+  }
+}
+
+function registerEntry(){
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];if(!P){showMsg('Seleccione un plano primero','#ff7a7a');return;}
+  const chars=curMode==='proceso'?P.chars.filter(c=>c.proceso):P.chars;
+  const measured=chars.filter(c=>vals[c.k]!==undefined&&vals[c.k]!=='');
+  if(!measured.length){showMsg('Ingrese al menos una medición','#ffce6b');return;}
+
+  const bad=chars.filter(c=>charStatus(c,vals[c.k])==='bad');
+  const result=bad.length>0?'RECHAZADO':'OK';
+  bad.forEach(c=>{defectCount[c.label]=(defectCount[c.label]||0)+1;});
+
+  const now=new Date();
+  const hora=now.toTimeString().slice(0,8);
+  const row={
+    ts:now.toISOString(),hora,
+    plano:pname,
+    cav:document.getElementById('cavidad').value,
+    pieza:document.getElementById('npieza').value||'—',
+    op:document.getElementById('op').value||'—',
+    maq:document.getElementById('maq').value,
+    insp:document.getElementById('insp').value||'—',
+    modo:curMode,
+    result,
+    badChars:bad.map(c=>c.label).join('; ')||'',
+    notas:document.getElementById('notas').value||'',
+    measurements:{...vals}
+  };
+  history.unshift(row);
+  renderHistory();renderStats();renderPareto();
+  // auto-increment piece number
+  const np=document.getElementById('npieza');
+  if(np.value)np.value=parseInt(np.value)+1;
+  // clear inputs
+  vals={};renderChars();updateVerdict();
+  document.getElementById('notas').value='';
+  showMsg(result==='OK'?'✓ Registrado correctamente':'✗ Pieza RECHAZADA registrada',result==='OK'?'#5fdc8f':'#ff7a7a');
+}
+
+function showMsg(m,c){
+  const el=document.getElementById('regMsg');el.style.color=c;el.textContent=m;
+  setTimeout(()=>{el.textContent='';},3000);
+}
+
+function renderHistory(){
+  const tbody=document.getElementById('histBody');
+  tbody.innerHTML=history.slice(0,50).map(r=>`<tr>
+    <td>${r.hora}</td>
+    <td>${r.cav}</td>
+    <td>${r.pieza}</td>
+    <td class="${r.result==='OK'?'ok':'bad'}">${r.result}</td>
+    <td style="text-align:left;font-size:10px;color:#ff7a7a">${r.badChars}</td>
+  </tr>`).join('');
+}
+
+function renderStats(){
+  const total=history.length;
+  const ok=history.filter(r=>r.result==='OK').length;
+  const rej=total-ok;
+  document.getElementById('stTotal').textContent=total;
+  document.getElementById('stOk').textContent=ok;
+  document.getElementById('stRej').textContent=rej;
+  document.getElementById('stPct').textContent=total?((rej/total)*100).toFixed(1)+'%':'—';
+}
+
+function renderPareto(){
+  const el=document.getElementById('pareto');
+  const sorted=Object.entries(defectCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(!sorted.length){el.innerHTML='<div style="color:#8aa0b8;font-size:11px">Sin rechazos registrados</div>';return;}
+  const max=sorted[0][1];
+  el.innerHTML=sorted.map(([lbl,cnt])=>`
+    <div class="pareto-row">
+      <div class="pareto-label" title="${lbl}">${lbl}</div>
+      <div style="flex:1"><div class="pareto-bar" style="width:${(cnt/max*100)}%"></div></div>
+      <div style="color:#ff7a7a;font-weight:bold;min-width:24px;text-align:right">${cnt}</div>
+    </div>`).join('');
+}
+
+function exportCSV(){
+  if(!history.length){alert('No hay datos para exportar.');return;}
+  const pname=document.getElementById('plano').value;
+  const P=APP.planos[pname];
+  const allKeys=P?P.chars.map(c=>c.k):[];
+  const header=['Timestamp','Hora','Plano','OP','Cavidad','Pieza','Maquina','Inspector','Modo','Resultado','Defectos',...allKeys,'Notas'];
+  const rows=history.map(r=>[
+    r.ts,r.hora,r.plano,r.op,r.cav,r.pieza,r.maq,r.insp,r.modo,r.result,r.badChars,
+    ...allKeys.map(k=>r.measurements[k]!==undefined?r.measurements[k]:''),
+    r.notas
+  ]);
+  const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const d=new Date();a.download=`inspeccion_inyectora_${d.toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function init(){
+  // Planos
+  fillSelect('plano',Object.keys(APP.planos));
+  // Maquinas
+  fillSelect('maq',APP.maquinas);
+  // Operadores - add to a datalist for inspector autocomplete
+  const dl=document.createElement('datalist');dl.id='opList';
+  APP.operadores.forEach(o=>{const opt=document.createElement('option');opt.value=o.n;dl.appendChild(opt);});
+  document.body.appendChild(dl);
+  document.getElementById('insp').setAttribute('list','opList');
+  // Clock
+  setInterval(()=>{
+    const n=new Date();
+    document.getElementById('clock').textContent=n.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · '+n.toTimeString().slice(0,8);
+  },1000);
+  // Init mode notes
+  document.getElementById('setupNote').style.display='block';
+  // Init first plano
+  onPlano();
+  renderChars();renderPareto();
+}
+
+init();
+</script>
+</body></html>
