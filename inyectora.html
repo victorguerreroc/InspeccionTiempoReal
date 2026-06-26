@@ -53,9 +53,16 @@ button.export-btn{background:#1e3a5f;padding:6px 16px;font-size:13px;font-weight
 .form-header{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
 .form-header label{font-size:11px;color:#8aa0b8;display:block;margin-bottom:3px}
 .form-header input{width:100%;padding:5px 7px;background:#0f1722;border:1px solid #2d3f54;border-radius:4px;color:#e6edf5;font-size:12px}
-#syncBadge{position:fixed;top:8px;right:10px;z-index:600;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:bold;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:default}
-#syncBadge.ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
-#syncBadge.off{background:#1a2330;color:#8aa0b8;border:1px solid #3d5170}
+#folderBadge{position:fixed;top:8px;right:10px;z-index:600;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:bold;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer;transition:filter 0.15s}
+#folderBadge:hover{filter:brightness(1.12)}
+#folderBadge.ok{background:#10331f;color:#5fdc8f;border:1px solid #2e7d4f}
+#folderBadge.err{background:#3a1414;color:#ff7a7a;border:1px solid #C00000}
+#folderBadge.none{background:#1a2330;color:#8aa0b8;border:1px solid #3d5170}
+.no-folder-banner{background:#1e2a1a;border:1px solid #2e7d4f;border-radius:8px;padding:12px 16px;margin-bottom:8px;display:none}
+.no-folder-banner h3{font-size:14px;color:#5fdc8f;margin-bottom:4px}
+.no-folder-banner p{font-size:12px;color:#8aa0b8;margin-bottom:8px}
+.folder-btn{background:#2e7d4f;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:bold;cursor:pointer}
+.folder-btn:hover{filter:brightness(1.1)}
 .note{font-size:11px;color:#8aa0b8;margin-top:6px;line-height:1.5}
 .pareto-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px}
 .pareto-bar{height:10px;background:#C00000;border-radius:3px}
@@ -76,7 +83,12 @@ canvas#ctrlChart{width:100%;height:200px;display:block;border-radius:6px;backgro
 .chart-stat .v{font-size:14px;font-weight:bold;margin-top:1px}
 </style></head><body>
 
-<div id="syncBadge" class="off">● Sin sync</div>
+<div id="folderBadge" class="none" onclick="seleccionarCarpeta()">📁 Sin carpeta</div>
+<div class="no-folder-banner" id="no-folder-banner">
+  <h3>📁 Conecta la carpeta para guardar automáticamente</h3>
+  <p>Selecciona la carpeta de SharePoint (ej: <em>Inyeccion Moldes</em>). Los registros se guardarán en <strong>Base de Datos / inyectora_inspecciones.json</strong> y se cargarán automáticamente la próxima vez.</p>
+  <button class="folder-btn" onclick="seleccionarCarpeta()">Seleccionar carpeta…</button>
+</div>
 
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
 <div><h1>Inspección en Tiempo Real — Inyectora de Moldeo</h1>
@@ -172,6 +184,128 @@ canvas#ctrlChart{width:100%;height:200px;display:block;border-radius:6px;backgro
 </div>
 
 <script>
+// ── IndexedDB — persiste el handle de carpeta entre sesiones ──────────────
+const IDB={name:'insp_inyectora',store:'handles',ver:1};
+function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB.name,IDB.ver);r.onupgradeneeded=e=>e.target.result.createObjectStore(IDB.store);r.onsuccess=e=>res(e.target.result);r.onerror=rej;});}
+async function idbGet(key){const db=await idbOpen();return new Promise((res,rej)=>{const req=db.transaction(IDB.store,'readonly').objectStore(IDB.store).get(key);req.onsuccess=()=>res(req.result);req.onerror=rej;});}
+async function idbSet(key,val){const db=await idbOpen();return new Promise((res,rej)=>{const tx=db.transaction(IDB.store,'readwrite');tx.objectStore(IDB.store).put(val,key);tx.oncomplete=res;tx.onerror=rej;});}
+
+// ── File System Access API ────────────────────────────────────────────────
+let dirHandle=null;
+
+async function getBDHandle(){
+  if(!dirHandle)return null;
+  try{return await dirHandle.getDirectoryHandle('Base de Datos',{create:true});}
+  catch(e){return dirHandle;}
+}
+async function readJSON(filename){
+  if(!dirHandle)return null;
+  try{
+    const bd=await getBDHandle();
+    let fh;
+    try{fh=await bd.getFileHandle(filename);}
+    catch(e){if(e.name==='NotFoundError')return null;throw e;}
+    const file=await fh.getFile();
+    return JSON.parse(await file.text());
+  }catch(e){if(e.name==='NotFoundError')return null;console.error('readJSON',e);return null;}
+}
+async function writeJSON(filename,data){
+  if(!dirHandle)return false;
+  if(!await asegurarPermiso())return false;
+  try{
+    const bd=await getBDHandle();
+    const fh=await bd.getFileHandle(filename,{create:true});
+    const wr=await fh.createWritable();
+    await wr.write(JSON.stringify(data,null,2));
+    await wr.close();
+    return true;
+  }catch(e){console.error('writeJSON',e);return false;}
+}
+async function asegurarPermiso(){
+  if(!dirHandle)return false;
+  const p=await dirHandle.queryPermission({mode:'readwrite'});
+  if(p==='granted')return true;
+  const r=await dirHandle.requestPermission({mode:'readwrite'});
+  if(r==='granted'){actualizarFolderUI();return true;}
+  return false;
+}
+async function seleccionarCarpeta(){
+  if(!('showDirectoryPicker' in window)){alert('Usa Chrome o Edge — este navegador no soporta acceso a carpetas.');return;}
+  try{
+    const h=await window.showDirectoryPicker({mode:'readwrite'});
+    dirHandle=h;
+    await idbSet('folder',h);
+    actualizarFolderUI();
+    await loadData();
+    toast('Carpeta conectada: '+h.name,'ok');
+  }catch(e){if(e.name!=='AbortError')toast('Error: '+e.message,'err');}
+}
+async function restaurarCarpeta(){
+  try{
+    const h=await idbGet('folder');
+    if(!h)return;
+    dirHandle=h;
+    const perm=await h.queryPermission({mode:'readwrite'});
+    if(perm==='granted'){actualizarFolderUI();await loadData();}
+    else{mostrarReconectar(h.name);}
+  }catch(e){}
+}
+function mostrarReconectar(nombre){
+  const badge=document.getElementById('folderBadge');
+  badge.className='folder-badge err';
+  badge.textContent='🔄 Reconectar: '+nombre;
+  badge.onclick=reconectarCarpeta;
+  const banner=document.getElementById('no-folder-banner');
+  if(banner){
+    banner.style.display='block';
+    banner.innerHTML=`<h3>🔄 Reconecta la carpeta para ver tus datos</h3>
+      <p>Tus datos están guardados. El navegador pide reconfirmar el acceso (solo un clic).</p>
+      <button class="folder-btn" onclick="reconectarCarpeta()">🔄 Reconectar ${nombre}</button>`;
+  }
+}
+async function reconectarCarpeta(){
+  if(!dirHandle){seleccionarCarpeta();return;}
+  const ok=await dirHandle.requestPermission({mode:'readwrite'});
+  if(ok==='granted'){actualizarFolderUI();await loadData();toast('Carpeta reconectada ✓','ok');}
+  else toast('Permiso denegado','err');
+}
+function actualizarFolderUI(){
+  const badge=document.getElementById('folderBadge');
+  const banner=document.getElementById('no-folder-banner');
+  if(dirHandle){
+    badge.className='ok';badge.textContent='📁 '+dirHandle.name;badge.onclick=seleccionarCarpeta;
+    if(banner)banner.style.display='none';
+  }else{
+    badge.className='none';badge.textContent='📁 Sin carpeta';badge.onclick=seleccionarCarpeta;
+    if(banner)banner.style.display='block';
+  }
+}
+function toast(msg,type){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;padding:9px 22px;border-radius:20px;font-size:13px;font-weight:bold;box-shadow:0 3px 14px rgba(0,0,0,.5);pointer-events:none;transition:opacity 0.4s`;
+  t.style.background=type==='ok'?'#10331f':type==='err'?'#3a1414':'#3a2e10';
+  t.style.color=type==='ok'?'#5fdc8f':type==='err'?'#ff7a7a':'#ffce6b';
+  t.style.border=`1px solid ${type==='ok'?'#2e7d4f':type==='err'?'#C00000':'#b8860b'}`;
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),420);},3000);
+}
+
+// ── Persistencia de datos ─────────────────────────────────────────────────
+const DATA_FILE='inyectora_inspecciones.json';
+async function loadData(){
+  const saved=await readJSON(DATA_FILE);
+  if(saved&&Array.isArray(saved)){
+    history=saved;
+    renderHistory();renderStats();renderCavStats();renderPareto();drawFocusChart();
+    toast(`${saved.length} registros cargados`,'ok');
+  }
+}
+async function saveData(){
+  const ok=await writeJSON(DATA_FILE,history);
+  const badge=document.getElementById('folderBadge');
+  if(ok&&badge){badge.textContent='📁 '+dirHandle.name+' ✓';setTimeout(()=>{if(dirHandle)badge.textContent='📁 '+dirHandle.name;},1500);}
+}
+
 const APP={
   planos:{
     "CG1.EP.31.A Rev B":{
@@ -530,6 +664,7 @@ function registerEntry(){
   history.unshift(row);
   previewVal=null;
   renderHistory();renderStats();renderCavStats();renderPareto();drawFocusChart();
+  saveData();
   const np=document.getElementById('npieza');
   if(np.value)np.value=parseInt(np.value)+1;
   vals={};renderChars();updateVerdict();
@@ -883,6 +1018,7 @@ function init(){
   onPlano();renderChars();renderPareto();
   clearCanvas(document.getElementById('ctrlChart'));
   window.addEventListener('resize',()=>drawFocusChart());
+  restaurarCarpeta();
 }
 init();
 </script>
