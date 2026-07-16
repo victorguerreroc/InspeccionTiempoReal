@@ -77,11 +77,17 @@ select.big{font-size:13px;padding:7px}
 
 <div class="kpis">
   <div class="kpi"><div class="l">Inspecciones</div><div class="v" id="kTotal">—</div><div class="s" id="kPiezas"></div><div class="bar" style="width:100%"></div></div>
-  <div class="kpi good"><div class="l">First Pass Yield</div><div class="v" id="kFPY">—</div><div class="s">Conforme primera vez</div><div class="bar" id="kFPYbar"></div></div>
+  <div class="kpi good"><div class="l">FPY (por pieza)</div><div class="v" id="kFPY">—</div><div class="s" id="kFPYs">Piezas conformes primera vez</div><div class="bar" id="kFPYbar"></div></div>
   <div class="kpi bad"><div class="l">Fuera de Spec</div><div class="v" id="kFuera">—</div><div class="s" id="kFueraPct"></div></div>
   <div class="kpi warn"><div class="l">Cerca del límite</div><div class="v" id="kCerca">—</div><div class="s">Riesgo / ajustar</div></div>
   <div class="kpi bad"><div class="l">Defectos visuales</div><div class="v" id="kDef">—</div><div class="s">Rosca/golpes/etc</div></div>
   <div class="kpi"><div class="l">PPM defectuoso</div><div class="v" id="kPPM" style="font-size:22px">—</div><div class="s">Partes por millón</div></div>
+</div>
+
+<div class="card grid1">
+  <h2>🚨 Panel de alertas activas</h2>
+  <div class="hint">Reglas SPC evaluadas por plano · part number · característica (n ≥ 10): puntos fuera de límites, rachas, tendencias, Cpk bajo y % CERCA elevado</div>
+  <div class="tblwrap" id="alertBody"></div>
 </div>
 
 <div class="grid2">
@@ -112,9 +118,9 @@ select.big{font-size:13px;padding:7px}
 
 <div class="card grid1">
   <h2>⚙️ Capacidad del Proceso (Cpk) por característica</h2>
-  <div class="hint">Cpk ≥ 1.33 capaz · 1.00–1.33 marginal · &lt; 1.00 NO capaz. Click en una fila para ver su histograma y gráfico de control.</div>
+  <div class="hint">Cpk (σ corto plazo, rango móvil) ≥ 1.33 capaz · 1.00–1.33 marginal · &lt; 1.00 NO capaz. Ppk = desempeño global (σ total). Cpk requiere n ≥ 10. Click en una fila para ver su histograma y gráfico de control.</div>
   <div class="tblwrap"><table id="tCpk"><thead><tr>
-    <th class="l">Característica</th><th>n</th><th>Promedio</th><th>Desv σ</th><th>LIE</th><th>LSE</th><th>Cp</th><th>Cpk</th><th>% Fuera</th><th>Capacidad</th>
+    <th class="l">Característica</th><th class="l">Part Number</th><th>n</th><th>Promedio</th><th>σ st</th><th>LIE</th><th>LSE</th><th>Cp</th><th>Cpk</th><th>Ppk</th><th>% Fuera</th><th>Capacidad</th>
   </tr></thead><tbody id="tCpkBody"></tbody></table></div>
 </div>
 
@@ -142,6 +148,18 @@ select.big{font-size:13px;padding:7px}
     <div class="hint">¿Hay un turno con más problemas?</div>
     <canvas id="cTurno" height="260"></canvas>
   </div>
+</div>
+
+<div class="card grid1">
+  <h2>📉 Tendencia de % CERCA (indicador temprano)</h2>
+  <div class="hint">% de mediciones numéricas en zona CERCA por día — sube antes de que aparezcan rechazos</div>
+  <canvas id="cCercaTrend" height="260"></canvas>
+</div>
+
+<div class="card grid1">
+  <h2>🗺️ Heatmap Máquina × Característica (Cpk σ corto plazo)</h2>
+  <div class="hint">Verde ≥ 1.33 · Amarillo 1.00–1.33 · Rojo &lt; 1.00 · Gris n &lt; 10 o sin límites. Si una celda mezcla varios part numbers se muestra el peor Cpk.</div>
+  <div class="tblwrap" id="hmWrap"></div>
 </div>
 
 <script>
@@ -177,7 +195,20 @@ function specFor(plano,dash,caract){
 }
 
 // ---------- carga de datos ----------
+function normFecha(r){
+  const fl=String(r.fecha_local||'').trim();
+  let m=fl.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+  if(/^\d{4}-\d{2}-\d{2}/.test(fl))return fl.substring(0,10);
+  if(!r.fecha)return '';
+  const d=new Date(r.fecha);
+  if(isNaN(d.getTime()))return String(r.fecha).substring(0,10);
+  return new Date(d.getTime()-6*3600e3).toISOString().substring(0,10); // UTC-6
+}
+function tKey(r){return (r._fecha||'')+' '+(r.hora_local||'')+' '+(r.fecha||'');}
+let loadSeq=0;
 async function loadData(){
+  const seq=++loadSeq;
   const b=document.getElementById('btnR');b.textContent='⏳...';b.disabled=true;
   document.getElementById('errBox').style.display='none';
   try{
@@ -186,13 +217,15 @@ async function loadData(){
     const resp=await fetch(url);
     if(!resp.ok)throw new Error('No se pudo conectar al servidor.');
     const j=await resp.json();
+    if(seq!==loadSeq){return;} // respuesta obsoleta (otro refresh/tab en curso)
     if(j.error)throw new Error(j.error);
-    allData=(j.rows||[]).map(r=>({...r,_fecha:String(r.fecha||'').substring(0,10),_num:parseFloat(r.valor)}));
+    allData=(j.rows||[]).map(r=>({...r,_fecha:normFecha(r),_num:parseFloat(r.valor)}));
     populateFilters();
     setDefaultDates();
     apply();
     document.getElementById('lastUpd').textContent='🟢 '+new Date().toLocaleTimeString('es-CR');
   }catch(e){
+    if(seq!==loadSeq)return;
     document.getElementById('errBox').style.display='block';
     document.getElementById('errBox').innerHTML='⚠️ <b>Error:</b> '+e.message;
   }
@@ -228,16 +261,17 @@ function apply(){
   const ft=document.getElementById('fTurno').value, fl=document.getElementById('fLado').value;
   const fe=document.getElementById('fEstado').value, fdef=document.getElementById('fDefecto').value, fcar=document.getElementById('fCaract').value;
   fData=allData.filter(r=>{
-    if(desde && r._fecha && r._fecha<desde)return false;
-    if(hasta && r._fecha && r._fecha>hasta)return false;
+    if((desde||hasta) && !r._fecha)return false; // sin fecha: excluir cuando hay filtro de fecha
+    if(desde && r._fecha<desde)return false;
+    if(hasta && r._fecha>hasta)return false;
     if(fp && r.plano!==fp)return false;
     if(fd && r.part_number!==fd)return false;
     if(fm && r.maquina!==fm)return false;
     if(fc && r.mecanico!==fc)return false;
-    if(ft && r.turno!==ft)return false;
+    if(ft && (r.turno_calc||r.turno)!==ft)return false;
     if(fl && r.lado!==fl)return false;
     if(fe && r.estado!==fe)return false;
-    if(fdef && r.valor!==fdef)return false;
+    if(fdef && (r.caracteristica!=='visual' || r.valor!==fdef))return false;
     if(fcar && r.caracteristica!==fcar)return false;
     return true;
   });
@@ -248,6 +282,7 @@ const isCerca=r=>r.estado==='CERCA';
 
 function renderAll(){
   renderKPIs();
+  renderAlertas();
   renderPareto();
   renderTrend();
   renderRanking('cMaq','maquina');
@@ -255,22 +290,39 @@ function renderAll(){
   renderCpkTable();
   renderVisual();
   renderTurno();
-  // default selected char = the worst Cpk or first numeric
-  if(!selChar){const f=fData.find(r=>!isNaN(r._num)&&r.caracteristica!=='visual');if(f)selChar=r0char(f);}
+  renderCercaTrend();
+  renderHeatmap();
+  // default selected group = first numeric
+  if(!selChar){const f=fData.find(r=>!isNaN(r._num)&&r.caracteristica!=='visual');if(f)selChar=gKey(f);}
   renderHist(); renderCtrl();
 }
-function r0char(r){return r.caracteristica;}
+function gKey(r){return (r.plano||'')+'|'+(r.part_number||'')+'|'+(r.caracteristica||'');}
+// sigma corto plazo por rango movil (vals ordenados en el tiempo)
+function mrSigma(vals){
+  if(vals.length<2)return {mrbar:0,sig:0};
+  let s=0;for(let i=1;i<vals.length;i++)s+=Math.abs(vals[i]-vals[i-1]);
+  const mrbar=s/(vals.length-1);
+  return {mrbar,sig:mrbar/1.128};
+}
 
 function renderKPIs(){
   const n=fData.length;
   const rej=fData.filter(isReject).length;
   const cerca=fData.filter(isCerca).length;
   const def=fData.filter(r=>r.caracteristica==='visual'&&isReject(r)).length;
-  const ok=n-rej;
-  const fpy=n?(ok/n*100):0;
+  // FPY por pieza: una pieza conforme = ninguna fila FUERA ni DEFECTO
+  const pg={};
+  fData.forEach(r=>{
+    const k=r.pieza||('op:'+(r.OP||'')+'|'+(r.hora_local||''));
+    if(!(k in pg))pg[k]=true;
+    if(isReject(r))pg[k]=false;
+  });
+  const pieces=Object.keys(pg).length, conf=Object.values(pg).filter(Boolean).length;
+  const fpy=pieces?(conf/pieces*100):0;
   document.getElementById('kTotal').textContent=n;
   document.getElementById('kPiezas').textContent=uniq(fData.map(r=>r.pieza)).length+' piezas · '+uniq(fData.map(r=>r.part_number)).length+' PN';
   const fpyEl=document.getElementById('kFPY');fpyEl.textContent=fpy.toFixed(1)+'%';
+  document.getElementById('kFPYs').textContent=conf+' de '+pieces+' piezas conformes';
   const fpyKpi=fpyEl.closest('.kpi');fpyKpi.className='kpi '+(fpy>=98?'good':fpy>=92?'warn':'bad');
   document.getElementById('kFPYbar').style.width=fpy+'%';
   document.getElementById('kFPYbar').style.background=fpy>=98?'#2e7d4f':fpy>=92?'#b8860b':'#C00000';
@@ -289,9 +341,10 @@ function renderPareto(){
   const {ctx,W,H}=setupCanvas('cPareto',300);
   const counts={};
   fData.filter(isReject).forEach(r=>{const k=r.descripcion||r.caracteristica||'?';counts[k]=(counts[k]||0)+1;});
-  let items=Object.entries(counts).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,8);
+  const all=Object.entries(counts).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  let items=all.slice(0,8);
   if(!items.length){noData(ctx,W,H);return;}
-  const total=items.reduce((a,b)=>a+b.v,0);
+  const total=all.reduce((a,b)=>a+b.v,0); // total sobre TODAS las categorias, no solo top 8
   const pad=40,padB=80,padT=14,maxV=Math.max(...items.map(i=>i.v));
   const bw=(W-pad-14)/items.length;
   let cum=0;const pts=[];
@@ -335,8 +388,8 @@ function renderRanking(id,field){
   const {ctx,W,H}=setupCanvas(id,280);
   const g={};
   fData.forEach(r=>{const k=r[field]||'?';g[k]=g[k]||{n:0,rej:0};g[k].n++;if(isReject(r))g[k].rej++;});
-  let items=Object.entries(g).map(([k,o])=>({k,n:o.n,rate:o.rej/o.n*100,rej:o.rej})).filter(i=>i.n>=1).sort((a,b)=>b.rate-a.rate).slice(0,8);
-  if(!items.length){noData(ctx,W,H);return;}
+  let items=Object.entries(g).map(([k,o])=>({k,n:o.n,rate:o.rej/o.n*100,rej:o.rej})).filter(i=>i.n>=5).sort((a,b)=>b.rate-a.rate).slice(0,8);
+  if(!items.length){noData(ctx,W,H);ctx.fillStyle='#65788f';ctx.font='11px Arial';ctx.textAlign='center';ctx.fillText('(se requieren n ≥ 5 inspecciones)',W/2,H/2+18);ctx.textAlign='left';return;}
   const maxR=Math.max(5,...items.map(i=>i.rate));
   const rowH=(H-20)/items.length, labelW=130;
   items.forEach((it,i)=>{
@@ -351,46 +404,63 @@ function renderRanking(id,field){
   });
 }
 
-function renderCpkTable(){
-  const tb=document.getElementById('tCpkBody');tb.innerHTML='';
-  // group numeric chars
+// agrupa filas numericas por plano|part_number|caracteristica, ordenadas en el tiempo
+function numGroups(){
   const g={};
   fData.forEach(r=>{
     if(r.caracteristica==='visual'||isNaN(r._num))return;
-    const key=r.caracteristica;
-    g[key]=g[key]||{vals:[],desc:r.descripcion,plano:r.plano,dash:r.part_number,fuera:0,n:0};
-    g[key].vals.push(r._num);g[key].n++;if(isReject(r))g[key].fuera++;
+    const key=gKey(r);
+    g[key]=g[key]||{rows:[],desc:r.descripcion||r.caracteristica,plano:r.plano,dash:r.part_number,car:r.caracteristica,fuera:0};
+    g[key].rows.push(r);if(isReject(r))g[key].fuera++;
   });
-  const rows=Object.entries(g).map(([k,o])=>{
-    const sp=specFor(o.plano,o.dash,k)||{};
+  Object.values(g).forEach(o=>{
+    o.rows.sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
+    o.vals=o.rows.map(r=>r._num);
+  });
+  return g;
+}
+function renderCpkTable(){
+  const tb=document.getElementById('tCpkBody');tb.innerHTML='';
+  const g=numGroups();
+  const rows=Object.entries(g).map(([key,o])=>{
+    const sp=specFor(o.plano,o.dash,o.car)||{};
     const n=o.vals.length,mean=o.vals.reduce((a,b)=>a+b,0)/n;
     const sd=n>1?Math.sqrt(o.vals.reduce((a,b)=>a+(b-mean)**2,0)/(n-1)):0;
-    let cp=null,cpk=null;
-    if(sp.lo!=null&&sp.hi!=null&&sd>0){cp=(sp.hi-sp.lo)/(6*sd);cpk=Math.min((sp.hi-mean)/(3*sd),(mean-sp.lo)/(3*sd));}
-    return {k,desc:o.desc||k,n,mean,sd,lo:sp.lo,hi:sp.hi,cp,cpk,fueraPct:o.fuera/o.n*100};
+    const {sig}=mrSigma(o.vals);
+    let cp=null,cpk=null,ppk=null;
+    if(sp.lo!=null&&sp.hi!=null){
+      if(sig>0&&n>=10){cp=(sp.hi-sp.lo)/(6*sig);cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));}
+      if(sd>0)ppk=Math.min((sp.hi-mean)/(3*sd),(mean-sp.lo)/(3*sd));
+    }
+    return {key,desc:o.desc,pn:o.dash||'—',n,mean,sig,lo:sp.lo,hi:sp.hi,cp,cpk,ppk,hasSpec:sp.lo!=null&&sp.hi!=null,fueraPct:o.fuera/n*100};
   }).sort((a,b)=>(a.cpk==null?99:a.cpk)-(b.cpk==null?99:b.cpk));
-  if(!rows.length){tb.innerHTML='<tr><td colspan="10" style="color:#65788f;padding:18px">Sin datos numéricos</td></tr>';return;}
+  if(!rows.length){tb.innerHTML='<tr><td colspan="12" style="color:#65788f;padding:18px">Sin datos numéricos</td></tr>';return;}
   rows.forEach(r=>{
     let cls='p-na',txt='Sin límites';
-    if(r.cpk!=null){if(r.cpk>=1.67){cls='p-ex';txt='Excelente';}else if(r.cpk>=1.33){cls='p-cap';txt='Capaz';}else if(r.cpk>=1){cls='p-marg';txt='Marginal';}else{cls='p-no';txt='NO capaz';}}
+    if(r.hasSpec&&r.n<10){cls='p-na';txt='n<10';}
+    else if(r.cpk!=null){if(r.cpk>=1.67){cls='p-ex';txt='Excelente';}else if(r.cpk>=1.33){cls='p-cap';txt='Capaz';}else if(r.cpk>=1){cls='p-marg';txt='Marginal';}else{cls='p-no';txt='NO capaz';}}
+    const cpkTxt=r.hasSpec?(r.n<10?'n<10':(r.cpk!=null?r.cpk.toFixed(2):'—')):'—';
     const tr=document.createElement('tr');tr.style.cursor='pointer';
-    tr.onclick=()=>{selChar=r.k;renderHist();renderCtrl();};
-    tr.innerHTML='<td class="l">'+r.desc+'</td><td>'+r.n+'</td><td>'+r.mean.toFixed(4)+'</td><td>'+r.sd.toFixed(4)+'</td>'+
+    tr.onclick=()=>{selChar=r.key;renderHist();renderCtrl();};
+    tr.innerHTML='<td class="l">'+r.desc+'</td><td class="l">'+r.pn+'</td><td>'+r.n+'</td><td>'+r.mean.toFixed(4)+'</td><td>'+r.sig.toFixed(4)+'</td>'+
       '<td>'+(r.lo!=null?r.lo:'—')+'</td><td>'+(r.hi!=null?r.hi:'—')+'</td>'+
       '<td>'+(r.cp!=null?r.cp.toFixed(2):'—')+'</td>'+
-      '<td style="font-weight:bold;color:'+(r.cpk==null?'#65788f':r.cpk>=1.33?'#5fdc8f':r.cpk>=1?'#ffce6b':'#ff7a7a')+'">'+(r.cpk!=null?r.cpk.toFixed(2):'—')+'</td>'+
+      '<td style="font-weight:bold;color:'+(r.cpk==null?'#65788f':r.cpk>=1.33?'#5fdc8f':r.cpk>=1?'#ffce6b':'#ff7a7a')+'">'+cpkTxt+'</td>'+
+      '<td style="color:'+(r.ppk==null?'#65788f':r.ppk>=1.33?'#5fdc8f':r.ppk>=1?'#ffce6b':'#ff7a7a')+'">'+(r.ppk!=null?r.ppk.toFixed(2):'—')+'</td>'+
       '<td>'+r.fueraPct.toFixed(1)+'%</td><td><span class="pill '+cls+'">'+txt+'</span></td>';
     tb.appendChild(tr);
   });
-  if(!selChar)selChar=rows[0].k;
+  if(!selChar)selChar=rows[0].key;
 }
 
 function valsForSel(){
   if(!selChar)return null;
-  const rows=fData.filter(r=>r.caracteristica===selChar&&!isNaN(r._num));
+  const rows=fData.filter(r=>gKey(r)===selChar&&!isNaN(r._num))
+    .sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
   if(!rows.length)return null;
-  const sp=specFor(rows[0].plano,rows[0].part_number,selChar)||{};
-  return {vals:rows.map(r=>r._num),rows,sp,desc:rows[0].descripcion||selChar};
+  const sp=specFor(rows[0].plano,rows[0].part_number,rows[0].caracteristica)||{};
+  const desc=(rows[0].descripcion||rows[0].caracteristica)+(rows[0].part_number?' · '+rows[0].part_number:'');
+  return {vals:rows.map(r=>r._num),rows,sp,desc};
 }
 
 function renderHist(){
@@ -425,19 +495,20 @@ function renderCtrl(){
   if(!d){noData(ctx,W,H);return;}
   const {vals,sp}=d;
   const n=vals.length,mean=vals.reduce((a,b)=>a+b,0)/n;
-  const sd=n>1?Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/(n-1)):0;
+  const {mrbar}=mrSigma(vals); // limites I-MR: media ± 2.66*MRbar
+  const ucl=mean+2.66*mrbar,lcl=mean-2.66*mrbar;
   let lo=sp.lo!=null?sp.lo:Math.min(...vals),hi=sp.hi!=null?sp.hi:Math.max(...vals);
-  let ylo=Math.min(lo,mean-3.5*sd),yhi=Math.max(hi,mean+3.5*sd);const r=(yhi-ylo)||1;ylo-=r*0.05;yhi+=r*0.05;
+  let ylo=Math.min(lo,lcl,Math.min(...vals)),yhi=Math.max(hi,ucl,Math.max(...vals));const r=(yhi-ylo)||1;ylo-=r*0.05;yhi+=r*0.05;
   const pad=46,padB=24,padT=14;
   const x=i=>pad+(n<=1?0:i/(Math.max(29,n-1)))*(W-pad-16);
   const y=v=>H-padB-((v-ylo)/(yhi-ylo))*(H-padT-padB);
   ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';
   for(let t=0;t<=4;t++){const vv=ylo+(yhi-ylo)*t/4;ctx.fillText(vv.toFixed(3),pad-4,y(vv)+3);}
   function hl(val,c,lbl,dash){if(val==null||val<ylo||val>yhi)return;ctx.strokeStyle=c;ctx.setLineDash(dash||[]);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,y(val));ctx.lineTo(W-16,y(val));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText(lbl,pad+3,y(val)-2);}
-  if(sd>0){hl(mean+3*sd,'#b388ff','UCL',[5,3]);hl(mean,'#b388ff','X̄',[2,2]);hl(mean-3*sd,'#b388ff','LCL',[5,3]);}
+  if(mrbar>0){hl(ucl,'#b388ff','UCL',[5,3]);hl(mean,'#b388ff','X̄',[2,2]);hl(lcl,'#b388ff','LCL',[5,3]);}
   hl(sp.hi,'#C00000','LSE');hl(sp.lo,'#C00000','LIE');
   ctx.strokeStyle='#8aa0b8';ctx.lineWidth=1.6;ctx.beginPath();vals.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
-  vals.forEach((v,i)=>{const out=(sp.hi!=null&&v>sp.hi)||(sp.lo!=null&&v<sp.lo);ctx.fillStyle=out?'#ff7a7a':'#5fdc8f';ctx.beginPath();ctx.arc(x(i),y(v),3.5,0,7);ctx.fill();});
+  vals.forEach((v,i)=>{const out=(sp.hi!=null&&v>sp.hi)||(sp.lo!=null&&v<sp.lo)||(mrbar>0&&(v>ucl||v<lcl));ctx.fillStyle=out?'#ff7a7a':'#5fdc8f';ctx.beginPath();ctx.arc(x(i),y(v),3.5,0,7);ctx.fill();});
 }
 
 function renderVisual(){
@@ -458,7 +529,7 @@ function renderTurno(){
   const {ctx,W,H}=setupCanvas('cTurno',260);
   const turnos=['Mañana 06-14','Tarde 14-22','Noche 22-06'];
   const g={};turnos.forEach(t=>g[t]={n:0,rej:0});
-  fData.forEach(r=>{if(g[r.turno]){g[r.turno].n++;if(isReject(r))g[r.turno].rej++;}});
+  fData.forEach(r=>{const t=r.turno_calc||r.turno;if(g[t]){g[t].n++;if(isReject(r))g[t].rej++;}});
   const items=turnos.map(t=>({t,n:g[t].n,rate:g[t].n?g[t].rej/g[t].n*100:0,rej:g[t].rej}));
   if(items.every(i=>i.n===0)){noData(ctx,W,H);return;}
   const maxR=Math.max(5,...items.map(i=>i.rate));
@@ -468,6 +539,129 @@ function renderTurno(){
     ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(it.rate.toFixed(1)+'%',x+bw/2,H-padB-bh-4);
     ctx.fillStyle='#9fb3c8';ctx.font='10px Arial';ctx.fillText(it.t.split(' ')[0],x+bw/2,H-padB+16);
     ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.fillText('('+it.rej+'/'+it.n+')',x+bw/2,H-padB+28);});
+}
+
+// ---------- panel de alertas activas ----------
+function renderAlertas(){
+  const el=document.getElementById('alertBody');
+  const g=numGroups();
+  const alerts=[];
+  Object.entries(g).forEach(([key,o])=>{
+    const vals=o.vals;
+    if(vals.length<10)return;
+    const sp=specFor(o.plano,o.dash,o.car)||{};
+    const name=o.desc+(o.dash?' · '+o.dash:'')+(o.plano?' ('+o.plano+')':'');
+    const maqs=uniq(o.rows.map(r=>r.maquina)).join(', ')||'—';
+    const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const {mrbar,sig}=mrSigma(vals);
+    // (a) puntos fuera de limites de control en los ultimos 20
+    if(mrbar>0){
+      const ucl=mean+2.66*mrbar,lcl=mean-2.66*mrbar;
+      const nOut=vals.slice(-20).filter(v=>v>ucl||v<lcl).length;
+      if(nOut)alerts.push({sev:2,name,maqs,msg:nOut+' punto(s) fuera de límites de control en los últimos 20'});
+    }
+    // (b) racha de 8 puntos al mismo lado de la media
+    let run=0,side=0;
+    for(const v of vals){
+      const s=v>mean?1:(v<mean?-1:0);
+      if(s!==0&&s===side)run++;else{side=s;run=s!==0?1:0;}
+      if(run>=8){alerts.push({sev:1,name,maqs,msg:'Racha de 8+ puntos consecutivos al mismo lado de la media'});break;}
+    }
+    // (c) 6 puntos consecutivos ascendentes o descendentes
+    let up=1,dn=1,trend=null;
+    for(let i=1;i<vals.length&&!trend;i++){
+      up=vals[i]>vals[i-1]?up+1:1;
+      dn=vals[i]<vals[i-1]?dn+1:1;
+      if(up>=6)trend='ascendente';else if(dn>=6)trend='descendente';
+    }
+    if(trend)alerts.push({sev:1,name,maqs,msg:'Tendencia: 6+ puntos consecutivos en dirección '+trend});
+    // (d) Cpk < 1.33
+    if(sp.lo!=null&&sp.hi!=null&&sig>0){
+      const cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));
+      if(cpk<1.33)alerts.push({sev:cpk<1?2:1,name,maqs,msg:'Cpk = '+cpk.toFixed(2)+' — proceso '+(cpk<1?'NO capaz':'marginal')});
+    }
+    // (e) % CERCA en ultimos 20 puntos > 30%
+    const l20=o.rows.slice(-20);
+    const nc=l20.filter(isCerca).length;
+    if(l20.length&&nc/l20.length>0.30)alerts.push({sev:1,name,maqs,msg:Math.round(nc/l20.length*100)+'% de mediciones CERCA del límite en los últimos 20 puntos'});
+  });
+  alerts.sort((a,b)=>b.sev-a.sev);
+  if(!alerts.length){el.innerHTML='<div style="color:#5fdc8f;padding:10px">✓ Sin alertas activas en los grupos con n ≥ 10</div>';return;}
+  el.innerHTML='<table><thead><tr><th style="width:24px"></th><th class="l">Grupo (característica · PN)</th><th class="l">Máquina(s)</th><th class="l">Descripción</th></tr></thead><tbody>'+
+    alerts.map(a=>'<tr><td><span class="dot" style="width:10px;height:10px;background:'+(a.sev>=2?'#ff7a7a':'#ffce6b')+'"></span></td>'+
+      '<td class="l">'+a.name+'</td><td class="l">'+a.maqs+'</td><td class="l" style="color:'+(a.sev>=2?'#ff7a7a':'#ffce6b')+'">'+a.msg+'</td></tr>').join('')+'</tbody></table>';
+}
+
+// ---------- tendencia diaria de % CERCA ----------
+function renderCercaTrend(){
+  const {ctx,W,H}=setupCanvas('cCercaTrend',260);
+  const byDay={};
+  fData.forEach(r=>{
+    if(r.caracteristica==='visual'||isNaN(r._num)||!r._fecha)return;
+    byDay[r._fecha]=byDay[r._fecha]||{n:0,c:0};
+    byDay[r._fecha].n++;if(isCerca(r))byDay[r._fecha].c++;
+  });
+  const days=Object.keys(byDay).sort();
+  if(!days.length){noData(ctx,W,H);return;}
+  const rates=days.map(d=>byDay[d].c/byDay[d].n*100);
+  const pad=42,padB=40,padT=14,maxR=Math.max(10,...rates);
+  const x=i=>pad+(days.length<=1?0:i/(days.length-1))*(W-pad-16);
+  const y=v=>H-padB-(v/maxR)*(H-padT-padB);
+  ctx.strokeStyle='#1e2d3d';
+  for(let t=0;t<=4;t++){const vv=maxR*t/4;ctx.beginPath();ctx.moveTo(pad,y(vv));ctx.lineTo(W-16,y(vv));ctx.stroke();ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText(vv.toFixed(0)+'%',pad-4,y(vv)+3);}
+  // umbral 30%
+  if(30<=maxR){ctx.strokeStyle='#ff7a7a';ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(pad,y(30));ctx.lineTo(W-16,y(30));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ff7a7a';ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText('30%',pad+3,y(30)-3);}
+  ctx.strokeStyle='#ffce6b';ctx.lineWidth=2;ctx.beginPath();rates.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
+  ctx.textAlign='center';
+  rates.forEach((v,i)=>{ctx.fillStyle=v>30?'#ff7a7a':'#ffce6b';ctx.beginPath();ctx.arc(x(i),y(v),4,0,7);ctx.fill();});
+  ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';
+  const step=Math.ceil(days.length/8);
+  days.forEach((d,i)=>{if(i%step===0||i===days.length-1)ctx.fillText(d.substring(5),x(i),H-padB+14);});
+  ctx.fillStyle='#8aa0b8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('% CERCA diario (mediciones numéricas)',pad,12);
+}
+
+// ---------- heatmap maquina x caracteristica (Cpk sigma_st) ----------
+function renderHeatmap(){
+  const el=document.getElementById('hmWrap');
+  // celdas: maquina x caracteristica; dentro puede haber varios plano|pn -> peor Cpk
+  const cells={},maqSet=new Set(),carMap={};
+  fData.forEach(r=>{
+    if(r.caracteristica==='visual'||isNaN(r._num))return;
+    const mq=r.maquina||'?';maqSet.add(mq);carMap[r.caracteristica]=r.descripcion||r.caracteristica;
+    const ck=mq+'§'+r.caracteristica,sk=gKey(r);
+    cells[ck]=cells[ck]||{};
+    (cells[ck][sk]=cells[ck][sk]||{rows:[],plano:r.plano,dash:r.part_number,car:r.caracteristica}).rows.push(r);
+  });
+  const maqs=[...maqSet].sort(),cars=Object.keys(carMap).sort((a,b)=>carMap[a].localeCompare(carMap[b]));
+  if(!maqs.length){el.innerHTML='<div style="color:#65788f;padding:10px">Sin datos numéricos</div>';return;}
+  let html='<table><thead><tr><th class="l">Máquina</th>'+cars.map(c=>'<th>'+carMap[c]+'</th>').join('')+'</tr></thead><tbody>';
+  maqs.forEach(mq=>{
+    html+='<tr><td class="l">'+mq+'</td>';
+    cars.forEach(c=>{
+      const cell=cells[mq+'§'+c];
+      if(!cell){html+='<td style="color:#324256">·</td>';return;}
+      let worst=null,anyBig=false,total=0;
+      Object.values(cell).forEach(o=>{
+        o.rows.sort((a,b)=>tKey(a)<tKey(b)?-1:1);
+        const vals=o.rows.map(r=>r._num);total+=vals.length;
+        if(vals.length<10)return;
+        const sp=specFor(o.plano,o.dash,o.car)||{};
+        if(sp.lo==null||sp.hi==null)return;
+        const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+        const {sig}=mrSigma(vals);
+        if(sig<=0)return;
+        anyBig=true;
+        const cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));
+        if(worst==null||cpk<worst)worst=cpk;
+      });
+      if(!anyBig){html+='<td style="background:#1a2330;color:#65788f">n='+total+'</td>';return;}
+      const bg=worst>=1.33?'#0c3b22':worst>=1?'#3a2e10':'#3a1414';
+      const fg=worst>=1.33?'#5fdc8f':worst>=1?'#ffce6b':'#ff7a7a';
+      html+='<td style="background:'+bg+';color:'+fg+';font-weight:bold">'+worst.toFixed(2)+'</td>';
+    });
+    html+='</tr>';
+  });
+  el.innerHTML=html+'</tbody></table>';
 }
 
 function switchSheet(s){
