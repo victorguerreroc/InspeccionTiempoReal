@@ -162,6 +162,23 @@ select.big{font-size:13px;padding:7px}
   <div class="tblwrap" id="hmWrap"></div>
 </div>
 
+<div class="card grid1">
+  <h2>📡 Detección de Deriva (EWMA)</h2>
+  <div class="hint">EWMA (λ = 0.2) por plano · part number · característica · máquina (n ≥ 15). Proyección lineal de los últimos 10 puntos EWMA: 🔴 cruza límite en ≤ 5 días · 🟡 en ≤ 15 días · 🟢 estable</div>
+  <div class="tblwrap" id="ewmaWrap"></div>
+</div>
+
+<div class="card grid1">
+  <h2>🧾 Trazabilidad por OP</h2>
+  <div class="hint">Historial completo de mediciones de una orden de producción (según filtros activos)</div>
+  <div style="margin-bottom:8px;display:flex;gap:8px;align-items:center">
+    <label style="font-size:11px;color:#c2d4e6;font-weight:bold;text-transform:uppercase">OP:</label>
+    <select id="opSel" class="big" onchange="renderOPDetail()" style="background:#0c1420;border:1px solid #2d3f54;border-radius:5px;color:#e6edf5;padding:6px;min-width:160px"></select>
+  </div>
+  <div id="opSummary" style="font-size:12px;color:#c2d4e6;margin-bottom:8px;line-height:1.6"></div>
+  <div class="tblwrap" id="opWrap"></div>
+</div>
+
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
 const SHEETS={insp:'Inspecciones',sierra:'Corte Sierra'};
@@ -292,6 +309,8 @@ function renderAll(){
   renderTurno();
   renderCercaTrend();
   renderHeatmap();
+  renderEWMA();
+  renderOPSection();
   // default selected group = first numeric
   if(!selChar){const f=fData.find(r=>!isNaN(r._num)&&r.caracteristica!=='visual');if(f)selChar=gKey(f);}
   renderHist(); renderCtrl();
@@ -662,6 +681,125 @@ function renderHeatmap(){
     html+='</tr>';
   });
   el.innerHTML=html+'</tbody></table>';
+}
+
+// ---------- deteccion de deriva (EWMA) ----------
+function renderEWMA(){
+  const el=document.getElementById('ewmaWrap');
+  // agrupar por plano|pn|caracteristica|maquina
+  const g={};
+  fData.forEach(r=>{
+    if(r.caracteristica==='visual'||isNaN(r._num))return;
+    const key=gKey(r)+'|'+(r.maquina||'?');
+    g[key]=g[key]||{rows:[],desc:r.descripcion||r.caracteristica,plano:r.plano,dash:r.part_number,car:r.caracteristica,maq:r.maquina||'?'};
+    g[key].rows.push(r);
+  });
+  const items=[];
+  Object.values(g).forEach(o=>{
+    o.rows.sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
+    const vals=o.rows.map(r=>r._num);
+    if(vals.length<15)return;
+    const sp=specFor(o.plano,o.dash,o.car)||{};
+    // EWMA lambda=0.2, z0 = media de los primeros 5
+    const z0=vals.slice(0,5).reduce((a,b)=>a+b,0)/5;
+    const ew=[];let z=z0;
+    vals.forEach(v=>{z=0.2*v+0.8*z;ew.push(z);});
+    const last=ew[ew.length-1];
+    const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+    // pendiente por punto: regresion lineal sobre los ultimos 10 EWMA
+    const seg=ew.slice(-10),m=seg.length;
+    let sx=0,sy=0,sxy=0,sxx=0;
+    seg.forEach((v,i)=>{sx+=i;sy+=v;sxy+=i*v;sxx+=i*i;});
+    const den=m*sxx-sx*sx;
+    const slopePt=den?(m*sxy-sx*sy)/den:0;
+    // puntos por dia promedio
+    const dias=uniq(o.rows.map(r=>r._fecha)).length||1;
+    const ppd=vals.length/dias;
+    const slopeDay=slopePt*ppd;
+    // dias hasta el limite mas cercano en la direccion de la tendencia
+    let diasLim=Infinity,haciaLim=false;
+    if(slopeDay>0&&sp.hi!=null){diasLim=(sp.hi-last)/slopeDay;haciaLim=true;}
+    else if(slopeDay<0&&sp.lo!=null){diasLim=(sp.lo-last)/slopeDay;haciaLim=true;}
+    if(diasLim<0)diasLim=0;
+    let risk=0; // 0 verde, 1 amarillo, 2 rojo
+    if(haciaLim&&isFinite(diasLim)){if(diasLim<=5)risk=2;else if(diasLim<=15)risk=1;}
+    const arrow=Math.abs(slopePt)<1e-9?'→':(slopePt>0?'↑':'↓');
+    items.push({name:o.desc+(o.dash?' · '+o.dash:'')+(o.plano?' ('+o.plano+')':''),maq:o.maq,last,mean,arrow,risk,diasLim:haciaLim&&isFinite(diasLim)?diasLim:null,ew,sp});
+  });
+  if(!items.length){el.innerHTML='<div style="color:#65788f;padding:10px">Sin datos suficientes (se requieren ≥15 mediciones por grupo)</div>';return;}
+  items.sort((a,b)=>b.risk-a.risk||((a.diasLim==null?1e9:a.diasLim)-(b.diasLim==null?1e9:b.diasLim)));
+  el.innerHTML='<table><thead><tr><th class="l">Grupo</th><th class="l">Máquina</th><th>EWMA actual</th><th>Media</th><th>Tendencia</th><th>Días hasta límite</th><th>Sparkline (últ. 30)</th></tr></thead><tbody>'+
+    items.map((it,i)=>{
+      const c=it.risk===2?'#ff7a7a':it.risk===1?'#ffce6b':'#5fdc8f';
+      return '<tr><td class="l">'+it.name+'</td><td class="l">'+it.maq+'</td>'+
+        '<td>'+it.last.toFixed(4)+'</td><td>'+it.mean.toFixed(4)+'</td>'+
+        '<td style="color:'+c+';font-weight:bold;font-size:15px">'+it.arrow+'</td>'+
+        '<td style="color:'+c+';font-weight:bold">'+(it.diasLim==null?'—':(it.diasLim>99?'>99':it.diasLim.toFixed(1)))+'</td>'+
+        '<td><canvas id="ewSpark'+i+'" width="160" height="34" style="width:160px;height:34px;display:inline-block"></canvas></td></tr>';
+    }).join('')+'</tbody></table>';
+  // dibujar sparklines
+  items.forEach((it,i)=>{
+    const cv=document.getElementById('ewSpark'+i);if(!cv)return;
+    const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    const pts=it.ew.slice(-30);
+    let lo=Math.min(...pts),hi=Math.max(...pts);
+    if(it.sp.lo!=null)lo=Math.min(lo,it.sp.lo);if(it.sp.hi!=null)hi=Math.max(hi,it.sp.hi);
+    const rg=(hi-lo)||1;lo-=rg*0.08;hi+=rg*0.08;
+    const x=j=>2+(pts.length<=1?0:j/(pts.length-1))*(W-4);
+    const y=v=>H-2-((v-lo)/(hi-lo))*(H-4);
+    // limites de spec punteados
+    [[it.sp.lo,'#C00000'],[it.sp.hi,'#C00000']].forEach(([v,cc])=>{
+      if(v==null)return;ctx.strokeStyle=cc;ctx.setLineDash([3,2]);ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(0,y(v));ctx.lineTo(W,y(v));ctx.stroke();ctx.setLineDash([]);
+    });
+    const lc=it.risk===2?'#ff7a7a':it.risk===1?'#ffce6b':'#5fdc8f';
+    ctx.strokeStyle=lc;ctx.lineWidth=1.5;ctx.beginPath();
+    pts.forEach((v,j)=>j?ctx.lineTo(x(j),y(v)):ctx.moveTo(x(j),y(v)));ctx.stroke();
+    ctx.fillStyle=lc;ctx.beginPath();ctx.arc(x(pts.length-1),y(pts[pts.length-1]),2.5,0,7);ctx.fill();
+  });
+}
+
+// ---------- trazabilidad por OP ----------
+function opOf(r){return String(r.OP||r.op||'').trim();}
+function renderOPSection(){
+  const sel=document.getElementById('opSel'),prev=sel.value;
+  // OPs ordenadas por su medicion mas reciente
+  const lastT={};
+  fData.forEach(r=>{const op=opOf(r);if(!op)return;const t=tKey(r);if(!(op in lastT)||t>lastT[op])lastT[op]=t;});
+  const ops=Object.keys(lastT).sort((a,b)=>lastT[b]<lastT[a]?-1:lastT[b]>lastT[a]?1:0);
+  sel.innerHTML='';
+  ops.forEach(op=>{const o=document.createElement('option');o.value=op;o.textContent=op;sel.appendChild(o);});
+  if(!ops.length){
+    document.getElementById('opSummary').textContent='';
+    document.getElementById('opWrap').innerHTML='<div style="color:#65788f;padding:10px">Sin OPs en los datos filtrados</div>';
+    return;
+  }
+  sel.value=(prev&&ops.includes(prev))?prev:ops[0]; // default: mas reciente
+  renderOPDetail();
+}
+function renderOPDetail(){
+  const op=document.getElementById('opSel').value;
+  const sumEl=document.getElementById('opSummary'),wrap=document.getElementById('opWrap');
+  const rows=fData.filter(r=>opOf(r)===op).sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
+  if(!rows.length){sumEl.textContent='';wrap.innerHTML='<div style="color:#65788f;padding:10px">Sin datos para esta OP</div>';return;}
+  const piezas=uniq(rows.map(r=>r.pieza)).length;
+  const conf=rows.filter(r=>!isReject(r)).length;
+  const fechas=uniq(rows.map(r=>r._fecha));
+  const insp=uniq(rows.map(r=>r.inspector)).join(', ')||'—';
+  const mecs=uniq(rows.map(r=>r.mecanico)).join(', ')||'—';
+  const maqs=uniq(rows.map(r=>r.maquina)).join(', ')||'—';
+  sumEl.innerHTML='<b>'+piezas+'</b> piezas · <b>'+rows.length+'</b> mediciones · '+
+    '<b style="color:'+(conf/rows.length>=0.98?'#5fdc8f':conf/rows.length>=0.92?'#ffce6b':'#ff7a7a')+'">'+(conf/rows.length*100).toFixed(1)+'% conforme</b> · '+
+    'Fechas: '+(fechas.length?fechas[0]+(fechas.length>1?' → '+fechas[fechas.length-1]:''):'—')+
+    '<br>Inspectores: '+insp+' · Mecánicos: '+mecs+' · Máquinas: '+maqs;
+  const MAX=300,shown=rows.slice(0,MAX);
+  const eColor=e=>e==='OK'?'#5fdc8f':e==='CERCA'?'#ffce6b':(e==='FUERA'||e==='DEFECTO')?'#ff7a7a':'#9fb3c8';
+  wrap.innerHTML='<table><thead><tr><th>Fecha</th><th>Hora</th><th>Pieza</th><th>Serie</th><th>Lado</th><th class="l">Característica</th><th>Valor</th><th>Estado</th><th>Máquina</th><th>Mecánico</th><th class="l">Comentario</th></tr></thead><tbody>'+
+    shown.map(r=>'<tr><td>'+(r.fecha_local||r._fecha||'—')+'</td><td>'+(r.hora_local||'—')+'</td><td>'+(r.pieza||'—')+'</td><td>'+(r.serie||'—')+'</td><td>'+(r.lado||'—')+'</td>'+
+      '<td class="l">'+(r.descripcion||r.caracteristica||'—')+'</td><td>'+(r.valor!=null&&r.valor!==''?r.valor:'—')+'</td>'+
+      '<td style="color:'+eColor(r.estado)+';font-weight:bold">'+(r.estado||'—')+'</td>'+
+      '<td>'+(r.maquina||'—')+'</td><td>'+(r.mecanico||'—')+'</td><td class="l">'+(r.comentario||'')+'</td></tr>').join('')+'</tbody></table>'+
+    (rows.length>MAX?'<div style="color:#ffce6b;padding:8px;font-size:11px">Mostrando '+MAX+' de '+rows.length+' filas (truncado)</div>':'');
 }
 
 function switchSheet(s){
