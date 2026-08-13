@@ -61,17 +61,17 @@ select.big{font-size:13px;padding:7px}
 </div>
 
 <div class="filters">
-  <div class="fg"><label>Desde</label><input type="date" id="fDesde" onchange="apply()"></div>
-  <div class="fg"><label>Hasta</label><input type="date" id="fHasta" onchange="apply()"></div>
-  <div class="fg"><label>Plano</label><select id="fPlano" onchange="apply()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Part Number</label><select id="fDash" onchange="apply()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Máquina</label><select id="fMaq" onchange="apply()"><option value="">Todas</option></select></div>
-  <div class="fg"><label>Mecánico</label><select id="fMec" onchange="apply()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Turno</label><select id="fTurno" onchange="apply()"><option value="">Todos</option><option>Mañana 06-14</option><option>Tarde 14-22</option><option>Noche 22-06</option></select></div>
-  <div class="fg" id="fgLado"><label>Lado</label><select id="fLado" onchange="apply()"><option value="">Todos</option><option value="T">TOP</option><option value="B">BOTTOM</option></select></div>
-  <div class="fg"><label>Estado</label><select id="fEstado" onchange="apply()"><option value="">Todos</option><option value="OK">OK</option><option value="CERCA">Cerca</option><option value="FUERA">Fuera de spec</option><option value="DEFECTO">Defecto visual</option></select></div>
-  <div class="fg"><label>Característica</label><select id="fCaract" onchange="apply()"><option value="">Todas</option></select></div>
-  <div class="fg"><label>Tipo de Defecto</label><select id="fDefecto" onchange="apply()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Desde</label><input type="date" id="fDesde" onchange="loadData()"></div>
+  <div class="fg"><label>Hasta</label><input type="date" id="fHasta" onchange="loadData()"></div>
+  <div class="fg"><label>Plano</label><select id="fPlano" onchange="loadData()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Part Number</label><select id="fDash" onchange="loadData()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Máquina</label><select id="fMaq" onchange="loadData()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Mecánico</label><select id="fMec" onchange="loadData()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Turno</label><select id="fTurno" onchange="loadData()"><option value="">Todos</option><option>Mañana 06-14</option><option>Tarde 14-22</option><option>Noche 22-06</option></select></div>
+  <div class="fg" id="fgLado"><label>Lado</label><select id="fLado" onchange="loadData()"><option value="">Todos</option><option value="T">TOP</option><option value="B">BOTTOM</option></select></div>
+  <div class="fg"><label>Estado</label><select id="fEstado" onchange="loadData()"><option value="">Todos</option><option value="OK">OK</option><option value="CERCA">Cerca</option><option value="FUERA">Fuera de spec</option><option value="DEFECTO">Defecto visual</option></select></div>
+  <div class="fg"><label>Característica</label><select id="fCaract" onchange="loadData()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Tipo de Defecto</label><select id="fDefecto" onchange="loadData()"><option value="">Todos</option></select></div>
   <div class="fg"><label>Limpiar</label><button class="sec" onclick="clearF()" style="width:100%">✕ Limpiar filtros</button></div>
 </div>
 
@@ -86,7 +86,7 @@ select.big{font-size:13px;padding:7px}
 
 <div class="card grid1">
   <h2>🚨 Panel de alertas activas</h2>
-  <div class="hint">Reglas SPC evaluadas por plano · part number · característica (n ≥ 10): puntos fuera de límites, rachas, tendencias, Cpk bajo y % CERCA elevado</div>
+  <div class="hint">Reglas por plano · part number · característica (n ≥ 10): Cpk bajo, % CERCA elevado y % fuera de especificación. Las reglas de rachas/tendencias/puntos fuera de control se evalúan en las vistas avanzadas (EWMA) sobre datos crudos.</div>
   <div class="tblwrap" id="alertBody"></div>
 </div>
 
@@ -118,7 +118,7 @@ select.big{font-size:13px;padding:7px}
 
 <div class="card grid1">
   <h2>⚙️ Capacidad del Proceso (Cpk) por característica</h2>
-  <div class="hint">Cpk (σ corto plazo, rango móvil) ≥ 1.33 capaz · 1.00–1.33 marginal · &lt; 1.00 NO capaz. Ppk = desempeño global (σ total). Cpk requiere n ≥ 10. Click en una fila para ver su histograma y gráfico de control.</div>
+  <div class="hint">Cpk (σ corto plazo, rango móvil) ≥ 1.33 capaz · 1.00–1.33 marginal · &lt; 1.00 NO capaz. Cpk requiere n ≥ 10. Ppk (σ global) no disponible desde el resumen. Click en una fila para descargar y ver su histograma y gráfico de control.</div>
   <div class="tblwrap"><table id="tCpk"><thead><tr>
     <th class="l">Característica</th><th class="l">Part Number</th><th>n</th><th>Promedio</th><th>σ st</th><th>LIE</th><th>LSE</th><th>Cp</th><th>Cpk</th><th>Ppk</th><th>% Fuera</th><th>Capacidad</th>
   </tr></thead><tbody id="tCpkBody"></tbody></table></div>
@@ -155,6 +155,7 @@ select.big{font-size:13px;padding:7px}
 </div>
 
 <div id="advWrap" style="display:none">
+<div id="advNote" style="color:#8aa0b8;font-size:12px;margin-bottom:8px"></div>
 <div class="card grid1">
   <h2>📉 Tendencia de % CERCA (indicador temprano)</h2>
   <div class="hint">% de mediciones numéricas en zona CERCA por día — sube antes de que aparezcan rechazos</div>
@@ -188,10 +189,14 @@ select.big{font-size:13px;padding:7px}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
 const SHEETS={insp:'Inspecciones',sierra:'Corte Sierra'};
-const MAXROWS=8000; // solo las filas mas recientes: evita descargar toda la hoja (rendimiento)
-let curSheet='insp', allData=[], fData=[], APP=null, selChar=null;
+let curSheet='insp', SUM=null, APP=null;
+let selGroup=null;                 // {plano,pn,caract} de la fila seleccionada en la tabla Cpk
+const groupCache={};               // 'plano|pn|caract' -> {loading,error,rows,numRows,vals,sp}
+let advRows=null, advData=null;     // datos crudos para vistas avanzadas
+let advOn=false;
+let loadSeq=0, advSeq=0;
 
-// ---------- carga de límites de especificación desde index.html ----------
+// ---------- carga de límites de especificación desde index.html (se mantiene en cliente) ----------
 async function loadSpecs(){
   if(APP)return;
   try{
@@ -218,7 +223,7 @@ function specFor(plano,dash,caract){
   return {lo:c.lo,hi:c.hi,nom:c.nom,label:c.label,t:c.t};
 }
 
-// ---------- carga de datos ----------
+// ---------- helpers ----------
 function normFecha(r){
   const fl=String(r.fecha_local||'').trim();
   let m=fl.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
@@ -230,136 +235,122 @@ function normFecha(r){
   return new Date(d.getTime()-6*3600e3).toISOString().substring(0,10); // UTC-6
 }
 function tKey(r){return (r._fecha||'')+' '+(r.hora_local||'')+' '+(r.fecha||'');}
-let loadSeq=0;
+function uniq(arr){return [...new Set(arr.filter(Boolean))].sort();}
+function val(id){const e=document.getElementById(id);return e?e.value:'';}
+const isReject=r=>r.estado==='FUERA'||r.estado==='DEFECTO';
+const isCerca=r=>r.estado==='CERCA';
+function mrSigma(vals){ // sigma corto plazo por rango movil (vals ordenados en el tiempo)
+  if(vals.length<2)return {mrbar:0,sig:0};
+  let s=0;for(let i=1;i<vals.length;i++)s+=Math.abs(vals[i]-vals[i-1]);
+  const mrbar=s/(vals.length-1);
+  return {mrbar,sig:mrbar/1.128};
+}
+function gKey(r){return (r.plano||'')+'|'+(r.part_number||'')+'|'+(r.caracteristica||'');}
+
+// ---------- filtros -> parametros de consulta ----------
+function curFilters(){
+  return {
+    desde:val('fDesde'),hasta:val('fHasta'),
+    plano:val('fPlano'),pn:val('fDash'),maq:val('fMaq'),mec:val('fMec'),
+    turno:val('fTurno'),lado:val('fLado'),estado:val('fEstado'),
+    defecto:val('fDefecto'),caract:val('fCaract')
+  };
+}
+function qs(obj){return Object.entries(obj).map(([k,v])=>k+'='+encodeURIComponent(v==null?'':v)).join('&');}
+function ensureDates(){ // por defecto: ultimos 14 dias
+  const dEl=document.getElementById('fDesde'),hEl=document.getElementById('fHasta');
+  if(dEl.value&&hEl.value)return;
+  const now=new Date();
+  const iso=d=>new Date(d.getTime()-6*3600e3).toISOString().substring(0,10); // local UTC-6
+  if(!hEl.value)hEl.value=iso(now);
+  if(!dEl.value){const h=new Date(now);h.setDate(h.getDate()-14);dEl.value=iso(h);}
+}
+
+// ---------- carga (MODO 1: resumen del servidor) ----------
 async function loadData(){
   const seq=++loadSeq;
   const b=document.getElementById('btnR');b.textContent='⏳...';b.disabled=true;
   document.getElementById('errBox').style.display='none';
   try{
     await loadSpecs();
-    const url=SCRIPT_URL+'?sheet='+encodeURIComponent(SHEETS[curSheet])+'&max='+MAXROWS+'&t='+Date.now();
+    ensureDates();
+    const f=curFilters();
+    const url=SCRIPT_URL+'?mode=summary&sheet='+encodeURIComponent(SHEETS[curSheet])+'&'+qs(f)+'&t='+Date.now();
     const resp=await fetch(url);
     if(!resp.ok)throw new Error('No se pudo conectar al servidor.');
     const j=await resp.json();
-    if(seq!==loadSeq){return;} // respuesta obsoleta (otro refresh/tab en curso)
+    if(seq!==loadSeq)return; // respuesta obsoleta (otro refresh/tab en curso)
     if(j.error)throw new Error(j.error);
-    allData=(j.rows||[]).map(r=>({...r,_fecha:normFecha(r),_num:parseFloat(r.valor)}));
+    if(!j.kpis)throw new Error('El servidor respondió en formato antiguo (sin modo "summary"). Actualiza/redespliega el Apps Script con el nuevo backend.');
+    SUM=j;
     populateFilters();
-    setDefaultDates();
-    apply();
+    // los datos crudos cacheados dejan de ser validos al cambiar la ventana/filtros
+    selGroup=null; for(const k in groupCache)delete groupCache[k]; advRows=null; advData=null;
+    renderAll();
+    if(advOn)loadAdvanced();
     document.getElementById('lastUpd').textContent='🟢 '+new Date().toLocaleTimeString('es-CR');
   }catch(e){
     if(seq!==loadSeq)return;
-    document.getElementById('errBox').style.display='block';
-    document.getElementById('errBox').innerHTML='⚠️ <b>Error:</b> '+e.message;
+    SUM=null;
+    const eb=document.getElementById('errBox');eb.style.display='block';
+    eb.innerHTML='⚠️ <b>Error:</b> '+e.message;
   }
   b.textContent='🔄 Actualizar';b.disabled=false;
 }
-function setDefaultDates(){
-  const dEl=document.getElementById('fDesde'),hEl=document.getElementById('fHasta');
-  // Solo poner por defecto si estan vacios (no sobreescribir la seleccion del usuario en refresh)
-  if(dEl.value||hEl.value)return;
-  const dates=allData.map(r=>r._fecha).filter(Boolean).sort();
-  if(dates.length){
-    hEl.value=dates[dates.length-1];
-    // por defecto: ultimos 14 dias (mas rapido). El usuario puede ampliar el rango.
-    const h=new Date(dates[dates.length-1]+'T00:00:00');
-    h.setDate(h.getDate()-14);
-    const desde14=h.toISOString().substring(0,10);
-    dEl.value=desde14>dates[0]?desde14:dates[0];
-  }
-}
-function uniq(arr){return [...new Set(arr.filter(Boolean))].sort();}
+
+function fill(id,arr){const s=document.getElementById(id),p=s.value;s.innerHTML='<option value="">Todos</option>';(arr||[]).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});if(p)s.value=p;}
 function populateFilters(){
-  fill('fPlano',uniq(allData.map(r=>r.plano)));
-  fill('fDash',uniq(allData.map(r=>r.part_number)));
-  fill('fMaq',uniq(allData.map(r=>r.maquina)));
-  fill('fMec',uniq(allData.map(r=>r.mecanico)));
-  fill('fDefecto',uniq(allData.filter(r=>r.caracteristica==='visual'&&r.valor&&r.valor!=='OK').map(r=>r.valor)));
-  // Característica: value=clave, texto=descripcion
-  const cmap={};allData.forEach(r=>{if(r.caracteristica)cmap[r.caracteristica]=r.descripcion||r.caracteristica;});
+  const F=SUM.filtros||{};
+  fill('fPlano',F.planos);
+  fill('fDash',F.dashes);
+  fill('fMaq',F.maquinas);
+  fill('fMec',F.mecanicos);
+  fill('fDefecto',F.defectos);
+  // Característica: value=clave, texto=descripcion/label (acepta strings o {k,label})
   const cs=document.getElementById('fCaract'),pv=cs.value;cs.innerHTML='<option value="">Todas</option>';
-  Object.keys(cmap).sort((a,b)=>cmap[a].localeCompare(cmap[b])).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=cmap[k];cs.appendChild(o);});
+  (F.caracts||[]).forEach(it=>{
+    const k=(it&&typeof it==='object')?it.k:it;
+    const lbl=(it&&typeof it==='object')?(it.label||it.d||it.desc||k):k;
+    const o=document.createElement('option');o.value=k;o.textContent=lbl;cs.appendChild(o);
+  });
   if(pv)cs.value=pv;
 }
-function fill(id,arr){const s=document.getElementById(id),p=s.value;s.innerHTML='<option value="">Todos</option>';arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});if(p)s.value=p;}
-function clearF(){['fPlano','fDash','fMaq','fMec','fTurno','fLado','fEstado','fDefecto','fCaract'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});setDefaultDates();apply();}
-
-function apply(){
-  const desde=document.getElementById('fDesde').value, hasta=document.getElementById('fHasta').value;
-  const fp=document.getElementById('fPlano').value, fd=document.getElementById('fDash').value;
-  const fm=document.getElementById('fMaq').value, fc=document.getElementById('fMec').value;
-  const ft=document.getElementById('fTurno').value, fl=document.getElementById('fLado').value;
-  const fe=document.getElementById('fEstado').value, fdef=document.getElementById('fDefecto').value, fcar=document.getElementById('fCaract').value;
-  fData=allData.filter(r=>{
-    if((desde||hasta) && !r._fecha)return false; // sin fecha: excluir cuando hay filtro de fecha
-    if(desde && r._fecha<desde)return false;
-    if(hasta && r._fecha>hasta)return false;
-    if(fp && r.plano!==fp)return false;
-    if(fd && r.part_number!==fd)return false;
-    if(fm && r.maquina!==fm)return false;
-    if(fc && r.mecanico!==fc)return false;
-    if(ft && (r.turno_calc||r.turno)!==ft)return false;
-    if(fl && r.lado!==fl)return false;
-    if(fe && r.estado!==fe)return false;
-    if(fdef && (r.caracteristica!=='visual' || r.valor!==fdef))return false;
-    if(fcar && r.caracteristica!==fcar)return false;
-    return true;
-  });
-  renderAll();
+function clearF(){
+  ['fPlano','fDash','fMaq','fMec','fTurno','fLado','fEstado','fDefecto','fCaract'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  loadData();
 }
-const isReject=r=>r.estado==='FUERA'||r.estado==='DEFECTO';
-const isCerca=r=>r.estado==='CERCA';
 
-let advOn=false;
-function toggleAdv(){
-  advOn=!advOn;
-  document.getElementById('advWrap').style.display=advOn?'block':'none';
-  document.getElementById('btnAdv').textContent=(advOn?'▾ Ocultar':'▸ Mostrar')+' vistas avanzadas (% CERCA · heatmap · EWMA · trazabilidad)';
-  if(advOn)renderAll();
-}
+// ---------- render principal (vistas ligeras desde SUM) ----------
 function renderAll(){
+  if(!SUM)return;
   renderKPIs();
   renderAlertas();
   renderPareto();
   renderTrend();
-  renderRanking('cMaq','maquina');
-  renderRanking('cMec','mecanico');
+  renderRanking('cMaq','rankMaq');
+  renderRanking('cMec','rankMec');
   renderCpkTable();
   renderVisual();
   renderTurno();
-  if(advOn){renderCercaTrend();renderHeatmap();renderEWMA();renderOPSection();} // vistas pesadas solo si estan visibles
-  // default selected group = first numeric
-  if(!selChar){const f=fData.find(r=>!isNaN(r._num)&&r.caracteristica!=='visual');if(f)selChar=gKey(f);}
-  renderHist(); renderCtrl();
-}
-function gKey(r){return (r.plano||'')+'|'+(r.part_number||'')+'|'+(r.caracteristica||'');}
-// sigma corto plazo por rango movil (vals ordenados en el tiempo)
-function mrSigma(vals){
-  if(vals.length<2)return {mrbar:0,sig:0};
-  let s=0;for(let i=1;i<vals.length;i++)s+=Math.abs(vals[i]-vals[i-1]);
-  const mrbar=s/(vals.length-1);
-  return {mrbar,sig:mrbar/1.128};
+  if(!selGroup && SUM.grupos && SUM.grupos.length){
+    const g0=SUM.grupos[0];
+    selectGroup(g0.plano,g0.pn||'',g0.caract); // auto-selecciona y descarga el primer grupo
+  }else{
+    renderHist();renderCtrl();
+  }
 }
 
 function renderKPIs(){
-  const n=fData.length;
-  const rej=fData.filter(isReject).length;
-  const cerca=fData.filter(isCerca).length;
-  const def=fData.filter(r=>r.caracteristica==='visual'&&isReject(r)).length;
-  // FPY por pieza: una pieza conforme = ninguna fila FUERA ni DEFECTO
-  const pg={};
-  fData.forEach(r=>{
-    const k=r.pieza||('op:'+(r.OP||'')+'|'+(r.hora_local||''));
-    if(!(k in pg))pg[k]=true;
-    if(isReject(r))pg[k]=false;
-  });
-  const pieces=Object.keys(pg).length, conf=Object.values(pg).filter(Boolean).length;
-  const fpy=pieces?(conf/pieces*100):0;
+  const k=SUM.kpis||{};
+  const n=k.total||0, rej=k.rechazos||0, cerca=k.cerca||0;
+  const pt=k.piezasTotal||0, pc=k.piezasConformes||0;
+  const fpy=pt?(pc/pt*100):0;
+  const def=(SUM.visual||[]).reduce((a,b)=>a+(b.n||0),0);
+  const pnCount=new Set((SUM.grupos||[]).map(g=>g.pn).filter(x=>x!=null&&x!=='')).size;
   document.getElementById('kTotal').textContent=n;
-  document.getElementById('kPiezas').textContent=uniq(fData.map(r=>r.pieza)).length+' piezas · '+uniq(fData.map(r=>r.part_number)).length+' PN';
+  document.getElementById('kPiezas').textContent=pt+' piezas · '+pnCount+' PN';
   const fpyEl=document.getElementById('kFPY');fpyEl.textContent=fpy.toFixed(1)+'%';
-  document.getElementById('kFPYs').textContent=conf+' de '+pieces+' piezas conformes';
+  document.getElementById('kFPYs').textContent=pc+' de '+pt+' piezas conformes';
   const fpyKpi=fpyEl.closest('.kpi');fpyKpi.className='kpi '+(fpy>=98?'good':fpy>=92?'warn':'bad');
   document.getElementById('kFPYbar').style.width=fpy+'%';
   document.getElementById('kFPYbar').style.background=fpy>=98?'#2e7d4f':fpy>=92?'#b8860b':'#C00000';
@@ -372,13 +363,12 @@ function renderKPIs(){
 
 // ---------- helpers de canvas ----------
 function setupCanvas(id,h){const cv=document.getElementById(id);const W=cv.width=cv.clientWidth;const H=cv.height=h||cv.height;const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);return {cv,ctx,W,H};}
-function noData(ctx,W,H){ctx.fillStyle='#9fb3c8';ctx.font='13px Arial';ctx.textAlign='center';ctx.fillText('Sin datos para los filtros',W/2,H/2);ctx.textAlign='left';}
+function noDataMsg(ctx,W,H,m){ctx.fillStyle='#9fb3c8';ctx.font='13px Arial';ctx.textAlign='center';ctx.fillText(m,W/2,H/2);ctx.textAlign='left';}
+function noData(ctx,W,H){noDataMsg(ctx,W,H,'Sin datos para los filtros');}
 
 function renderPareto(){
   const {ctx,W,H}=setupCanvas('cPareto',300);
-  const counts={};
-  fData.filter(isReject).forEach(r=>{const k=r.descripcion||r.caracteristica||'?';counts[k]=(counts[k]||0)+1;});
-  const all=Object.entries(counts).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  const all=(SUM.pareto||[]).map(o=>({k:o.c||'?',v:o.n||0})).filter(o=>o.v>0);
   let items=all.slice(0,8);
   if(!items.length){noData(ctx,W,H);return;}
   const total=all.reduce((a,b)=>a+b.v,0); // total sobre TODAS las categorias, no solo top 8
@@ -395,19 +385,17 @@ function renderPareto(){
   });
   ctx.strokeStyle='#ffce6b';ctx.lineWidth=2;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
   pts.forEach(p=>{ctx.fillStyle='#ffce6b';ctx.beginPath();ctx.arc(p.x,p.y,3,0,7);ctx.fill();});
-  // cumulative % labels
   let c2=0;ctx.fillStyle='#ffce6b';ctx.font='9px Arial';ctx.textAlign='center';items.forEach((it,i)=>{c2+=it.v;ctx.fillText(Math.round(c2/total*100)+'%',pts[i].x,pts[i].y-6);});
   ctx.fillStyle='#9fb3c8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('Rechazos: '+total,pad,12);
 }
 
 function renderTrend(){
   const {ctx,W,H}=setupCanvas('cTrend',300);
-  const byDay={};
-  fData.forEach(r=>{if(!r._fecha)return;byDay[r._fecha]=byDay[r._fecha]||{n:0,rej:0};byDay[r._fecha].n++;if(isReject(r))byDay[r._fecha].rej++;});
-  const days=Object.keys(byDay).sort();
+  const arr=SUM.trend||[];
+  const days=arr.map(o=>o.d);
   if(days.length<1){noData(ctx,W,H);return;}
   const pad=42,padB=46,padT=14;
-  const rates=days.map(d=>byDay[d].rej/byDay[d].n*100);
+  const rates=arr.map(o=>o.t?o.r/o.t*100:0);
   const maxR=Math.max(5,...rates);
   const x=i=>pad+(days.length<=1?0:i/(days.length-1))*(W-pad-16);
   const y=v=>H-padB-(v/maxR)*(H-padT-padB);
@@ -421,11 +409,9 @@ function renderTrend(){
   ctx.fillStyle='#8aa0b8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('% rechazo diario',pad,12);
 }
 
-function renderRanking(id,field){
+function renderRanking(id,key){
   const {ctx,W,H}=setupCanvas(id,280);
-  const g={};
-  fData.forEach(r=>{const k=r[field]||'?';g[k]=g[k]||{n:0,rej:0};g[k].n++;if(isReject(r))g[k].rej++;});
-  let items=Object.entries(g).map(([k,o])=>({k,n:o.n,rate:o.rej/o.n*100,rej:o.rej})).filter(i=>i.n>=5).sort((a,b)=>b.rate-a.rate).slice(0,8);
+  let items=(SUM[key]||[]).map(o=>({k:o.k||'?',n:o.n||0,rej:o.r||0,rate:o.n?o.r/o.n*100:0})).slice(0,8);
   if(!items.length){noData(ctx,W,H);ctx.fillStyle='#65788f';ctx.font='11px Arial';ctx.textAlign='center';ctx.fillText('(se requieren n ≥ 5 inspecciones)',W/2,H/2+18);ctx.textAlign='left';return;}
   const maxR=Math.max(5,...items.map(i=>i.rate));
   const rowH=(H-20)/items.length, labelW=130;
@@ -441,35 +427,18 @@ function renderRanking(id,field){
   });
 }
 
-// agrupa filas numericas por plano|part_number|caracteristica, ordenadas en el tiempo
-function numGroups(){
-  const g={};
-  fData.forEach(r=>{
-    if(r.caracteristica==='visual'||isNaN(r._num))return;
-    const key=gKey(r);
-    g[key]=g[key]||{rows:[],desc:r.descripcion||r.caracteristica,plano:r.plano,dash:r.part_number,car:r.caracteristica,fuera:0};
-    g[key].rows.push(r);if(isReject(r))g[key].fuera++;
-  });
-  Object.values(g).forEach(o=>{
-    o.rows.sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
-    o.vals=o.rows.map(r=>r._num);
-  });
-  return g;
-}
 function renderCpkTable(){
   const tb=document.getElementById('tCpkBody');tb.innerHTML='';
-  const g=numGroups();
-  const rows=Object.entries(g).map(([key,o])=>{
-    const sp=specFor(o.plano,o.dash,o.car)||{};
-    const n=o.vals.length,mean=o.vals.reduce((a,b)=>a+b,0)/n;
-    const sd=n>1?Math.sqrt(o.vals.reduce((a,b)=>a+(b-mean)**2,0)/(n-1)):0;
-    const {sig}=mrSigma(o.vals);
-    let cp=null,cpk=null,ppk=null;
-    if(sp.lo!=null&&sp.hi!=null){
-      if(sig>0&&n>=10){cp=(sp.hi-sp.lo)/(6*sig);cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));}
-      if(sd>0)ppk=Math.min((sp.hi-mean)/(3*sd),(mean-sp.lo)/(3*sd));
+  const rows=(SUM.grupos||[]).map(o=>{
+    const sp=specFor(o.plano,o.pn,o.caract)||{};
+    const n=o.n||0, mean=o.mean, sig=o.sigmaST;
+    let cp=null,cpk=null;
+    if(sp.lo!=null&&sp.hi!=null&&sig>0&&n>=10){
+      cp=(sp.hi-sp.lo)/(6*sig);
+      cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));
     }
-    return {key,desc:o.desc,pn:o.dash||'—',n,mean,sig,lo:sp.lo,hi:sp.hi,cp,cpk,ppk,hasSpec:sp.lo!=null&&sp.hi!=null,fueraPct:o.fuera/n*100};
+    return {plano:o.plano,pn:o.pn,caract:o.caract,desc:(sp.label||o.caract),pnTxt:o.pn||'—',
+      n,mean,sig,lo:sp.lo,hi:sp.hi,cp,cpk,hasSpec:sp.lo!=null&&sp.hi!=null,fueraPct:n?(o.fuera||0)/n*100:0};
   }).sort((a,b)=>(a.cpk==null?99:a.cpk)-(b.cpk==null?99:b.cpk));
   if(!rows.length){tb.innerHTML='<tr><td colspan="12" style="color:#65788f;padding:18px">Sin datos numéricos</td></tr>';return;}
   rows.forEach(r=>{
@@ -478,31 +447,59 @@ function renderCpkTable(){
     else if(r.cpk!=null){if(r.cpk>=1.67){cls='p-ex';txt='Excelente';}else if(r.cpk>=1.33){cls='p-cap';txt='Capaz';}else if(r.cpk>=1){cls='p-marg';txt='Marginal';}else{cls='p-no';txt='NO capaz';}}
     const cpkTxt=r.hasSpec?(r.n<10?'n<10':(r.cpk!=null?r.cpk.toFixed(2):'—')):'—';
     const tr=document.createElement('tr');tr.style.cursor='pointer';
-    tr.onclick=()=>{selChar=r.key;renderHist();renderCtrl();};
-    tr.innerHTML='<td class="l">'+r.desc+'</td><td class="l">'+r.pn+'</td><td>'+r.n+'</td><td>'+r.mean.toFixed(4)+'</td><td>'+r.sig.toFixed(4)+'</td>'+
+    tr.onclick=()=>selectGroup(r.plano,r.pn||'',r.caract);
+    tr.innerHTML='<td class="l">'+r.desc+'</td><td class="l">'+r.pnTxt+'</td><td>'+r.n+'</td><td>'+(r.mean!=null?r.mean.toFixed(4):'—')+'</td><td>'+(r.sig!=null?r.sig.toFixed(4):'—')+'</td>'+
       '<td>'+(r.lo!=null?r.lo:'—')+'</td><td>'+(r.hi!=null?r.hi:'—')+'</td>'+
       '<td>'+(r.cp!=null?r.cp.toFixed(2):'—')+'</td>'+
       '<td style="font-weight:bold;color:'+(r.cpk==null?'#65788f':r.cpk>=1.33?'#5fdc8f':r.cpk>=1?'#ffce6b':'#ff7a7a')+'">'+cpkTxt+'</td>'+
-      '<td style="color:'+(r.ppk==null?'#65788f':r.ppk>=1.33?'#5fdc8f':r.ppk>=1?'#ffce6b':'#ff7a7a')+'">'+(r.ppk!=null?r.ppk.toFixed(2):'—')+'</td>'+
+      '<td style="color:#65788f">—</td>'+
       '<td>'+r.fueraPct.toFixed(1)+'%</td><td><span class="pill '+cls+'">'+txt+'</span></td>';
     tb.appendChild(tr);
   });
-  if(!selChar)selChar=rows[0].key;
 }
 
-function valsForSel(){
-  if(!selChar)return null;
-  const rows=fData.filter(r=>gKey(r)===selChar&&!isNaN(r._num))
-    .sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
-  if(!rows.length)return null;
-  const sp=specFor(rows[0].plano,rows[0].part_number,rows[0].caracteristica)||{};
-  const desc=(rows[0].descripcion||rows[0].caracteristica)+(rows[0].part_number?' · '+rows[0].part_number:'');
-  return {vals:rows.map(r=>r._num),rows,sp,desc};
+// ---------- drill-down (MODO 2: crudo de un solo grupo) para histograma + control ----------
+function selectGroup(plano,pn,caract){
+  selGroup={plano:plano||'',pn:pn||'',caract:caract||''};
+  const key=selGroup.plano+'|'+selGroup.pn+'|'+selGroup.caract;
+  if(!groupCache[key])fetchGroup(selGroup.plano,selGroup.pn,selGroup.caract);
+  renderHist();renderCtrl();
+}
+async function fetchGroup(plano,pn,caract){
+  const key=plano+'|'+pn+'|'+caract;
+  groupCache[key]={loading:true};
+  renderHist();renderCtrl();
+  try{
+    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+
+      '&plano='+encodeURIComponent(plano)+'&pn='+encodeURIComponent(pn)+'&caract='+encodeURIComponent(caract)+
+      '&desde='+encodeURIComponent(val('fDesde'))+'&hasta='+encodeURIComponent(val('fHasta'))+'&t='+Date.now();
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error('http');
+    const j=await resp.json();
+    const rows=(j.rows||[]).map(r=>({...r,_num:parseFloat(r.valor),_fecha:normFecha(r)}));
+    const numRows=rows.filter(r=>!isNaN(r._num));
+    const sp=specFor(plano,pn,caract)||{};
+    groupCache[key]={loading:false,rows,numRows,vals:numRows.map(r=>r._num),sp};
+  }catch(e){
+    groupCache[key]={loading:false,error:true,rows:[],numRows:[],vals:[]};
+  }
+  if(selGroup&&(selGroup.plano+'|'+selGroup.pn+'|'+selGroup.caract)===key){renderHist();renderCtrl();}
+}
+function selData(){
+  if(!selGroup)return null;
+  const key=selGroup.plano+'|'+selGroup.pn+'|'+selGroup.caract;
+  const g=groupCache[key];
+  if(!g||g.loading)return {loading:true};
+  if(!g.vals||!g.vals.length)return null;
+  const sp=g.sp||specFor(selGroup.plano,selGroup.pn,selGroup.caract)||{};
+  const lbl=((sp.label||selGroup.caract)||'')+(selGroup.pn?' · '+selGroup.pn:'');
+  return {vals:g.vals,rows:g.numRows,sp,desc:lbl};
 }
 
 function renderHist(){
   const {ctx,W,H}=setupCanvas('cHist',300);
-  const d=valsForSel();
+  const d=selData();
+  if(d&&d.loading){document.getElementById('histTitle').textContent='📊 Histograma — cargando…';noDataMsg(ctx,W,H,'cargando…');return;}
   document.getElementById('histTitle').textContent='📊 Histograma — '+(d?d.desc:'seleccione una característica');
   if(!d){noData(ctx,W,H);return;}
   const {vals,sp}=d;
@@ -518,7 +515,7 @@ function renderHist(){
   const y=c=>H-padB-(c/maxC)*(H-padT-padB);
   for(let i=0;i<bins;i++){const x0=x(lo+i*bw),x1=x(lo+(i+1)*bw);
     ctx.fillStyle='#2E75B6';ctx.fillRect(x0+1,y(counts[i]),x1-x0-2,H-padB-y(counts[i]));}
-  function vline(val,c,lbl){if(val==null)return;const xx=x(val);ctx.strokeStyle=c;ctx.lineWidth=2;ctx.setLineDash(c==='#5bb8ff'?[4,3]:[]);ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,H-padB);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(lbl,xx,padT-2);}
+  function vline(v,c,lbl){if(v==null)return;const xx=x(v);ctx.strokeStyle=c;ctx.lineWidth=2;ctx.setLineDash(c==='#5bb8ff'?[4,3]:[]);ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,H-padB);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(lbl,xx,padT-2);}
   vline(sp.lo,'#C00000','LIE');vline(sp.hi,'#C00000','LSE');vline(sp.nom,'#5bb8ff','Nom');
   const mean=vals.reduce((a,b)=>a+b,0)/vals.length;vline(mean,'#5fdc8f','X̄');
   ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='center';
@@ -527,7 +524,8 @@ function renderHist(){
 
 function renderCtrl(){
   const {ctx,W,H}=setupCanvas('cCtrl',300);
-  const d=valsForSel();
+  const d=selData();
+  if(d&&d.loading){document.getElementById('ctrlTitle').textContent='🔵 Gráfico de control — cargando…';noDataMsg(ctx,W,H,'cargando…');return;}
   document.getElementById('ctrlTitle').textContent='🔵 Gráfico de control — '+(d?d.desc:'');
   if(!d){noData(ctx,W,H);return;}
   const {vals,sp}=d;
@@ -541,7 +539,7 @@ function renderCtrl(){
   const y=v=>H-padB-((v-ylo)/(yhi-ylo))*(H-padT-padB);
   ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';
   for(let t=0;t<=4;t++){const vv=ylo+(yhi-ylo)*t/4;ctx.fillText(vv.toFixed(3),pad-4,y(vv)+3);}
-  function hl(val,c,lbl,dash){if(val==null||val<ylo||val>yhi)return;ctx.strokeStyle=c;ctx.setLineDash(dash||[]);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,y(val));ctx.lineTo(W-16,y(val));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText(lbl,pad+3,y(val)-2);}
+  function hl(v,c,lbl,dash){if(v==null||v<ylo||v>yhi)return;ctx.strokeStyle=c;ctx.setLineDash(dash||[]);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(pad,y(v));ctx.lineTo(W-16,y(v));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=c;ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText(lbl,pad+3,y(v)-2);}
   if(mrbar>0){hl(ucl,'#b388ff','UCL',[5,3]);hl(mean,'#b388ff','X̄',[2,2]);hl(lcl,'#b388ff','LCL',[5,3]);}
   hl(sp.hi,'#C00000','LSE');hl(sp.lo,'#C00000','LIE');
   ctx.strokeStyle='#8aa0b8';ctx.lineWidth=1.6;ctx.beginPath();vals.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
@@ -550,9 +548,7 @@ function renderCtrl(){
 
 function renderVisual(){
   const {ctx,W,H}=setupCanvas('cVis',260);
-  const g={};
-  fData.filter(r=>r.caracteristica==='visual'&&r.valor&&r.valor!=='OK').forEach(r=>{g[r.valor]=(g[r.valor]||0)+1;});
-  let items=Object.entries(g).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  let items=(SUM.visual||[]).map(o=>({k:o.c||'?',v:o.n||0})).filter(o=>o.v>0);
   if(!items.length){noData(ctx,W,H);ctx.fillStyle='#5fdc8f';ctx.font='12px Arial';ctx.textAlign='center';ctx.fillText('✓ Sin defectos visuales',W/2,H/2+20);return;}
   const max=Math.max(...items.map(i=>i.v)),rowH=(H-16)/items.length,labelW=150;
   const colors=['#C00000','#d9534f','#e8743b','#b8860b','#9c6ff0','#5bb8ff'];
@@ -565,9 +561,8 @@ function renderVisual(){
 function renderTurno(){
   const {ctx,W,H}=setupCanvas('cTurno',260);
   const turnos=['Mañana 06-14','Tarde 14-22','Noche 22-06'];
-  const g={};turnos.forEach(t=>g[t]={n:0,rej:0});
-  fData.forEach(r=>{const t=r.turno_calc||r.turno;if(g[t]){g[t].n++;if(isReject(r))g[t].rej++;}});
-  const items=turnos.map(t=>({t,n:g[t].n,rate:g[t].n?g[t].rej/g[t].n*100:0,rej:g[t].rej}));
+  const gm={};(SUM.turno||[]).forEach(o=>{gm[o.k]={n:o.n||0,rej:o.r||0};});
+  const items=turnos.map(t=>({t,n:gm[t]?gm[t].n:0,rej:gm[t]?gm[t].rej:0,rate:gm[t]&&gm[t].n?gm[t].rej/gm[t].n*100:0}));
   if(items.every(i=>i.n===0)){noData(ctx,W,H);return;}
   const maxR=Math.max(5,...items.map(i=>i.rate));
   const bw=(W-50)/items.length,padB=46,padT=16;
@@ -578,49 +573,23 @@ function renderTurno(){
     ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.fillText('('+it.rej+'/'+it.n+')',x+bw/2,H-padB+28);});
 }
 
-// ---------- panel de alertas activas ----------
+// ---------- panel de alertas (desde SUM.grupos, n>=10) ----------
 function renderAlertas(){
   const el=document.getElementById('alertBody');
-  const g=numGroups();
   const alerts=[];
-  Object.entries(g).forEach(([key,o])=>{
-    const vals=o.vals;
-    if(vals.length<10)return;
-    const sp=specFor(o.plano,o.dash,o.car)||{};
-    const name=o.desc+(o.dash?' · '+o.dash:'')+(o.plano?' ('+o.plano+')':'');
-    const maqs=uniq(o.rows.map(r=>r.maquina)).join(', ')||'—';
-    const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
-    const {mrbar,sig}=mrSigma(vals);
-    // (a) puntos fuera de limites de control en los ultimos 20
-    if(mrbar>0){
-      const ucl=mean+2.66*mrbar,lcl=mean-2.66*mrbar;
-      const nOut=vals.slice(-20).filter(v=>v>ucl||v<lcl).length;
-      if(nOut)alerts.push({sev:2,name,maqs,msg:nOut+' punto(s) fuera de límites de control en los últimos 20'});
-    }
-    // (b) racha de 8 puntos al mismo lado de la media
-    let run=0,side=0;
-    for(const v of vals){
-      const s=v>mean?1:(v<mean?-1:0);
-      if(s!==0&&s===side)run++;else{side=s;run=s!==0?1:0;}
-      if(run>=8){alerts.push({sev:1,name,maqs,msg:'Racha de 8+ puntos consecutivos al mismo lado de la media'});break;}
-    }
-    // (c) 6 puntos consecutivos ascendentes o descendentes
-    let up=1,dn=1,trend=null;
-    for(let i=1;i<vals.length&&!trend;i++){
-      up=vals[i]>vals[i-1]?up+1:1;
-      dn=vals[i]<vals[i-1]?dn+1:1;
-      if(up>=6)trend='ascendente';else if(dn>=6)trend='descendente';
-    }
-    if(trend)alerts.push({sev:1,name,maqs,msg:'Tendencia: 6+ puntos consecutivos en dirección '+trend});
-    // (d) Cpk < 1.33
-    if(sp.lo!=null&&sp.hi!=null&&sig>0){
-      const cpk=Math.min((sp.hi-mean)/(3*sig),(mean-sp.lo)/(3*sig));
+  (SUM.grupos||[]).forEach(o=>{
+    const n=o.n||0;if(n<10)return;
+    const sp=specFor(o.plano,o.pn,o.caract)||{};
+    const name=((sp.label||o.caract)||'')+(o.pn?' · '+o.pn:'')+(o.plano?' ('+o.plano+')':'');
+    const maqs=(o.maquinas||[]).join(', ')||'—';
+    if(sp.lo!=null&&sp.hi!=null&&o.sigmaST>0){
+      const cpk=Math.min((sp.hi-o.mean)/(3*o.sigmaST),(o.mean-sp.lo)/(3*o.sigmaST));
       if(cpk<1.33)alerts.push({sev:cpk<1?2:1,name,maqs,msg:'Cpk = '+cpk.toFixed(2)+' — proceso '+(cpk<1?'NO capaz':'marginal')});
     }
-    // (e) % CERCA en ultimos 20 puntos > 30%
-    const l20=o.rows.slice(-20);
-    const nc=l20.filter(isCerca).length;
-    if(l20.length&&nc/l20.length>0.30)alerts.push({sev:1,name,maqs,msg:Math.round(nc/l20.length*100)+'% de mediciones CERCA del límite en los últimos 20 puntos'});
+    const pc=(o.cerca||0)/n*100;
+    if(pc>30)alerts.push({sev:1,name,maqs,msg:pc.toFixed(0)+'% de mediciones CERCA del límite'});
+    const pf=(o.fuera||0)/n*100;
+    if(pf>5)alerts.push({sev:2,name,maqs,msg:pf.toFixed(1)+'% de mediciones fuera de especificación'});
   });
   alerts.sort((a,b)=>b.sev-a.sev);
   if(!alerts.length){el.innerHTML='<div style="color:#5fdc8f;padding:10px">✓ Sin alertas activas en los grupos con n ≥ 10</div>';return;}
@@ -629,11 +598,61 @@ function renderAlertas(){
       '<td class="l">'+a.name+'</td><td class="l">'+a.maqs+'</td><td class="l" style="color:'+(a.sev>=2?'#ff7a7a':'#ffce6b')+'">'+a.msg+'</td></tr>').join('')+'</tbody></table>';
 }
 
-// ---------- tendencia diaria de % CERCA ----------
+// ================= VISTAS AVANZADAS (crudo pesado, solo bajo demanda) =================
+let advWrapDivsCleared=false;
+function toggleAdv(){
+  advOn=!advOn;
+  document.getElementById('advWrap').style.display=advOn?'block':'none';
+  document.getElementById('btnAdv').textContent=(advOn?'▾ Ocultar':'▸ Mostrar')+' vistas avanzadas (% CERCA · heatmap · EWMA · trazabilidad)';
+  if(advOn&&SUM){
+    if(advRows===null)loadAdvanced();
+    else{computeAdvData();renderCercaTrend();renderHeatmap();renderEWMA();renderOPSection();}
+  }
+}
+async function loadAdvanced(){
+  const seq=++advSeq;
+  document.getElementById('advNote').textContent='⏳ Descargando datos crudos para vistas avanzadas…';
+  ['cCercaTrend'].forEach(id=>{const {ctx,W,H}=setupCanvas(id,260);noDataMsg(ctx,W,H,'cargando…');});
+  document.getElementById('hmWrap').innerHTML='<div class="loading">cargando…</div>';
+  document.getElementById('ewmaWrap').innerHTML='<div class="loading">cargando…</div>';
+  document.getElementById('opWrap').innerHTML='<div class="loading">cargando…</div>';
+  try{
+    const f=curFilters();
+    // MODO 2 sin grupo especifico: todas las filas de la ventana (aplicando plano/pn/caract si el usuario los fijo).
+    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+
+      '&plano='+encodeURIComponent(f.plano)+'&pn='+encodeURIComponent(f.pn)+'&caract='+encodeURIComponent(f.caract)+
+      '&desde='+encodeURIComponent(f.desde)+'&hasta='+encodeURIComponent(f.hasta)+'&t='+Date.now();
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error('No se pudo conectar al servidor.');
+    const j=await resp.json();
+    if(seq!==advSeq)return;
+    if(j.error)throw new Error(j.error);
+    advRows=(j.rows||[]).map(r=>({...r,_num:parseFloat(r.valor),_fecha:normFecha(r)}));
+    computeAdvData();
+    document.getElementById('advNote').textContent='';
+    renderCercaTrend();renderHeatmap();renderEWMA();renderOPSection();
+  }catch(e){
+    if(seq!==advSeq)return;
+    document.getElementById('advNote').innerHTML='<span style="color:#ff7a7a">⚠️ Error al cargar vistas avanzadas: '+e.message+'</span>';
+  }
+}
+function computeAdvData(){ // aplica en cliente los filtros que MODO 2 no resuelve (maq/mec/turno/lado/estado/defecto)
+  const f=curFilters();
+  advData=(advRows||[]).filter(r=>{
+    if(f.maq&&r.maquina!==f.maq)return false;
+    if(f.mec&&r.mecanico!==f.mec)return false;
+    if(f.turno&&(r.turno_calc||r.turno)!==f.turno)return false;
+    if(f.lado&&r.lado!==f.lado)return false;
+    if(f.estado&&r.estado!==f.estado)return false;
+    if(f.defecto&&(r.caracteristica!=='visual'||r.valor!==f.defecto))return false;
+    return true;
+  });
+}
+
 function renderCercaTrend(){
   const {ctx,W,H}=setupCanvas('cCercaTrend',260);
   const byDay={};
-  fData.forEach(r=>{
+  (advData||[]).forEach(r=>{
     if(r.caracteristica==='visual'||isNaN(r._num)||!r._fecha)return;
     byDay[r._fecha]=byDay[r._fecha]||{n:0,c:0};
     byDay[r._fecha].n++;if(isCerca(r))byDay[r._fecha].c++;
@@ -646,7 +665,6 @@ function renderCercaTrend(){
   const y=v=>H-padB-(v/maxR)*(H-padT-padB);
   ctx.strokeStyle='#1e2d3d';
   for(let t=0;t<=4;t++){const vv=maxR*t/4;ctx.beginPath();ctx.moveTo(pad,y(vv));ctx.lineTo(W-16,y(vv));ctx.stroke();ctx.fillStyle='#9fb3c8';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText(vv.toFixed(0)+'%',pad-4,y(vv)+3);}
-  // umbral 30%
   if(30<=maxR){ctx.strokeStyle='#ff7a7a';ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(pad,y(30));ctx.lineTo(W-16,y(30));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ff7a7a';ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText('30%',pad+3,y(30)-3);}
   ctx.strokeStyle='#ffce6b';ctx.lineWidth=2;ctx.beginPath();rates.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
   ctx.textAlign='center';
@@ -657,12 +675,10 @@ function renderCercaTrend(){
   ctx.fillStyle='#8aa0b8';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('% CERCA diario (mediciones numéricas)',pad,12);
 }
 
-// ---------- heatmap maquina x caracteristica (Cpk sigma_st) ----------
 function renderHeatmap(){
   const el=document.getElementById('hmWrap');
-  // celdas: maquina x caracteristica; dentro puede haber varios plano|pn -> peor Cpk
   const cells={},maqSet=new Set(),carMap={};
-  fData.forEach(r=>{
+  (advData||[]).forEach(r=>{
     if(r.caracteristica==='visual'||isNaN(r._num))return;
     const mq=r.maquina||'?';maqSet.add(mq);carMap[r.caracteristica]=r.descripcion||r.caracteristica;
     const ck=mq+'§'+r.caracteristica,sk=gKey(r);
@@ -701,12 +717,10 @@ function renderHeatmap(){
   el.innerHTML=html+'</tbody></table>';
 }
 
-// ---------- deteccion de deriva (EWMA) ----------
 function renderEWMA(){
   const el=document.getElementById('ewmaWrap');
-  // agrupar por plano|pn|caracteristica|maquina
   const g={};
-  fData.forEach(r=>{
+  (advData||[]).forEach(r=>{
     if(r.caracteristica==='visual'||isNaN(r._num))return;
     const key=gKey(r)+'|'+(r.maquina||'?');
     g[key]=g[key]||{rows:[],desc:r.descripcion||r.caracteristica,plano:r.plano,dash:r.part_number,car:r.caracteristica,maq:r.maquina||'?'};
@@ -718,28 +732,24 @@ function renderEWMA(){
     const vals=o.rows.map(r=>r._num);
     if(vals.length<15)return;
     const sp=specFor(o.plano,o.dash,o.car)||{};
-    // EWMA lambda=0.2, z0 = media de los primeros 5
     const z0=vals.slice(0,5).reduce((a,b)=>a+b,0)/5;
     const ew=[];let z=z0;
     vals.forEach(v=>{z=0.2*v+0.8*z;ew.push(z);});
     const last=ew[ew.length-1];
     const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
-    // pendiente por punto: regresion lineal sobre los ultimos 10 EWMA
     const seg=ew.slice(-10),m=seg.length;
     let sx=0,sy=0,sxy=0,sxx=0;
     seg.forEach((v,i)=>{sx+=i;sy+=v;sxy+=i*v;sxx+=i*i;});
     const den=m*sxx-sx*sx;
     const slopePt=den?(m*sxy-sx*sy)/den:0;
-    // puntos por dia promedio
     const dias=uniq(o.rows.map(r=>r._fecha)).length||1;
     const ppd=vals.length/dias;
     const slopeDay=slopePt*ppd;
-    // dias hasta el limite mas cercano en la direccion de la tendencia
     let diasLim=Infinity,haciaLim=false;
     if(slopeDay>0&&sp.hi!=null){diasLim=(sp.hi-last)/slopeDay;haciaLim=true;}
     else if(slopeDay<0&&sp.lo!=null){diasLim=(sp.lo-last)/slopeDay;haciaLim=true;}
     if(diasLim<0)diasLim=0;
-    let risk=0; // 0 verde, 1 amarillo, 2 rojo
+    let risk=0;
     if(haciaLim&&isFinite(diasLim)){if(diasLim<=5)risk=2;else if(diasLim<=15)risk=1;}
     const arrow=Math.abs(slopePt)<1e-9?'→':(slopePt>0?'↑':'↓');
     items.push({name:o.desc+(o.dash?' · '+o.dash:'')+(o.plano?' ('+o.plano+')':''),maq:o.maq,last,mean,arrow,risk,diasLim:haciaLim&&isFinite(diasLim)?diasLim:null,ew,sp});
@@ -755,7 +765,6 @@ function renderEWMA(){
         '<td style="color:'+c+';font-weight:bold">'+(it.diasLim==null?'—':(it.diasLim>99?'>99':it.diasLim.toFixed(1)))+'</td>'+
         '<td><canvas id="ewSpark'+i+'" width="160" height="34" style="width:160px;height:34px;display:inline-block"></canvas></td></tr>';
     }).join('')+'</tbody></table>';
-  // dibujar sparklines
   items.forEach((it,i)=>{
     const cv=document.getElementById('ewSpark'+i);if(!cv)return;
     const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -765,7 +774,6 @@ function renderEWMA(){
     const rg=(hi-lo)||1;lo-=rg*0.08;hi+=rg*0.08;
     const x=j=>2+(pts.length<=1?0:j/(pts.length-1))*(W-4);
     const y=v=>H-2-((v-lo)/(hi-lo))*(H-4);
-    // limites de spec punteados
     [[it.sp.lo,'#C00000'],[it.sp.hi,'#C00000']].forEach(([v,cc])=>{
       if(v==null)return;ctx.strokeStyle=cc;ctx.setLineDash([3,2]);ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(0,y(v));ctx.lineTo(W,y(v));ctx.stroke();ctx.setLineDash([]);
@@ -781,9 +789,8 @@ function renderEWMA(){
 function opOf(r){return String(r.OP||r.op||'').trim();}
 function renderOPSection(){
   const sel=document.getElementById('opSel'),prev=sel.value;
-  // OPs ordenadas por su medicion mas reciente
   const lastT={};
-  fData.forEach(r=>{const op=opOf(r);if(!op)return;const t=tKey(r);if(!(op in lastT)||t>lastT[op])lastT[op]=t;});
+  (advData||[]).forEach(r=>{const op=opOf(r);if(!op)return;const t=tKey(r);if(!(op in lastT)||t>lastT[op])lastT[op]=t;});
   const ops=Object.keys(lastT).sort((a,b)=>lastT[b]<lastT[a]?-1:lastT[b]>lastT[a]?1:0);
   sel.innerHTML='';
   ops.forEach(op=>{const o=document.createElement('option');o.value=op;o.textContent=op;sel.appendChild(o);});
@@ -792,13 +799,13 @@ function renderOPSection(){
     document.getElementById('opWrap').innerHTML='<div style="color:#65788f;padding:10px">Sin OPs en los datos filtrados</div>';
     return;
   }
-  sel.value=(prev&&ops.includes(prev))?prev:ops[0]; // default: mas reciente
+  sel.value=(prev&&ops.includes(prev))?prev:ops[0];
   renderOPDetail();
 }
 function renderOPDetail(){
   const op=document.getElementById('opSel').value;
   const sumEl=document.getElementById('opSummary'),wrap=document.getElementById('opWrap');
-  const rows=fData.filter(r=>opOf(r)===op).sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
+  const rows=(advData||[]).filter(r=>opOf(r)===op).sort((a,b)=>tKey(a)<tKey(b)?-1:tKey(a)>tKey(b)?1:0);
   if(!rows.length){sumEl.textContent='';wrap.innerHTML='<div style="color:#65788f;padding:10px">Sin datos para esta OP</div>';return;}
   const piezas=uniq(rows.map(r=>r.pieza)).length;
   const conf=rows.filter(r=>!isReject(r)).length;
@@ -825,11 +832,15 @@ function switchSheet(s){
   document.getElementById('tabInsp').classList.toggle('act',s==='insp');
   document.getElementById('tabSierra').classList.toggle('act',s==='sierra');
   document.getElementById('fgLado').style.display=s==='sierra'?'none':'';
-  selChar=null;allData=[];fData=[];
+  SUM=null;selGroup=null;for(const k in groupCache)delete groupCache[k];advRows=null;advData=null;
   loadData();
 }
-window.addEventListener('resize',()=>{ if(fData.length) renderAll(); });
+window.addEventListener('resize',()=>{
+  if(!SUM)return;
+  renderAll();
+  if(advOn&&advData){renderCercaTrend();renderHeatmap();renderEWMA();}
+});
 loadData();
-// Sin refresco automatico: se actualiza solo con el boton "Actualizar" (mejor rendimiento)
+// Sin refresco automatico: se actualiza solo con el boton "Actualizar" o al cambiar un filtro.
 </script>
 </body></html>
