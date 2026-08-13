@@ -150,6 +150,11 @@ select.big{font-size:13px;padding:7px}
   </div>
 </div>
 
+<div style="text-align:center;margin:6px 0 14px">
+  <button id="btnAdv" onclick="toggleAdv()" style="background:#243447;color:#c2d4e6;border:1px solid #2d3f54;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:bold;cursor:pointer">▸ Mostrar vistas avanzadas (% CERCA · heatmap · EWMA · trazabilidad)</button>
+</div>
+
+<div id="advWrap" style="display:none">
 <div class="card grid1">
   <h2>📉 Tendencia de % CERCA (indicador temprano)</h2>
   <div class="hint">% de mediciones numéricas en zona CERCA por día — sube antes de que aparezcan rechazos</div>
@@ -177,6 +182,7 @@ select.big{font-size:13px;padding:7px}
   </div>
   <div id="opSummary" style="font-size:12px;color:#c2d4e6;margin-bottom:8px;line-height:1.6"></div>
   <div class="tblwrap" id="opWrap"></div>
+</div>
 </div>
 
 <script>
@@ -254,7 +260,14 @@ function setDefaultDates(){
   // Solo poner por defecto si estan vacios (no sobreescribir la seleccion del usuario en refresh)
   if(dEl.value||hEl.value)return;
   const dates=allData.map(r=>r._fecha).filter(Boolean).sort();
-  if(dates.length){dEl.value=dates[0];hEl.value=dates[dates.length-1];}
+  if(dates.length){
+    hEl.value=dates[dates.length-1];
+    // por defecto: ultimos 14 dias (mas rapido). El usuario puede ampliar el rango.
+    const h=new Date(dates[dates.length-1]+'T00:00:00');
+    h.setDate(h.getDate()-14);
+    const desde14=h.toISOString().substring(0,10);
+    dEl.value=desde14>dates[0]?desde14:dates[0];
+  }
 }
 function uniq(arr){return [...new Set(arr.filter(Boolean))].sort();}
 function populateFilters(){
@@ -298,6 +311,13 @@ function apply(){
 const isReject=r=>r.estado==='FUERA'||r.estado==='DEFECTO';
 const isCerca=r=>r.estado==='CERCA';
 
+let advOn=false;
+function toggleAdv(){
+  advOn=!advOn;
+  document.getElementById('advWrap').style.display=advOn?'block':'none';
+  document.getElementById('btnAdv').textContent=(advOn?'▾ Ocultar':'▸ Mostrar')+' vistas avanzadas (% CERCA · heatmap · EWMA · trazabilidad)';
+  if(advOn)renderAll();
+}
 function renderAll(){
   renderKPIs();
   renderAlertas();
@@ -308,10 +328,7 @@ function renderAll(){
   renderCpkTable();
   renderVisual();
   renderTurno();
-  renderCercaTrend();
-  renderHeatmap();
-  renderEWMA();
-  renderOPSection();
+  if(advOn){renderCercaTrend();renderHeatmap();renderEWMA();renderOPSection();} // vistas pesadas solo si estan visibles
   // default selected group = first numeric
   if(!selChar){const f=fData.find(r=>!isNaN(r._num)&&r.caracteristica!=='visual');if(f)selChar=gKey(f);}
   renderHist(); renderCtrl();
@@ -813,6 +830,6 @@ function switchSheet(s){
 }
 window.addEventListener('resize',()=>{ if(fData.length) renderAll(); });
 loadData();
-setInterval(loadData,60000);
+// Sin refresco automatico: se actualiza solo con el boton "Actualizar" (mejor rendimiento)
 </script>
 </body></html>
