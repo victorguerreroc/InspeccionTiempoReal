@@ -182,6 +182,7 @@ select.big{font-size:13px;padding:7px}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
 const SHEETS={insp:'Inspecciones',sierra:'Corte Sierra'};
+const MAXROWS=8000; // solo las filas mas recientes: evita descargar toda la hoja (rendimiento)
 let curSheet='insp', allData=[], fData=[], APP=null, selChar=null;
 
 // ---------- carga de límites de especificación desde index.html ----------
@@ -230,7 +231,7 @@ async function loadData(){
   document.getElementById('errBox').style.display='none';
   try{
     await loadSpecs();
-    const url=SCRIPT_URL+'?sheet='+encodeURIComponent(SHEETS[curSheet])+'&t='+Date.now();
+    const url=SCRIPT_URL+'?sheet='+encodeURIComponent(SHEETS[curSheet])+'&max='+MAXROWS+'&t='+Date.now();
     const resp=await fetch(url);
     if(!resp.ok)throw new Error('No se pudo conectar al servidor.');
     const j=await resp.json();
@@ -812,6 +813,6 @@ function switchSheet(s){
 }
 window.addEventListener('resize',()=>{ if(fData.length) renderAll(); });
 loadData();
-setInterval(loadData,30000);
+setInterval(loadData,60000);
 </script>
 </body></html>
