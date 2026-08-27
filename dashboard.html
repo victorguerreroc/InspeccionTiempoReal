@@ -61,17 +61,17 @@ select.big{font-size:13px;padding:7px}
 </div>
 
 <div class="filters">
-  <div class="fg"><label>Desde</label><input type="date" id="fDesde" onchange="loadData()"></div>
-  <div class="fg"><label>Hasta</label><input type="date" id="fHasta" onchange="loadData()"></div>
-  <div class="fg"><label>Plano</label><select id="fPlano" onchange="loadData()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Part Number</label><select id="fDash" onchange="loadData()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Máquina</label><select id="fMaq" onchange="loadData()"><option value="">Todas</option></select></div>
-  <div class="fg"><label>Mecánico</label><select id="fMec" onchange="loadData()"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Turno</label><select id="fTurno" onchange="loadData()"><option value="">Todos</option><option>Mañana 06-14</option><option>Tarde 14-22</option><option>Noche 22-06</option></select></div>
-  <div class="fg" id="fgLado"><label>Lado</label><select id="fLado" onchange="loadData()"><option value="">Todos</option><option value="T">TOP</option><option value="B">BOTTOM</option></select></div>
-  <div class="fg"><label>Estado</label><select id="fEstado" onchange="loadData()"><option value="">Todos</option><option value="OK">OK</option><option value="CERCA">Cerca</option><option value="FUERA">Fuera de spec</option><option value="DEFECTO">Defecto visual</option></select></div>
-  <div class="fg"><label>Característica</label><select id="fCaract" onchange="loadData()"><option value="">Todas</option></select></div>
-  <div class="fg"><label>Tipo de Defecto</label><select id="fDefecto" onchange="loadData()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Desde</label><input type="date" id="fDesde" onchange="loadDataDebounced()"></div>
+  <div class="fg"><label>Hasta</label><input type="date" id="fHasta" onchange="loadDataDebounced()"></div>
+  <div class="fg"><label>Plano</label><select id="fPlano" onchange="loadDataDebounced()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Part Number</label><select id="fDash" onchange="loadDataDebounced()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Máquina</label><select id="fMaq" onchange="loadDataDebounced()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Mecánico</label><select id="fMec" onchange="loadDataDebounced()"><option value="">Todos</option></select></div>
+  <div class="fg"><label>Turno</label><select id="fTurno" onchange="loadDataDebounced()"><option value="">Todos</option><option>Mañana 06-14</option><option>Tarde 14-22</option><option>Noche 22-06</option></select></div>
+  <div class="fg" id="fgLado"><label>Lado</label><select id="fLado" onchange="loadDataDebounced()"><option value="">Todos</option><option value="T">TOP</option><option value="B">BOTTOM</option></select></div>
+  <div class="fg"><label>Estado</label><select id="fEstado" onchange="loadDataDebounced()"><option value="">Todos</option><option value="OK">OK</option><option value="CERCA">Cerca</option><option value="FUERA">Fuera de spec</option><option value="DEFECTO">Defecto visual</option></select></div>
+  <div class="fg"><label>Característica</label><select id="fCaract" onchange="loadDataDebounced()"><option value="">Todas</option></select></div>
+  <div class="fg"><label>Tipo de Defecto</label><select id="fDefecto" onchange="loadDataDebounced()"><option value="">Todos</option></select></div>
   <div class="fg"><label>Limpiar</label><button class="sec" onclick="clearF()" style="width:100%">✕ Limpiar filtros</button></div>
 </div>
 
@@ -189,6 +189,7 @@ select.big{font-size:13px;padding:7px}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw2FO7p_AFokTiBFJJeoVh8s5E2NwgRMspNVntgDOc1r5kNpsri1gW3SaCOL1aJzhVt/exec';
 const SHEETS={insp:'Inspecciones',sierra:'Corte Sierra'};
+const MAXROWS=8000; // pedir solo filas recientes al servidor (mas rapido)
 let curSheet='insp', SUM=null, APP=null;
 let selGroup=null;                 // {plano,pn,caract} de la fila seleccionada en la tabla Cpk
 const groupCache={};               // 'plano|pn|caract' -> {loading,error,rows,numRows,vals,sp}
@@ -267,15 +268,21 @@ function ensureDates(){ // por defecto: ultimos 14 dias
 }
 
 // ---------- carga (MODO 1: resumen del servidor) ----------
+let _ddTimer=null;
+function loadDataDebounced(){clearTimeout(_ddTimer);_ddTimer=setTimeout(loadData,300);} // agrupa cambios de filtro seguidos
+function cacheKey(){return 'dashCache_'+curSheet+'|'+qs(curFilters());}
 async function loadData(){
   const seq=++loadSeq;
   const b=document.getElementById('btnR');b.textContent='⏳...';b.disabled=true;
   document.getElementById('errBox').style.display='none';
+  ensureDates();
+  const ck=cacheKey();
+  // Caché instantánea: si no hay datos aún, muestra lo último visto para estos filtros mientras llega lo fresco
+  if(!SUM){try{const c=localStorage.getItem(ck);if(c){SUM=JSON.parse(c);populateFilters();renderAll();document.getElementById('lastUpd').textContent='🕓 (caché) actualizando…';}}catch(e){}}
   try{
     await loadSpecs();
-    ensureDates();
     const f=curFilters();
-    const url=SCRIPT_URL+'?mode=summary&sheet='+encodeURIComponent(SHEETS[curSheet])+'&'+qs(f)+'&t='+Date.now();
+    const url=SCRIPT_URL+'?mode=summary&sheet='+encodeURIComponent(SHEETS[curSheet])+'&max='+MAXROWS+'&'+qs(f)+'&t='+Date.now();
     const resp=await fetch(url);
     if(!resp.ok)throw new Error('No se pudo conectar al servidor.');
     const j=await resp.json();
@@ -283,6 +290,7 @@ async function loadData(){
     if(j.error)throw new Error(j.error);
     if(!j.kpis)throw new Error('El servidor respondió en formato antiguo (sin modo "summary"). Actualiza/redespliega el Apps Script con el nuevo backend.');
     SUM=j;
+    try{localStorage.setItem(ck,JSON.stringify(j));}catch(e){}
     populateFilters();
     // los datos crudos cacheados dejan de ser validos al cambiar la ventana/filtros
     selGroup=null; for(const k in groupCache)delete groupCache[k]; advRows=null; advData=null;
@@ -470,7 +478,7 @@ async function fetchGroup(plano,pn,caract){
   groupCache[key]={loading:true};
   renderHist();renderCtrl();
   try{
-    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+
+    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+'&max='+MAXROWS+
       '&plano='+encodeURIComponent(plano)+'&pn='+encodeURIComponent(pn)+'&caract='+encodeURIComponent(caract)+
       '&desde='+encodeURIComponent(val('fDesde'))+'&hasta='+encodeURIComponent(val('fHasta'))+'&t='+Date.now();
     const resp=await fetch(url);
@@ -619,7 +627,7 @@ async function loadAdvanced(){
   try{
     const f=curFilters();
     // MODO 2 sin grupo especifico: todas las filas de la ventana (aplicando plano/pn/caract si el usuario los fijo).
-    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+
+    const url=SCRIPT_URL+'?mode=raw&sheet='+encodeURIComponent(SHEETS[curSheet])+'&max='+MAXROWS+
       '&plano='+encodeURIComponent(f.plano)+'&pn='+encodeURIComponent(f.pn)+'&caract='+encodeURIComponent(f.caract)+
       '&desde='+encodeURIComponent(f.desde)+'&hasta='+encodeURIComponent(f.hasta)+'&t='+Date.now();
     const resp=await fetch(url);
