@@ -768,7 +768,7 @@ function liveStatus(k){
   const v=parseFloat(document.getElementById('inp_'+k)?.value);
   if(isNaN(v)){setRowState(1,k,'');previewVal=null;drawChart();refreshVerdict(1);return;}
   const st=classifyChar(v,curChar);
-  setRowState(1,k,st,dirTxt(v,curChar,st));
+  setRowState(1,k,st,dirTxt(v,curChar,st));avisoDash(1,k,v,st);
   previewVal=v;drawChart();refreshVerdict(1);
 }
 function setGNGVal(k,val){
@@ -854,7 +854,7 @@ function liveStatusM2(k){
   const v=parseFloat(document.getElementById('m2inp_'+k)?.value);
   if(isNaN(v)){setRowState(2,k,'');previewVal2=null;drawChart2();refreshVerdict(2);return;}
   const st=classifyChar(v,curChar2);
-  setRowState(2,k,st,dirTxt(v,curChar2,st));
+  setRowState(2,k,st,dirTxt(v,curChar2,st));avisoDash(2,k,v,st);
   previewVal2=v;drawChart2();refreshVerdict(2);
 }
 
@@ -1068,12 +1068,31 @@ function closeConfirm(){
   const m=document.getElementById('confirmModal');
   m.classList.remove('show');m.dataset.mode='';
 }
+// Largo Total: si la medida FUERA calza con OTRO dash del mismo plano, probablemente se escogió mal el dash (2026-11-04)
+function dashQueCalza(v){
+  const P=APP.planos[curPlano],d=document.getElementById('dash').value;if(!P||isNaN(v))return null;
+  const ds=(P.dashes||[]).filter(x=>x!==d);
+  for(const x of ds){let L=null;
+    if(curMode==='sierra'&&P.sierraOal&&P.sierraOal[x])L=P.sierraOal[x];
+    else if(P.oal&&P.oal[x])L=P.oal[x];
+    else if(P.oalNom&&P.oalNom[x]!=null){const n=P.oalNom[x],t=P.oalTol||0.015625;L=[n-t,n+t];}
+    if(L&&L[0]!=null&&v>=L[0]&&v<=L[1])return x;}
+  return null;
+}
+function avisoDash(m,k,v,st){
+  if(k!=='oal'||st!=='FUERA')return;
+  const x=dashQueCalza(v);if(!x)return;
+  setRowState(m,k,st,'FUERA · ¿dash '+x+'?');
+  toast('⚠ Largo Total '+v+' corresponde al dash '+x+', no al '+document.getElementById('dash').value+'. ¿Seleccionó el dash correcto?','warn',7000);
+}
 // Avisa si la misma pieza ya fue registrada (misma máquina, plano, PN y lado). No bloquea.
 function dupWarnings(machines,sides){
   const out=[],dash=document.getElementById('dash').value;
   machines.forEach(m=>{
     const pz=(document.getElementById(m===1?'npieza':'npieza2')?.value||'').trim();
     const name='Máq '+m+(document.getElementById(m===1?'maq':'maq2')?.value?' ('+document.getElementById(m===1?'maq':'maq2').value+')':'');
+    {const ov=parseFloat(document.getElementById((m===1?'inp_':'m2inp_')+'oal')?.value),xd=dashQueCalza(ov),L=getDashLimits();
+     if(xd&&L[0]!=null&&(ov<L[0]||ov>L[1]))out.push(name+': <b>Largo Total '+esc(ov)+' corresponde al dash '+esc(xd)+'</b>, no al '+esc(dash)+'. ¿Seleccionó el dash correcto?');}
     if(!pz){out.push(name+': sin N° de pieza.');return;}
     const store=m===1?data:data2,hit=new Set();
     sides.forEach(s=>Object.keys(store).forEach(k=>{const p=k.split('|');
