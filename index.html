@@ -151,6 +151,27 @@ canvas{background:var(--bg);border-radius:8px;width:100%;height:220px;display:bl
 .conf-warning{background:var(--badbg);border:1px solid var(--badb);border-radius:6px;padding:8px 12px;color:var(--bad);font-size:13px;font-weight:bold;margin-bottom:10px;display:none}
 .kbd-hint{font-size:11px;color:var(--mut2);margin-right:auto;align-self:center}
 /* ---- avisos (toast) ---- */
+.tabs{display:flex;gap:4px;margin-bottom:8px;border-bottom:1px solid var(--line2)}
+.tabs button{background:transparent;color:var(--mut);border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;padding:8px 16px;font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:-1px}
+.tabs button.act{background:var(--panel);color:#fff;border-color:var(--line2);border-bottom:1px solid var(--panel)}
+.hfil{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.hfil label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
+.hfil input[type=date],.hfil input[type=search]{min-height:38px;padding:6px 8px;background:var(--bg);border:1px solid var(--line2);border-radius:6px;color:var(--txt);font-size:14px;color-scheme:dark}
+.hfil .hgrow{flex:1;min-width:180px}.hfil .hgrow input{width:100%}
+.hfil .hchk label{display:flex;gap:6px;align-items:center;min-height:38px;color:var(--txt);font-size:13px}
+.hbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.hbar .seg span{font-weight:normal;opacity:.8}
+.hstat{color:var(--mut);font-size:12px}
+.hwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.htbl{margin-top:0;font-size:13px}
+.htbl th{position:sticky;top:0;background:var(--panel2);text-align:left;padding:7px 8px;color:var(--mut);font-weight:normal;white-space:nowrap}
+.htbl td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+.htbl tr.hreg{cursor:pointer}.htbl tr.hreg:hover td{background:#1b2838}
+.htbl tr.hdet td{background:#0b121b;padding:6px 10px 10px}
+.htbl .det{width:100%;font-size:12px}.htbl .det td,.htbl .det th{padding:3px 6px;border-top:1px solid var(--line)}
+.tb{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold;white-space:nowrap}
+.tb.setup{background:#13314f;color:var(--sky)}.tb.proceso{background:#10331f;color:var(--ok)}.tb.sierra{background:#2f1f45;color:var(--m2)}
+.rs{font-weight:bold;white-space:nowrap}.rs.OK{color:var(--ok)}.rs.CERCA{color:var(--warn)}.rs.FUERA,.rs.DEFECTO{color:var(--bad)}
 #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;z-index:1100;max-width:min(92vw,620px);padding:12px 18px;border-radius:10px;font-size:14px;font-weight:bold;box-shadow:0 6px 20px rgba(0,0,0,.55);transition:opacity .2s,transform .2s;background:#1a2330;color:var(--txt);border:1px solid #3d5170;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok{background:var(--okbg);color:var(--ok);border-color:var(--okb)}
@@ -182,12 +203,14 @@ canvas{background:var(--bg);border-radius:8px;width:100%;height:220px;display:bl
     <div class="clock" id="clock"></div></div>
 </header>
 
+<nav class="tabs" role="tablist"><button type="button" role="tab" id="tabInsp" class="act" onclick="showTab('insp')">📝 Inspección</button><button type="button" role="tab" id="tabHist" onclick="showTab('hist')">🕘 Historial de inspecciones</button></nav>
+<div id="paneInsp">
 <section class="setup" aria-label="Datos de la inspección">
   <div class="f f-plano"><label for="plano">Plano / Familia</label><select id="plano" onchange="onPlano()"></select></div>
   <div class="f f-dash"><label for="dash">Part Number (dash)</label><select id="dash" onchange="onDash()"></select></div>
   <div class="f"><label for="op">OP (Orden de Producción) <span class="req">*</span></label><input id="op" placeholder="OP 20 / OP 30" autocomplete="off"></div>
   <div class="f"><label for="mec">Mecánico <span class="req">*</span></label><input id="mecQ" type="search" placeholder="Buscar # empleado o nombre" autocomplete="off" oninput="filtrarMec()" style="margin-bottom:4px"><select id="mec"></select></div>
-  <div class="f"><label for="insp">Inspector <span class="req">*</span></label><input id="insp" placeholder="Nombre del inspector" autocomplete="off"></div>
+  <div class="f"><label for="insp">Inspector <span class="req">*</span></label><input id="inspQ" type="search" placeholder="Buscar código o nombre" autocomplete="off" oninput="filtrarInsp()" style="margin-bottom:4px"><select id="insp"></select></div>
   <div class="setup-ctrl">
     <div class="seg" role="group" aria-label="Modo de inspección"><button type="button" id="btnSetup" class="act" onclick="setMode('setup')">Set-Up / Liberación</button><button type="button" id="btnProceso" onclick="setMode('proceso')">Inspección Proceso</button><button type="button" id="btnSierra" class="sierra" onclick="setMode('sierra')">Corte Sierra</button></div>
     <div class="seg" role="group" aria-label="Lado"><button type="button" id="btnT" class="act" onclick="setSide('T')">TOP</button><button type="button" id="btnB" onclick="setSide('B')">BOTTOM</button></div>
@@ -246,6 +269,21 @@ canvas{background:var(--bg);border-radius:8px;width:100%;height:220px;display:bl
   </section>
 
 </div>
+</div><!-- /paneInsp -->
+<section id="paneHist" hidden aria-label="Historial de inspecciones">
+  <div class="hfil">
+    <div><label for="hDesde">Desde</label><input type="date" id="hDesde"></div>
+    <div><label for="hHasta">Hasta</label><input type="date" id="hHasta"></div>
+    <div><label for="hInspQ">Inspector</label><input id="hInspQ" type="search" placeholder="Código o nombre" autocomplete="off" oninput="renderHist()"></div>
+    <div class="hgrow"><label for="hTxt">Buscar</label><input id="hTxt" type="search" placeholder="OP, PN, máquina, mecánico…" autocomplete="off" oninput="renderHist()"></div>
+    <div class="hchk"><label><input type="checkbox" id="hFuera" onchange="renderHist()"> Solo con FUERA</label></div>
+    <div class="hbtn"><button type="button" class="btn-all" onclick="cargarHist()">⟳ Cargar</button></div>
+  </div>
+  <div class="hbar"><div class="seg" role="group" aria-label="Tipo"><button type="button" data-t="" class="act" onclick="setHistTipo('')">Todos <span id="hc_"></span></button><button type="button" data-t="setup" onclick="setHistTipo('setup')">Set-Up / Liberación <span id="hc_setup"></span></button><button type="button" data-t="proceso" onclick="setHistTipo('proceso')">Proceso <span id="hc_proceso"></span></button><button type="button" data-t="sierra" class="sierra" onclick="setHistTipo('sierra')">Corte Sierra <span id="hc_sierra"></span></button></div>
+    <span class="hstat" id="hStat"></span></div>
+  <div class="hwrap"><table class="htbl"><thead><tr><th>Fecha / hora</th><th>Tipo</th><th>Inspector</th><th>Plano / PN</th><th>OP</th><th>Máquina(s)</th><th>Lado</th><th>Mecánico</th><th>Dim.</th><th>Resultado</th></tr></thead><tbody id="hBody"></tbody></table></div>
+  <div class="note">Cada fila = un guardado del inspector (todas las dimensiones registradas juntas, sin importar cuántas). Clic en la fila para ver el detalle. Set-Up / Proceso se identifica por las características medidas (Proceso = solo Seal Bore, Largo Total, Rosca GO y Visual).</div>
+</section>
 <div id="toast" role="alert"></div>
 
 <div style="display:none"><span id="specTxt"></span><div id="numInput"></div><div id="gngInput"></div><div id="visInput"></div><div id="omitInput"></div><label id="measLbl"></label></div>
@@ -276,6 +314,17 @@ function filtrarMec(){const q=_nrm(document.getElementById('mecQ').value).trim()
   addPlaceholder('mec',L.length?(q?'— '+L.length+' resultado(s) —':'— Seleccione mecánico —'):'— Sin resultados —');
   if(L.length===1&&q){s.value=s.options[1].value;}else if([...s.options].some(o=>o.value===cur)){s.value=cur;}
   s.dispatchEvent(new Event('change',{bubbles:true}));}
+const INSPECTORES=[{id:'2010',n:'Moisés Eduardo Ramírez Valerio'},{id:'2146',n:'Henry Salas Astorga'},{id:'2584',n:'Enrique Alexander Gutiérrez Zúñiga'},{id:'2821',n:'Sergio Andrés Estrada Palacios'},{id:'2844',n:'David Yuriam Gutiérrez Espinoza'},{id:'2849',n:'Andru David Salazar Rodríguez'}];
+function inspKey(v){v=String(v||'').trim();const d=v.match(/\d{3,}/);if(d)return d[0];
+  const t=_nrm(v);if(!t)return '';const x=INSPECTORES.find(i=>_nrm(i.n).includes(t));return x?x.id:v;}
+function inspNombre(c){const k=inspKey(c);const x=INSPECTORES.find(i=>i.id===k);return x?x.id+' — '+x.n:String(c||'');}
+function filtrarInsp(){const q=_nrm(document.getElementById('inspQ').value).trim(),s=document.getElementById('insp'),cur=s.value;
+  const terms=q.split(/\s+/).filter(Boolean);
+  const L=INSPECTORES.filter(m=>{const t=_nrm(m.id+' '+m.n);return terms.every(w=>t.includes(w));});
+  fillSelect('insp',L,m=>({v:m.id,t:m.id+' — '+m.n}));
+  addPlaceholder('insp',L.length?(q?'— '+L.length+' resultado(s) —':'— Seleccione inspector —'):'— Sin resultados —');
+  if(L.length===1&&q){s.value=s.options[1].value;}else if([...s.options].some(o=>o.value===cur)){s.value=cur;}
+  s.dispatchEvent(new Event('change',{bubbles:true}));}
 function addPlaceholder(id,txt){const s=document.getElementById(id);const o=document.createElement('option');o.value='';o.textContent=txt;s.insertBefore(o,s.firstChild);s.value='';}
 function init(){
   fillSelect('plano',Object.keys(APP.planos));
@@ -287,6 +336,8 @@ function init(){
   addPlaceholder('maq','— Seleccione máquina —');
   addPlaceholder('maq2','— Seleccione máquina —');
   addPlaceholder('mec','— Seleccione mecánico —');
+  fillSelect('insp',INSPECTORES,m=>({v:m.id,t:m.id+' — '+m.n}));
+  addPlaceholder('insp','— Seleccione inspector —');
   restoreSetupPrefs();
   wireSetupFields();
   onPlano();
@@ -325,7 +376,7 @@ function updateCtx(){const bar=document.getElementById('ctxbar');if(!bar||!curPl
   const mecTxt=v('mec')?v('mec').replace(/^\d+\s+/,''):'';
   bar.innerHTML=chip('Plano',curPlano)+chip('PN',v('dash'))+chip('OP',v('op'))+
     '<span class="chip mode">'+esc(MODE_LBL[curMode]||curMode)+'</span><span class="chip side">'+(curSide==='T'?'TOP':'BOTTOM')+'</span>'+
-    chip('Máq 1',v('maq'))+chip('Máq 2',v('maq2'),'c2')+chip('Mecánico',mecTxt)+chip('Inspector',v('insp'));}
+    chip('Máq 1',v('maq'))+chip('Máq 2',v('maq2'),'c2')+chip('Mecánico',mecTxt)+chip('Inspector',v('insp')?inspNombre(v('insp')):'');}
 // Valida campos obligatorios antes de registrar. machines = [1], [2] o [1,2]
 function validateSetup(machines){
   const req=[['op','OP'],['mec','Mecánico'],['insp','Inspector']];
@@ -1124,7 +1175,7 @@ function openConfirm(mode,r1,r2,show1,show2,sides){
   const chip=(l,x)=>'<span class="chip"><b>'+l+'</b>'+esc(x||'—')+'</span>';
   document.getElementById('confCtx').innerHTML=chip('Plano',curPlano)+chip('PN',v('dash'))+chip('OP',v('op'))+
     '<span class="chip mode">'+esc(MODE_LBL[curMode]||curMode)+'</span><span class="chip side">'+sides.map(s=>s==='T'?'TOP':'BOTTOM').join(' + ')+'</span>'+
-    chip('Mecánico',v('mec').replace(/^\d+\s+/,''))+chip('Inspector',v('insp'))+chip('Turno',autoTurno())+
+    chip('Mecánico',v('mec').replace(/^\d+\s+/,''))+chip('Inspector',v('insp')?inspNombre(v('insp')):'')+chip('Turno',autoTurno())+
     (show1?chip('Pieza M1',v('npieza'))+(v('nserie')?chip('Serie M1',v('nserie')):''):'')+
     (show2?chip('Pieza M2',v('npieza2'))+(v('nserie2')?chip('Serie M2',v('nserie2')):''):'');
   const rel=[...(show1?r1:[]),...(show2?r2:[])];
@@ -1297,6 +1348,66 @@ function registerAllSides(){
 }
 
 window.addEventListener('resize',()=>{drawChart();drawChart2();});
+// ===== Historial de inspecciones (lee el Google Sheet) =====
+let histRegs=null,histTipo='';
+const HIST_GAP_MS=10000; // filas del mismo inspector con <=10 s entre sí = 1 guardado
+const TIPO_LBL={setup:'Set-Up / Liberación',proceso:'Proceso',sierra:'Corte Sierra'};
+function crHoy(){return new Date(Date.now()-6*3600e3).toISOString().slice(0,10);}
+function crFmt(t){const d=new Date(new Date(t).getTime()-6*3600e3);return isNaN(d)?'':d.toISOString().slice(0,16).replace('T',' ');}
+function showTab(t){document.getElementById('paneInsp').hidden=t!=='insp';document.getElementById('paneHist').hidden=t!=='hist';
+  document.getElementById('tabInsp').classList.toggle('act',t==='insp');document.getElementById('tabHist').classList.toggle('act',t==='hist');
+  document.querySelector('.ctxbar').style.display=t==='insp'?'':'none';
+  if(t==='hist'){const a=document.getElementById('hDesde'),b=document.getElementById('hHasta');if(!a.value)a.value=crHoy();if(!b.value)b.value=crHoy();if(!histRegs)cargarHist();}
+  else{drawChart();drawChart2();}}
+async function cargarHist(){
+  const d1=document.getElementById('hDesde').value||crHoy(),d2=document.getElementById('hHasta').value||d1,st=document.getElementById('hStat');
+  if(d2<d1){toast('La fecha "Hasta" es menor que "Desde".','warn');return;}
+  st.textContent='Cargando del Google Sheet… (puede tardar 1-2 min)';document.getElementById('hBody').innerHTML='';
+  // el filtro 'desde' del Apps Script deja fuera el primer día: se piden 2 días antes y se filtra aquí
+  const get=sh=>fetch(cfg().url+'?mode=raw&sheet='+encodeURIComponent(sh)+'&desde='+encodeURIComponent(new Date(Date.parse(d1+'T00:00:00-06:00')-2*864e5).toISOString().slice(0,10)+'T00:00:00-06:00')+'&max=50000')
+    .then(r=>r.json()).then(j=>(j.rows||[]).map(r=>Object.assign(r,{_sh:sh})));
+  try{const [a,b]=await Promise.all([get('Inspecciones'),get('Corte Sierra')]);
+    const rows=[...a,...b].filter(r=>{const f=crFmt(r.fecha).slice(0,10);return f&&f>=d1&&f<=d2;});
+    histRegs=agruparHist(rows);renderHist();
+  }catch(e){st.textContent='No se pudo leer el historial ('+e.message+'). Revise la conexión y vuelva a cargar.';}}
+function agruparHist(rows){
+  rows.forEach(r=>{r._t=new Date(r.fecha).getTime();r._i=inspKey(r.inspector);});
+  rows.sort((x,y)=>x._sh.localeCompare(y._sh)||x._i.localeCompare(y._i)||x._t-y._t);
+  const regs=[];let g=null;
+  rows.forEach(r=>{if(!g||g.sh!==r._sh||g.insp!==r._i||r._t-g.last>HIST_GAP_MS){g={sh:r._sh,insp:r._i,t:r._t,last:r._t,rows:[]};regs.push(g);}
+    g.rows.push(r);g.last=r._t;});
+  const uniq=(g,k)=>[...new Set(g.rows.map(r=>String(r[k]==null?'':r[k]).trim()).filter(Boolean))];
+  regs.forEach(g=>{
+    const modo=uniq(g,'modo')[0];
+    g.tipo=g.sh==='Corte Sierra'?'sierra':(modo&&TIPO_LBL[modo]?modo:(g.rows.every(r=>PROCESO_KEYS.includes(r.caracteristica))?'proceso':'setup'));
+    g.plano=uniq(g,'plano');g.pn=uniq(g,'part_number');g.op=uniq(g,'OP');g.maq=uniq(g,'maquina');
+    g.lado=uniq(g,'lado').map(l=>l==='T'?'TOP':l==='B'?'BOT':l);g.mec=uniq(g,'mecanico').map(m=>m.replace(/^\d+\s+/,''));
+    g.malas=g.rows.filter(r=>r.estado==='FUERA'||r.estado==='DEFECTO').length;
+    g.cerca=g.rows.filter(r=>r.estado==='CERCA').length;
+    g.res=g.malas?'FUERA':g.cerca?'CERCA':'OK';
+    g.txt=_nrm([g.plano,g.pn,g.op,g.maq,uniq(g,'mecanico'),uniq(g,'pieza'),uniq(g,'serie'),uniq(g,'comentario')].flat().join(' '));
+    g.inspTxt=_nrm(inspNombre(g.insp)+' '+uniq(g,'inspector').join(' '));});
+  return regs.sort((x,y)=>y.t-x.t);}
+function setHistTipo(t){histTipo=t;document.querySelectorAll('#paneHist .hbar .seg button').forEach(b=>b.classList.toggle('act',b.dataset.t===t));renderHist();}
+function renderHist(){if(!histRegs)return;
+  const qi=_nrm(document.getElementById('hInspQ').value).split(/\s+/).filter(Boolean),qt=_nrm(document.getElementById('hTxt').value).split(/\s+/).filter(Boolean),
+    sf=document.getElementById('hFuera').checked;
+  const base=histRegs.filter(g=>qi.every(w=>g.inspTxt.includes(w))&&qt.every(w=>g.txt.includes(w))&&(!sf||g.malas));
+  const cnt={'':base.length,setup:0,proceso:0,sierra:0};base.forEach(g=>cnt[g.tipo]++);
+  Object.keys(cnt).forEach(k=>{const e=document.getElementById('hc_'+k);if(e)e.textContent='('+cnt[k]+')';});
+  const L=base.filter(g=>!histTipo||g.tipo===histTipo),MAX=400;
+  const dims=L.reduce((a,g)=>a+g.rows.length,0),fu=L.filter(g=>g.malas).length;
+  document.getElementById('hStat').textContent=L.length+' registro(s) · '+dims+' dimensiones · '+fu+' con FUERA'+(L.length>MAX?' · mostrando los '+MAX+' más recientes':'');
+  const j=a=>esc(a.join(', '));
+  document.getElementById('hBody').innerHTML=L.length?L.slice(0,MAX).map(g=>
+    '<tr class="hreg" onclick="toggleHistDet(this,'+histRegs.indexOf(g)+')"><td>'+crFmt(g.t)+'</td><td><span class="tb '+g.tipo+'">'+TIPO_LBL[g.tipo]+'</span></td><td>'+esc(inspNombre(g.insp)||'—')+'</td><td>'+j(g.plano)+'<br><b>'+j(g.pn)+'</b></td><td>'+j(g.op)+'</td><td>'+j(g.maq)+'</td><td>'+j(g.lado)+'</td><td>'+j(g.mec)+'</td><td>'+g.rows.length+'</td><td class="rs '+g.res+'">'+(g.malas?'✗ '+g.malas+' FUERA':g.cerca?'⚠ '+g.cerca+' CERCA':'✓ OK')+'</td></tr>').join('')
+    :'<tr><td colspan="10" style="text-align:center;color:var(--mut);padding:18px">Sin registros para estos filtros.</td></tr>';}
+function toggleHistDet(tr,idx){const nx=tr.nextElementSibling;if(nx&&nx.classList.contains('hdet')){nx.remove();return;}
+  const g=histRegs[idx];const d=document.createElement('tr');d.className='hdet';
+  d.innerHTML='<td colspan="10"><table class="det"><thead><tr><th>Máquina</th><th>Lado</th><th>Característica</th><th>Valor</th><th>Estado</th><th>Pieza</th><th>Serie</th><th>Comentario</th></tr></thead><tbody>'+
+    g.rows.map(r=>'<tr><td>'+esc(r.maquina)+'</td><td>'+esc(r.lado==='T'?'TOP':r.lado==='B'?'BOT':r.lado)+'</td><td>'+esc(r.descripcion||r.caracteristica)+'</td><td>'+esc(r.valor)+'</td><td class="rs '+esc(r.estado)+'">'+esc(r.estado)+'</td><td>'+esc(r.pieza)+'</td><td>'+esc(r.serie)+'</td><td>'+esc(r.comentario)+'</td></tr>').join('')+'</tbody></table></td>';
+  tr.after(d);}
+['hDesde','hHasta'].forEach(id=>document.getElementById(id).addEventListener('change',cargarHist));
 // restaurar
 try{const sv=localStorage.getItem('inspData');if(sv&&sv!=='undefined')data=JSON.parse(sv);}catch(e){localStorage.removeItem('inspData');}
 try{const sv2=localStorage.getItem('inspData2');if(sv2&&sv2!=='undefined')data2=JSON.parse(sv2);}catch(e){localStorage.removeItem('inspData2');}
