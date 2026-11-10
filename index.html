@@ -1360,7 +1360,7 @@ function showTab(t){document.getElementById('paneInsp').hidden=t!=='insp';docume
   if(t==='hist'){const a=document.getElementById('hDesde'),b=document.getElementById('hHasta');if(!a.value)a.value=crHoy();if(!b.value)b.value=crHoy();if(!histRegs)cargarHist();}
   else{drawChart();drawChart2();}}
 const SHEET_ID='1q1rAgbhNIYO9PSDRoJxIzroYYthIMX1RT5KtIkC9lGM';
-const SHEETS={'Inspecciones':{gid:'1864076953',col:'P'},'Corte Sierra':{gid:'865446473',col:'N'}}; // col = columna 'fecha'
+const SHEETS={'Inspecciones':{gid:'1864076953',col:'P'},'Inspecciones Histórico':{gid:'1411540500',col:'P',como:'Inspecciones'},'Corte Sierra':{gid:'865446473',col:'N'}}; // col = columna 'fecha'
 function parseCSV(t){const rows=[];let row=[],f='',q=false;
   for(let i=0;i<t.length;i++){const c=t[i];
     if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
@@ -1383,11 +1383,12 @@ async function cargarHist(){
     .then(t=>parseInt((t.split('\n')[1]||'0').replace(/\D/g,''))||0);
   const get=async(sh)=>{const S=SHEETS[sh];
     const [hdr,n1,n2]=await Promise.all([txt(base+'/export?format=csv&gid='+S.gid+'&range=A1:Z1'),cuenta(S.gid,S.col,iso(d1)),cuenta(S.gid,S.col,iso(d2,1))]);
+    if(n2===n1)return []; // nada en esas fechas en esta hoja
     const ini=Math.max(2,n1+2-1500),fin=n2+1+500;
     const body=await txt(base+'/export?format=csv&gid='+S.gid+'&range=A'+ini+':Z'+fin);
-    return parseCSV(hdr.replace(/\s+$/,'')+'\n'+body).map(r=>Object.assign(r,{_sh:sh}));};
-  try{const [a,b]=await Promise.all([get('Inspecciones'),get('Corte Sierra')]);
-    const rows=[...a,...b].filter(r=>{const f=crFmt(r.fecha).slice(0,10);return f&&f>=d1&&f<=d2;});
+    return parseCSV(hdr.replace(/\s+$/,'')+'\n'+body).map(r=>Object.assign(r,{_sh:S.como||sh}));};
+  try{const parts=await Promise.all(Object.keys(SHEETS).map(get));
+    const rows=parts.flat().filter(r=>{const f=crFmt(r.fecha).slice(0,10);return f&&f>=d1&&f<=d2;});
     histRegs=agruparHist(rows);renderHist();
   }catch(e){st.textContent='No se pudo leer el historial ('+e.message+'). Revise la conexión y vuelva a cargar.';}}
 function agruparHist(rows){
