@@ -1359,13 +1359,33 @@ function showTab(t){document.getElementById('paneInsp').hidden=t!=='insp';docume
   document.querySelector('.ctxbar').style.display=t==='insp'?'':'none';
   if(t==='hist'){const a=document.getElementById('hDesde'),b=document.getElementById('hHasta');if(!a.value)a.value=crHoy();if(!b.value)b.value=crHoy();if(!histRegs)cargarHist();}
   else{drawChart();drawChart2();}}
+const SHEET_ID='1q1rAgbhNIYO9PSDRoJxIzroYYthIMX1RT5KtIkC9lGM';
+const SHEETS={'Inspecciones':{gid:'1864076953',col:'P'},'Corte Sierra':{gid:'865446473',col:'N'}}; // col = columna 'fecha'
+function parseCSV(t){const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f='';}
+    else if(c==='\n'){row.push(f);rows.push(row);row=[];f='';}else if(c!=='\r')f+=c;}
+  if(f||row.length){row.push(f);rows.push(row);}
+  if(!rows.length)return [];const h=rows[0].map(x=>x.trim());
+  return rows.slice(1).filter(r=>r.some(Boolean)).map(r=>{const o={};h.forEach((k,j)=>{if(k)o[k]=r[j]==null?'':r[j];});
+    if(!o.caracteristica&&o.valor!==undefined&&!o.descripcion){o.caracteristica='oal';o.descripcion='Largo (Corte Sierra)';}return o;});}
 async function cargarHist(){
   const d1=document.getElementById('hDesde').value||crHoy(),d2=document.getElementById('hHasta').value||d1,st=document.getElementById('hStat');
   if(d2<d1){toast('La fecha "Hasta" es menor que "Desde".','warn');return;}
-  st.textContent='Cargando del Google Sheet… (puede tardar 1-2 min)';document.getElementById('hBody').innerHTML='';
-  // el filtro 'desde' del Apps Script deja fuera el primer día: se piden 2 días antes y se filtra aquí
-  const get=sh=>fetch(cfg().url+'?mode=raw&sheet='+encodeURIComponent(sh)+'&desde='+encodeURIComponent(new Date(Date.parse(d1+'T00:00:00-06:00')-2*864e5).toISOString().slice(0,10)+'T00:00:00-06:00')+'&max=50000')
-    .then(r=>r.json()).then(j=>(j.rows||[]).map(r=>Object.assign(r,{_sh:sh})));
+  st.textContent='Cargando del Google Sheet…';document.getElementById('hBody').innerHTML='';
+  // Lee el Google Sheet directo (~2 s). El Apps Script lee toda la hoja y tarda 2-3 min.
+  // 1) gviz cuenta filas por fecha (solo para ubicar el rango); 2) export CSV de ese rango (conserva textos como 'Henry' u 'OK').
+  const iso=(d,add)=>new Date(Date.parse(d+'T00:00:00-06:00')+(add||0)*864e5).toISOString().slice(0,16);
+  const base='https://docs.google.com/spreadsheets/d/'+SHEET_ID;
+  const txt=u=>fetch(u).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();});
+  const cuenta=(gid,col,f)=>txt(base+'/gviz/tq?tqx=out:csv&headers=1&gid='+gid+'&tq='+encodeURIComponent("select count(A) where "+col+" < '"+f+"'"))
+    .then(t=>parseInt((t.split('\n')[1]||'0').replace(/\D/g,''))||0);
+  const get=async(sh)=>{const S=SHEETS[sh];
+    const [hdr,n1,n2]=await Promise.all([txt(base+'/export?format=csv&gid='+S.gid+'&range=A1:Z1'),cuenta(S.gid,S.col,iso(d1)),cuenta(S.gid,S.col,iso(d2,1))]);
+    const ini=Math.max(2,n1+2-1500),fin=n2+1+500;
+    const body=await txt(base+'/export?format=csv&gid='+S.gid+'&range=A'+ini+':Z'+fin);
+    return parseCSV(hdr.replace(/\s+$/,'')+'\n'+body).map(r=>Object.assign(r,{_sh:sh}));};
   try{const [a,b]=await Promise.all([get('Inspecciones'),get('Corte Sierra')]);
     const rows=[...a,...b].filter(r=>{const f=crFmt(r.fecha).slice(0,10);return f&&f>=d1&&f<=d2;});
     histRegs=agruparHist(rows);renderHist();
