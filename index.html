@@ -314,7 +314,7 @@ function filtrarMec(){const q=_nrm(document.getElementById('mecQ').value).trim()
   addPlaceholder('mec',L.length?(q?'— '+L.length+' resultado(s) —':'— Seleccione mecánico —'):'— Sin resultados —');
   if(L.length===1&&q){s.value=s.options[1].value;}else if([...s.options].some(o=>o.value===cur)){s.value=cur;}
   s.dispatchEvent(new Event('change',{bubbles:true}));}
-const INSPECTORES=[{id:'2010',n:'Moisés Eduardo Ramírez Valerio'},{id:'2146',n:'Henry Salas Astorga'},{id:'2584',n:'Enrique Alexander Gutiérrez Zúñiga'},{id:'2821',n:'Sergio Andrés Estrada Palacios'},{id:'2844',n:'David Yuriam Gutiérrez Espinoza'},{id:'2849',n:'Andru David Salazar Rodríguez'}];
+const INSPECTORES=[{id:'2010',n:'Moisés Eduardo Ramírez Valerio'},{id:'2055',n:'Anthony Montero Hidalgo'},{id:'2183',n:'Carlos Roberto Ortega Arguedas'},{id:'2554',n:'Deissel Marín Chaves'},{id:'2146',n:'Henry Salas Astorga'},{id:'2584',n:'Enrique Alexander Gutiérrez Zúñiga'},{id:'2821',n:'Sergio Andrés Estrada Palacios'},{id:'2844',n:'David Yuriam Gutiérrez Espinoza'},{id:'2849',n:'Andru David Salazar Rodríguez'}].sort((a,b)=>Number(a.id)-Number(b.id));
 function inspKey(v){v=String(v||'').trim();const d=v.match(/\d{3,}/);if(d)return d[0];
   const t=_nrm(v);if(!t)return '';const x=INSPECTORES.find(i=>_nrm(i.n).includes(t));return x?x.id:v;}
 function inspNombre(c){const k=inspKey(c);const x=INSPECTORES.find(i=>i.id===k);return x?x.id+' — '+x.n:String(c||'');}
